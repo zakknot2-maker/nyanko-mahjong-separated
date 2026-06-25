@@ -497,6 +497,9 @@ battle.animate([
       <div class="developer-text">ようこそ、飼い主。</div>
       <div class="developer-text">自分用の押し引き補正はここに育てていくにゃ。</div>
       <div class="developer-badge">現在：観察モード</div>
+      <button class="developer-close" onclick="hideDeveloperMode()">
+閉じる
+</button>
     `;
     document.getElementById("secret-battle").appendChild(panel);
   }
@@ -515,3 +518,15 @@ document.body.classList.add("theme-assist");
 calcQuick();
 calcAssist();
 calcCondition();
+
+function hideDeveloperMode(){
+
+    document.body.classList.remove("developer-mode");
+
+    const panel = document.getElementById("developer-mode-panel");
+
+    if(panel){
+        panel.classList.remove("active");
+    }
+
+}
