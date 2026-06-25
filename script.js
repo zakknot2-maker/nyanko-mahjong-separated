@@ -476,6 +476,15 @@ function handleDeveloperCommandTap(e){
 }
 
 function showDeveloperMode(){
+  const battle = document.getElementById("secret-battle");
+
+battle.animate([
+    {transform:"scale(1)"},
+    {transform:"scale(1.015)"},
+    {transform:"scale(1)"}
+],{
+    duration:250
+});
   document.body.classList.add("developer-mode");
 
   let panel = document.getElementById("developer-mode-panel");
