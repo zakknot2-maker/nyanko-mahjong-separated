@@ -185,11 +185,14 @@ setConditionDifficultyCat(bestCondition);if(diff<0){document.getElementById("con
   "。本場・供託込みで判定するにゃ。";}
 
 function showSecretBattle(){
+  document.body.classList.add("secret-mode");
   document.getElementById("secret-battle").classList.add("active");
   calcBattle();
   document.getElementById("secret-battle").scrollIntoView({behavior:"smooth",block:"start"});
 }
+
 function hideSecretBattle(){
+  document.body.classList.remove("secret-mode");
   document.getElementById("secret-battle").classList.remove("active");
 }
 function calcBattle(){
