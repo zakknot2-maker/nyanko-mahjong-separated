@@ -681,3 +681,21 @@ body.theme-quick .tab.active::after,
 body.theme-condition .tab.active::after{
   color:var(--theme-main);
 }
+/* ===== Remaining green cleanup ===== */
+
+body.theme-assist .hero,
+body.theme-quick .hero,
+body.theme-condition .hero{
+  border-bottom-color:var(--theme-shadow);
+}
+
+body.theme-assist .note,
+body.theme-quick .note,
+body.theme-condition .note,
+body.theme-assist .info-box,
+body.theme-quick .info-box,
+body.theme-condition .info-box{
+  border-color:var(--theme-shadow);
+  background:var(--theme-soft);
+  color:var(--theme-main);
+}
