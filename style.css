@@ -602,3 +602,82 @@ body.theme-condition .results.fire{
       #7B211A
     );
 }
+/* ===== Theme color cleanup ===== */
+
+body.theme-assist .input-box,
+body.theme-quick .input-box,
+body.theme-condition .input-box{
+  border-color:var(--theme-shadow);
+  box-shadow:0 4px 0 var(--theme-shadow);
+}
+
+body.theme-assist .hero-message,
+body.theme-quick .hero-message,
+body.theme-condition .hero-message{
+  border-color:var(--theme-shadow);
+  color:var(--theme-main);
+}
+
+body.theme-assist .cat-avatar,
+body.theme-quick .cat-avatar,
+body.theme-condition .cat-avatar{
+  border-color:var(--theme-main);
+}
+
+body.theme-assist .cat-frame,
+body.theme-quick .cat-frame,
+body.theme-condition .cat-frame{
+  border-color:var(--theme-main);
+}
+
+body.theme-assist .subtitle,
+body.theme-quick .subtitle,
+body.theme-condition .subtitle,
+body.theme-assist .comment-text,
+body.theme-quick .comment-text,
+body.theme-condition .comment-text,
+body.theme-assist .footer,
+body.theme-quick .footer,
+body.theme-condition .footer,
+body.theme-assist .grid-label,
+body.theme-quick .grid-label,
+body.theme-condition .grid-label{
+  color:var(--theme-main);
+}
+
+body.theme-assist .score,
+body.theme-quick .score,
+body.theme-condition .score,
+body.theme-assist .cond-main,
+body.theme-quick .cond-main,
+body.theme-condition .cond-main,
+body.theme-assist .big,
+body.theme-quick .big,
+body.theme-condition .big{
+  color:var(--theme-accent);
+}
+
+body.theme-assist .result-item,
+body.theme-quick .result-item,
+body.theme-condition .result-item,
+body.theme-assist .condition,
+body.theme-quick .condition,
+body.theme-condition .condition,
+body.theme-assist .summary,
+body.theme-quick .summary,
+body.theme-condition .summary{
+  border-color:var(--theme-shadow);
+  box-shadow:0 3px 0 var(--theme-shadow);
+}
+
+body.theme-assist details summary,
+body.theme-quick details summary,
+body.theme-condition details summary{
+  color:var(--theme-accent);
+}
+
+body.theme-assist .tab.active::after,
+body.theme-quick .tab.active::after,
+body.theme-condition .tab.active::after{
+  color:var(--theme-main);
+}
