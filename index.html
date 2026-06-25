@@ -76,6 +76,25 @@
     </div>
 
     <div class="input-box">
+      <div class="input-box">
+  <label>相手の攻撃 ⚠️</label>
+  <select id="battle-threat" onchange="calcBattle()">
+    <option value="none" selected>なし</option>
+    <option value="riichi">リーチ</option>
+    <option value="parent">親リーチ</option>
+    <option value="open">高そうな仕掛け</option>
+  </select>
+</div>
+
+<div class="input-box">
+  <label>切る牌 🀄</label>
+  <select id="battle-risklevel" onchange="calcBattle()">
+    <option value="safe">安全牌</option>
+    <option value="okay" selected>まあ通りそう</option>
+    <option value="danger">危ない</option>
+    <option value="verydanger">無スジ・激ヤバ</option>
+  </select>
+</div>
       <label>待ち・形 🐾</label>
       <select id="battle-shape" onchange="calcBattle()">
         <option value="good" selected>良形</option>
