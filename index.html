@@ -67,9 +67,8 @@
       <div class="input-box">
         <label>打点目安 💰</label>
         <select id="battle-value" onchange="calcBattle()">
-          <option value="1000">1000級</option>
-          <option value="2000">2000級</option>
-          <option value="3900" selected>3900級</option>
+          <option value="low">1000～2000</option>
+          <option value="middle" selected>3900～5200</option>
           <option value="mangan">満貫以上</option>
         </select>
       </div>
@@ -89,10 +88,9 @@
 <div class="input-box">
   <label>切る牌 🀄</label>
   <select id="battle-risklevel" onchange="calcBattle()">
-    <option value="safe">安全牌</option>
-    <option value="okay" selected>まあ通りそう</option>
-    <option value="danger">危ない</option>
-    <option value="verydanger">無スジ・激ヤバ</option>
+    <option value="okay" selected>通りそうな牌</option>
+    <option value="danger">危険牌</option>
+    <option value="verydanger">超危険牌</option>
   </select>
 </div>
       <label>待ち・形 🐾</label>
