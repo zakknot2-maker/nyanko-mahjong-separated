@@ -399,6 +399,104 @@ function calcBattle(){
   document.getElementById("battle-score").innerText = total;
   document.getElementById("battle-reason").innerHTML = "<b>理由：</b>" + reasons.join(" / ");
 }
+/* ==========================
+開発者モード隠しコマンド
+順番：
+1 吹き出し
+2 猫の顔
+3 手牌を置く手
+4 タイトル「ざわ…戦えるかにゃ？」
+========================== */
+
+const devSecretSequence = ["speech", "face", "hand", "title"];
+let devSecretProgress = [];
+let devSecretTimer = null;
+
+function getBattleTapZone(e){
+  const panel = document.getElementById("secret-battle");
+  if(!panel || !document.body.classList.contains("secret-mode")) return null;
+
+  if(e.target.closest("select, button, input")) return null;
+
+  const rect = panel.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+
+  const beforeHeight = parseFloat(getComputedStyle(panel, "::before").height) || 420;
+  const imageRatio = beforeHeight / rect.height;
+
+  if(e.target.closest(".secret-head, .secret-title")){
+    return "title";
+  }
+
+  if(y > imageRatio) return null;
+
+  const iy = y / imageRatio;
+
+  // 吹き出し：右上
+  if(x >= 0.68 && x <= 0.98 && iy >= 0.04 && iy <= 0.38){
+    return "speech";
+  }
+
+  // 猫の顔：中央上
+  if(x >= 0.34 && x <= 0.70 && iy >= 0.16 && iy <= 0.52){
+    return "face";
+  }
+
+  // 手牌を置く手：左下〜中央下
+  if(x >= 0.10 && x <= 0.62 && iy >= 0.58 && iy <= 0.96){
+    return "hand";
+  }
+
+  return null;
+}
+
+function handleDeveloperCommandTap(e){
+  const zone = getBattleTapZone(e);
+  if(!zone) return;
+
+  clearTimeout(devSecretTimer);
+  devSecretTimer = setTimeout(() => {
+    devSecretProgress = [];
+  }, 5000);
+
+  const next = devSecretSequence[devSecretProgress.length];
+
+  if(zone === next){
+    devSecretProgress.push(zone);
+  }else{
+    devSecretProgress = zone === devSecretSequence[0] ? [zone] : [];
+  }
+
+  if(devSecretProgress.length === devSecretSequence.length){
+    devSecretProgress = [];
+    clearTimeout(devSecretTimer);
+    showDeveloperMode();
+  }
+}
+
+function showDeveloperMode(){
+  document.body.classList.add("developer-mode");
+
+  let panel = document.getElementById("developer-mode-panel");
+  if(!panel){
+    panel = document.createElement("div");
+    panel.id = "developer-mode-panel";
+    panel.className = "developer-panel";
+    panel.innerHTML = `
+      <div class="developer-title">🐾 開発者モード</div>
+      <div class="developer-text">ようこそ、飼い主。</div>
+      <div class="developer-text">自分用の押し引き補正はここに育てていくにゃ。</div>
+      <div class="developer-badge">現在：観察モード</div>
+    `;
+    document.getElementById("secret-battle").appendChild(panel);
+  }
+
+  panel.classList.add("active");
+}
+
+document.getElementById("secret-battle").addEventListener("click", handleDeveloperCommandTap);
+
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');
 setCommentCatByName('quick-cat', 'ニンマリ猫');
