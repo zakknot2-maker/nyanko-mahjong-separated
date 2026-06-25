@@ -299,17 +299,14 @@ function calcBattleNormal(){
     reasons.push("3シャンテン以上 -4");
   }
 
-  if(value === "1000"){
-    total -= 2;
-    reasons.push("1000級 -2");
-  }else if(value === "2000"){
+  if(value === "low"){
     total -= 1;
-    reasons.push("2000級 -1");
+    reasons.push("1000～2000 -1");
   }else if(value === "mangan"){
     total += 2;
     reasons.push("満貫以上 +2");
   }else{
-    reasons.push("3900級 基準");
+    reasons.push("3900～5200 基準");
   }
 
   if(shape === "bad"){
@@ -333,17 +330,14 @@ function calcBattleNormal(){
     reasons.push("相手攻撃なし 基準");
   }
 
-  if(riskLevel === "safe"){
-    total += 1;
-    reasons.push("安全牌 +1");
-  }else if(riskLevel === "danger"){
+  if(riskLevel === "danger"){
     total -= 2;
     reasons.push("危険牌 -2");
   }else if(riskLevel === "verydanger"){
     total -= 3;
-    reasons.push("無スジ危険牌 -3");
+    reasons.push("超危険牌 -3");
   }else{
-    reasons.push("まあ通りそう 基準");
+    reasons.push("通りそうな牌 基準");
   }
 
   let judgement = "";
@@ -386,12 +380,12 @@ function calcBattleNormal(){
     reasons.push("終盤の超危険牌：一段階引き");
   }
 
-  if(value === "1000" && shape === "bad"){
+  if(value === "low" && shape === "bad"){
     if(total <= 1){
       judgement = "🚪 ベタオリにゃ";
       risk = "0枚";
     }
-    reasons.push("低打点愚形：引き補正");
+    reasons.push("1000～2000愚形：引き補正");
   }
 
   if(shanten === "tenpai" && value === "mangan"){
@@ -465,16 +459,13 @@ function calcBattleAwaken(){
     expectedMemos.push("3シャンテンは押し返しの期待値がかなり低いにゃ。");
   }
 
-  if(value === "1000"){
-    reasons.push("1000級 ±0");
-    expectedMemos.push("1000点は押し返す理由としては弱いにゃ。");
-  }else if(value === "2000"){
-    reasons.push("2000級 ±0");
-    expectedMemos.push("2000点は状況次第。安全度とシャンテン数を優先するにゃ。");
-  }else if(value === "3900"){
+  if(value === "low"){
+    reasons.push("1000～2000 ±0");
+    expectedMemos.push("1000～2000は状況次第。安全度とシャンテン数を優先するにゃ。");
+  }else if(value === "middle"){
     total += 1;
-    reasons.push("3900級 +1");
-    expectedMemos.push("3900は十分押せる打点。形が良ければ前向きにゃ。");
+    reasons.push("3900～5200 +1");
+    expectedMemos.push("3900～5200は十分押せる打点。形が良ければ前向きにゃ。");
   }else{
     total += 2;
     reasons.push("満貫以上 +2");
@@ -509,11 +500,7 @@ function calcBattleAwaken(){
     expectedMemos.push("高そうな副露はリーチ級に警戒。安い手で押す価値は下がるにゃ。");
   }
 
-  if(riskLevel === "safe"){
-    total += 1;
-    reasons.push("安全牌 +1");
-    expectedMemos.push("安全牌を切れるなら局面を進めやすいにゃ。");
-  }else if(riskLevel === "okay"){
+  if(riskLevel === "okay"){
     total += 1;
     reasons.push("通りそうな牌 +1");
     expectedMemos.push("通りそうな牌なら、手牌価値がある時は押しやすいにゃ。");
@@ -556,7 +543,7 @@ function calcBattleAwaken(){
     coachingComments.push("押し返しの期待値が足りない。ベタオリ寄りで良いにゃ。");
   }
 
-  if((shanten === "tenpai" || shanten === "one") && value !== "1000" && threat !== "parent" && riskLevel !== "verydanger" && total >= 1){
+  if((shanten === "tenpai" || shanten === "one") && value !== "low" && threat !== "parent" && riskLevel !== "verydanger" && total >= 1){
     pushWarning = "押し不足注意：この条件は降りすぎると長期期待値を落としやすいにゃ。";
   }
 
