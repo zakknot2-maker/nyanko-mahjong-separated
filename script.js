@@ -174,29 +174,63 @@ function setConditionDifficultyCat(resultText){
   }
 }
 
-function calcCondition(){const meInput = document.getElementById("cond-me");
-const targetInput = document.getElementById("cond-target");
+function calcCondition(){
+  const meInput = document.getElementById("cond-me");
+  const targetInput = document.getElementById("cond-target");
 
-if(meInput.value === "" || targetInput.value === ""){
+  const mySeat = document.getElementById("cond-my-seat").value;
+  const targetSeat = document.getElementById("cond-target-seat").value;
+  const honba = parseInt(document.getElementById("cond-honba").value || 0);
+  const kyotaku = parseInt(document.getElementById("cond-kyotaku").value || 0);
+
+  if(meInput.value === "" || targetInput.value === ""){
     document.getElementById("cond-diff").innerText = "点数を入力してください🐾";
+    document.getElementById("cond-minimum").innerText = "-";
     document.getElementById("cond-ron").innerText = "-";
     document.getElementById("cond-direct").innerText = "-";
     document.getElementById("cond-tsumo").innerText = "-";
-    document.getElementById("cond-minimum").innerText = "-";
+    document.getElementById("cond-tsumo-sub").innerText =
+      "自分：" + (mySeat === "parent" ? "親" : "子") +
+      " / 相手：" + (targetSeat === "parent" ? "親" : "子") +
+      "。本場・供託込みで判定するにゃ。";
     return;
+  }
+
+  const me = parseInt(meInput.value);
+  const target = parseInt(targetInput.value);
+  const bonus = honba * 300 + kyotaku * 1000;
+  const diff = target - me;
+
+  document.getElementById("cond-diff").innerText =
+    diff > 0 ? fmt(diff) + "点ビハインド" : fmt(Math.abs(diff)) + "点リード";
+
+  const ron = findRon(me, target, mySeat, false, bonus);
+  const direct = findRon(me, target, mySeat, true, bonus);
+  const tsumo = findTsumo(me, target, mySeat, targetSeat, bonus);
+
+  document.getElementById("cond-ron").innerText = ron;
+  document.getElementById("cond-direct").innerText = direct;
+  document.getElementById("cond-tsumo").innerText = tsumo;
+
+  let bestCondition = ron;
+  if(bestCondition.includes("届かない")) bestCondition = direct;
+  if(bestCondition.includes("届かない")) bestCondition = tsumo;
+
+  setConditionDifficultyCat(bestCondition);
+
+  if(diff < 0){
+    document.getElementById("cond-minimum").innerText = "すでに上回ってるにゃ";
+  }else if([ron, direct, tsumo].some(x => !x.includes("届かない"))){
+    document.getElementById("cond-minimum").innerText = "どれかでまくれるにゃ";
+  }else{
+    document.getElementById("cond-minimum").innerText = "かなり厳しいにゃ";
+  }
+
+  document.getElementById("cond-tsumo-sub").innerText =
+    "自分：" + (mySeat === "parent" ? "親" : "子") +
+    " / 相手：" + (targetSeat === "parent" ? "親" : "子") +
+    "。本場・供託込みで判定するにゃ。";
 }
-
-let me = parseInt(meInput.value);
-let target = parseInt(targetInput.value);,mySeat=document.getElementById("cond-my-seat").value,targetSeat=document.getElementById("cond-target-seat").value,honba=parseInt(document.getElementById("cond-honba").value||0),kyotaku=parseInt(document.getElementById("cond-kyotaku").value||0);let bonus=honba*300+kyotaku*1000;let diff=target-me;document.getElementById("cond-diff").innerText=diff>0?fmt(diff)+"点ビハインド":fmt(Math.abs(diff))+"点リード";let ron=findRon(me,target,mySeat,false,bonus),direct=findRon(me,target,mySeat,true,bonus),tsumo=findTsumo(me,target,mySeat,targetSeat,bonus);document.getElementById("cond-ron").innerText=ron;document.getElementById("cond-direct").innerText=direct;document.getElementById("cond-tsumo").innerText=tsumo;
-
-let bestCondition = ron;
-if(bestCondition.includes("届かない")) bestCondition = direct;
-if(bestCondition.includes("届かない")) bestCondition = tsumo;
-setConditionDifficultyCat(bestCondition);if(diff<0){document.getElementById("cond-minimum").innerText="すでに上回ってるにゃ";}else if([ron,direct,tsumo].some(x=>!x.includes("届かない"))){document.getElementById("cond-minimum").innerText="どれかでまくれるにゃ";}else{document.getElementById("cond-minimum").innerText="かなり厳しいにゃ";}document.getElementById("cond-tsumo-sub").innerText=
-  "自分：" + (mySeat==="parent"?"親":"子") +
-  " / 相手：" + (targetSeat==="parent"?"親":"子") +
-  "。本場・供託込みで判定するにゃ。";}
-
 function showSecretBattle(){
   document.body.classList.add("secret-mode");
   document.getElementById("secret-battle").classList.add("active");
