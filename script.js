@@ -243,85 +243,162 @@ function hideSecretBattle(){
   document.getElementById("secret-battle").classList.remove("active");
 }
 function calcBattle(){
-  let total=0;
-  let reasons=[];
-  const threat = document.getElementById("battle-threat").value;
-const riskLevel = document.getElementById("battle-risklevel").value;
-  let round=document.getElementById("battle-round").value;
-  let rank=document.getElementById("battle-rank").value;
-  let shanten=document.getElementById("battle-shanten").value;
-  let value=document.getElementById("battle-value").value;
-  let shape=document.getElementById("battle-shape").value;
+  let total = 0;
+  let reasons = [];
 
-  if(round==="early"){total+=1;reasons.push("序盤 +1")}
-  else if(round==="late"){total-=1;reasons.push("終盤 -1")}
-  else reasons.push("中盤 基準");
+  let round = document.getElementById("battle-round").value;
+  let rank = document.getElementById("battle-rank").value;
+  let shanten = document.getElementById("battle-shanten").value;
+  let value = document.getElementById("battle-value").value;
+  let shape = document.getElementById("battle-shape").value;
+  let threat = document.getElementById("battle-threat").value;
+  let riskLevel = document.getElementById("battle-risklevel").value;
 
-  if(rank==="1"){total-=1;reasons.push("トップ目 -1")}
-  else if(rank==="3"){total+=1;reasons.push("3着目 +1")}
-  else if(rank==="4"){total+=2;reasons.push("ラス目 +2")}
-  else reasons.push("2着目 基準");
+  if(round === "early"){
+    total += 1;
+    reasons.push("序盤 +1");
+  }else if(round === "late"){
+    total -= 1;
+    reasons.push("終盤 -1");
+  }else{
+    reasons.push("中盤 基準");
+  }
 
-  if(shanten==="tenpai"){total+=2;reasons.push("テンパイ +2")}
-  else if(shanten==="one"){total+=1;reasons.push("1シャンテン +1")}
-  else if(shanten==="two"){total-=1;reasons.push("2シャンテン -1")}
-  else {total-=3;reasons.push("3シャンテン以上 -3")}
+  if(rank === "1"){
+    total -= 1;
+    reasons.push("トップ目 -1");
+  }else if(rank === "3"){
+    total += 1;
+    reasons.push("3着目 +1");
+  }else if(rank === "4"){
+    total += 2;
+    reasons.push("ラス目 +2");
+  }else{
+    reasons.push("2着目 基準");
+  }
 
-  if(value==="1000"){total-=2;reasons.push("1000級 -2")}
-  else if(value==="2000"){total-=1;reasons.push("2000級 -1")}
-  else if(value==="mangan"){total+=1;reasons.push("満貫以上 +1")}
-  else reasons.push("3900級 基準");
+  if(shanten === "tenpai"){
+    total += 3;
+    reasons.push("テンパイ +3");
+  }else if(shanten === "one"){
+    total += 1;
+    reasons.push("1シャンテン +1");
+  }else if(shanten === "two"){
+    total -= 2;
+    reasons.push("2シャンテン -2");
+  }else{
+    total -= 4;
+    reasons.push("3シャンテン以上 -4");
+  }
 
-  if(shape==="bad"){total-=1;reasons.push("愚形 -1")}
-  else reasons.push("良形 基準");
+  if(value === "1000"){
+    total -= 2;
+    reasons.push("1000級 -2");
+  }else if(value === "2000"){
+    total -= 1;
+    reasons.push("2000級 -1");
+  }else if(value === "mangan"){
+    total += 2;
+    reasons.push("満貫以上 +2");
+  }else{
+    reasons.push("3900級 基準");
+  }
 
-  if(shape==="bad"){
-  total-=1;
-  reasons.push("愚形 -1");
-}else{
-  reasons.push("良形 基準");
+  if(shape === "bad"){
+    total -= 1;
+    reasons.push("愚形 -1");
+  }else{
+    total += 1;
+    reasons.push("良形 +1");
+  }
+
+  if(threat === "riichi"){
+    total -= 2;
+    reasons.push("リーチ -2");
+  }else if(threat === "parent"){
+    total -= 3;
+    reasons.push("親リーチ -3");
+  }else if(threat === "open"){
+    total -= 2;
+    reasons.push("高そうな仕掛け -2");
+  }else{
+    reasons.push("相手攻撃なし 基準");
+  }
+
+  if(riskLevel === "safe"){
+    total += 1;
+    reasons.push("安全牌 +1");
+  }else if(riskLevel === "danger"){
+    total -= 2;
+    reasons.push("危険牌 -2");
+  }else if(riskLevel === "verydanger"){
+    total -= 3;
+    reasons.push("無スジ危険牌 -3");
+  }else{
+    reasons.push("まあ通りそう 基準");
+  }
+
+  let judgement = "";
+  let risk = "";
+
+  if(total >= 5){
+    judgement = "🔥 全ツにゃ";
+    risk = "3枚以上";
+  }else if(total >= 3){
+    judgement = "😼 押しにゃ";
+    risk = "2枚くらい";
+  }else if(total >= 1){
+    judgement = "🐾 押し寄り";
+    risk = "1〜2枚";
+  }else if(total === 0){
+    judgement = "🤔 微妙にゃ";
+    risk = "0〜1枚";
+  }else if(total >= -3){
+    judgement = "🙀 降り寄り";
+    risk = "0〜1枚";
+  }else{
+    judgement = "🚪 ベタオリにゃ";
+    risk = "0枚";
+  }
+
+  if((shanten === "two" || shanten === "three") && threat === "parent"){
+    judgement = "🚪 ベタオリにゃ";
+    risk = "0枚";
+    reasons.push("2シャンテン以上で親リーチ：強制引き");
+  }
+
+  if(round === "late" && riskLevel === "verydanger"){
+    if(total >= 3){
+      judgement = "🐾 押し寄り";
+      risk = "1枚まで";
+    }else{
+      judgement = "🙀 降り寄り";
+      risk = "0〜1枚";
+    }
+    reasons.push("終盤の超危険牌：一段階引き");
+  }
+
+  if(value === "1000" && shape === "bad"){
+    if(total <= 1){
+      judgement = "🚪 ベタオリにゃ";
+      risk = "0枚";
+    }
+    reasons.push("低打点愚形：引き補正");
+  }
+
+  if(shanten === "tenpai" && value === "mangan"){
+    if(total <= 0){
+      judgement = "🐾 押し寄り";
+      risk = "1〜2枚";
+    }
+    reasons.push("満貫以上テンパイ：押し補正");
+  }
+
+  document.getElementById("battle-judge").innerText = judgement;
+  document.getElementById("battle-risk").innerText = risk;
+  document.getElementById("battle-score").innerText = total;
+  document.getElementById("battle-reason").innerHTML = "<b>理由：</b>" + reasons.join(" / ");
 }
-
-/* ▼ここから追加▼ */
-
-if(threat==="riichi"){
-  total-=2;
-  reasons.push("リーチ -2");
-}else if(threat==="parent"){
-  total-=3;
-  reasons.push("親リーチ -3");
-}else if(threat==="open"){
-  total-=1;
-  reasons.push("高そうな仕掛け -1");
-}
-
-if(riskLevel==="safe"){
-  total+=1;
-  reasons.push("安全牌 +1");
-}else if(riskLevel==="danger"){
-  total-=2;
-  reasons.push("危険牌 -2");
-}else if(riskLevel==="verydanger"){
-  total-=4;
-  reasons.push("無スジ危険牌 -4");
-}
-
-/* ▲ここまで追加▲ */
-
-  let judgement="", risk="";
-  if(total>=4){judgement="🔥 全ツにゃ";risk="3枚以上"}
-  else if(total>=2){judgement="😼 押しにゃ";risk="2枚くらい"}
-  else if(total===1){judgement="🐾 押し寄り";risk="1〜2枚"}
-  else if(total===0){judgement="🤔 微妙にゃ";risk="0〜1枚"}
-  else if(total>=-2){judgement="🙀 降り寄り";risk="0〜1枚"}
-  else {judgement="🚪 ベタオリにゃ";risk="0枚"}
-
-  document.getElementById("battle-judge").innerText=judgement;
-  document.getElementById("battle-risk").innerText=risk;
-  document.getElementById("battle-score").innerText=total;
-  document.getElementById("battle-reason").innerHTML="<b>理由：</b>"+reasons.join(" / ");
-}
-
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');
 setCommentCatByName('quick-cat', 'ニンマリ猫');
