@@ -241,4 +241,8 @@ applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');
 setCommentCatByName('quick-cat', 'ニンマリ猫');
 setCommentCatByName('condition-cat', 'ネクタイ猫');
-calcQuick();calcAssist();calcCondition();
+document.body.classList.add("theme-assist");
+
+calcQuick();
+calcAssist();
+calcCondition();
