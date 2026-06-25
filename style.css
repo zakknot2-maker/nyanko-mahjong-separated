@@ -699,3 +699,21 @@ body.theme-condition .info-box{
   background:var(--theme-soft);
   color:var(--theme-main);
 }
+/* ===== Force theme cleanup ===== */
+
+body.theme-assist .hero,
+body.theme-quick .hero,
+body.theme-condition .hero{
+  border-bottom:3px solid var(--theme-shadow) !important;
+}
+
+body.theme-assist .note,
+body.theme-quick .note,
+body.theme-condition .note,
+body.theme-assist .info-box,
+body.theme-quick .info-box,
+body.theme-condition .info-box{
+  border:2px dashed var(--theme-shadow) !important;
+  background:var(--theme-soft) !important;
+  color:var(--theme-main) !important;
+}
