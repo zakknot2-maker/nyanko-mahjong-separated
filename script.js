@@ -243,6 +243,14 @@ function hideSecretBattle(){
   document.getElementById("secret-battle").classList.remove("active");
 }
 function calcBattle(){
+  if(document.body.classList.contains("developer-mode")){
+    calcBattleAwaken();
+  }else{
+    calcBattleNormal();
+  }
+}
+
+function calcBattleNormal(){
   let total = 0;
   let reasons = [];
 
@@ -394,10 +402,30 @@ function calcBattle(){
     reasons.push("満貫以上テンパイ：押し補正");
   }
 
-  document.getElementById("battle-judge").innerText = judgement;
-  document.getElementById("battle-risk").innerText = risk;
-  document.getElementById("battle-score").innerText = total;
-  document.getElementById("battle-reason").innerHTML = "<b>理由：</b>" + reasons.join(" / ");
+  applyBattleResult({
+    judgement: judgement,
+    risk: risk,
+    total: total,
+    reasons: reasons
+  });
+
+  updateDeveloperPanel();
+}
+
+function calcBattleAwaken(){
+  calcBattleNormal();
+}
+
+function applyBattleResult(result){
+  document.getElementById("battle-judge").innerText = result.judgement;
+  document.getElementById("battle-risk").innerText = result.risk;
+  document.getElementById("battle-score").innerText = result.total;
+  document.getElementById("battle-reason").innerHTML = "<b>理由：</b>" + result.reasons.join(" / ");
+}
+
+function updateDeveloperPanel(){
+  const panel = document.getElementById("developer-mode-panel");
+  if(!panel) return;
 }
 /* ==========================
 開発者モード隠しコマンド
