@@ -123,3 +123,48 @@ body.secret-mode .battle-sub b{
     height:370px;
   }
 }
+/* ===== Developer hidden mode ===== */
+
+.developer-panel{
+  display:none;
+  margin-top:14px;
+  padding:14px;
+  border:2px solid #7A5CFF;
+  border-radius:20px;
+  background:
+    linear-gradient(180deg,rgba(35,25,70,.92),rgba(8,8,18,.95));
+  color:#F2F2F2;
+  box-shadow:
+    0 4px 0 #26144A,
+    0 0 18px rgba(122,92,255,.28);
+}
+
+.developer-panel.active{
+  display:block;
+}
+
+.developer-title{
+  font-size:18px;
+  font-weight:900;
+  color:#B9A7FF;
+  margin-bottom:8px;
+}
+
+.developer-text{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.55;
+  color:#E8E2FF;
+}
+
+.developer-badge{
+  display:inline-block;
+  margin-top:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#111;
+  border:1px solid #7A5CFF;
+  color:#DCD3FF;
+  font-size:12px;
+  font-weight:900;
+}
