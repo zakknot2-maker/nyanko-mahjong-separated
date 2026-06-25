@@ -189,3 +189,20 @@ body.developer-mode #secret-battle::before{
     contrast(1.12)
     saturate(1.05);
 }
+
+.developer-close{
+    margin-top:14px;
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:999px;
+    background:#7A5CFF;
+    color:#fff;
+    font-size:14px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.developer-close:active{
+    transform:scale(.98);
+}
