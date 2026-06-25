@@ -1,29 +1,66 @@
-/* 画像を主役にする版 */
+/* ===== 戦えるかにゃ？専用CSS ===== */
 
-body.secret-mode .secret-panel{
-  display:block;
-  border:3px solid #333;
-  background:#050505;
-  color:#F2F2F2;
-  box-shadow:0 8px 0 #000,0 18px 28px rgba(0,0,0,.75);
+/* 裏モード中は通常UIを隠す */
+body.secret-mode .hero,
+body.secret-mode .tabs,
+body.secret-mode .content,
+body.secret-mode .footer{
+  display:none;
 }
 
+body.secret-mode{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.08),transparent 30%),
+    linear-gradient(180deg,#151515,#050505);
+}
+
+body.secret-mode .app{
+  background:#050505;
+  border-color:#111;
+  box-shadow:
+    0 8px 0 #000,
+    0 18px 32px rgba(0,0,0,.75);
+}
+
+/* 戦えるかにゃ本体 */
+body.secret-mode .secret-panel{
+  display:block;
+  margin:0;
+  padding:0 14px 16px;
+  border:0;
+  border-radius:24px;
+  background:#050505;
+  color:#F2F2F2;
+  box-shadow:none;
+  overflow:hidden;
+}
+
+/* 画像を大きく見せる */
 body.secret-mode .secret-panel::before{
   content:"";
   display:block;
-  height:260px;
-  margin:-12px -12px 12px;
-  background:url("images/battle-cat.jpg") center top/cover no-repeat;
-  border-bottom:2px solid #333;
+  height:420px;
+  margin:0 -14px 14px;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 65%,rgba(5,5,5,.95) 100%),
+    url("images/battle-cat.jpg") center top/cover no-repeat;
+  border-bottom:2px solid #222;
 }
 
+/* 見出し */
 body.secret-mode .secret-head{
-  background:#050505;
-  padding:4px 0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:0 0 14px;
 }
 
 body.secret-mode .secret-title{
+  font-size:20px;
+  font-weight:900;
   color:#F2F2F2;
+  text-shadow:0 0 10px #000;
 }
 
 body.secret-mode .secret-title::before{
@@ -31,30 +68,58 @@ body.secret-mode .secret-title::before{
   color:#C63A2D;
 }
 
-body.secret-mode .input-box{
+/* 閉じる */
+body.secret-mode .secret-close{
+  border:2px solid #C63A2D;
+  border-radius:999px;
+  background:#FFFDF8;
+  color:#B9231B;
+  font-weight:900;
+  padding:8px 13px;
+}
+
+/* 入力欄 */
+body.secret-mode .secret-panel .input-box{
   background:#111;
-  border-color:#555;
+  border:3px solid #555;
+  border-radius:22px;
   box-shadow:0 4px 0 #000;
 }
 
-body.secret-mode label,
-body.secret-mode select{
+body.secret-mode .secret-panel label{
   color:#F2F2F2;
 }
 
-body.secret-mode select{
+body.secret-mode .secret-panel select{
   background:#111;
-  border-color:#777;
+  color:#F2F2F2;
+  border:3px solid #777;
 }
 
+/* 判定 */
 body.secret-mode .battle-judge{
   background:#000;
-  border-color:#C63A2D;
+  border:2px solid #C63A2D;
+  border-radius:22px;
   color:#F2F2F2;
+  box-shadow:0 4px 0 #4A0D0D;
+  text-shadow:0 0 8px #000;
 }
 
 body.secret-mode .battle-sub{
-  background:#080808;
-  border-color:#555;
+  background:#0B0B0B;
+  border:2px solid #555;
+  border-radius:18px;
   color:#DDD;
+}
+
+body.secret-mode .battle-sub b{
+  color:#FFFFFF;
+}
+
+/* 小さい画面では画像を少し抑える */
+@media (max-width:390px){
+  body.secret-mode .secret-panel::before{
+    height:370px;
+  }
 }
