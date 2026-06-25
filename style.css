@@ -428,6 +428,7 @@ summary{cursor:pointer;font-weight:900;color:var(--red);font-size:14px;outline:n
 }
 
 /* ===== Tool themes ===== */
+
 body,
 .app,
 .hero,
@@ -438,93 +439,166 @@ body,
 .condition,
 .summary,
 .tab,
-.cat-comment {
-  transition: background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+.cat-comment,
+select,
+input{
+  transition:
+    background .25s ease,
+    border-color .25s ease,
+    color .25s ease,
+    box-shadow .25s ease;
 }
 
-body.theme-assist {
-  --theme-main:#3F8C62;
-  --theme-deep:#216B43;
+/* 補助輪ネコ（緑） */
+body.theme-assist{
+  --theme-main:#216B43;
+  --theme-deep:#3F8C62;
   --theme-accent:#D43D32;
   --theme-bg1:#DDEFE2;
   --theme-bg2:#C8E3D0;
   --theme-soft:#F4FBF6;
-}
-body.theme-quick {
-  --theme-main:#D89836;
-  --theme-deep:#9B641F;
-  --theme-accent:#2F6B4F;
-  --theme-bg1:#FFF1D2;
-  --theme-bg2:#F7DFA9;
-  --theme-soft:#FFF8EC;
-}
-body.theme-condition {
-  --theme-main:#D6432C;
-  --theme-deep:#7B211A;
-  --theme-accent:#246342;
-  --theme-bg1:#FFE1D6;
-  --theme-bg2:#F5C3B5;
-  --theme-soft:#FFF8EC;
+  --theme-shadow:#B7D7C0;
 }
 
+/* 早いネコ（金） */
+body.theme-quick{
+  --theme-main:#D6A000;
+  --theme-deep:#9C6A00;
+  --theme-accent:#B57A00;
+  --theme-bg1:#FFF7D8;
+  --theme-bg2:#FFE69A;
+  --theme-soft:#FFF9EA;
+  --theme-shadow:#E5C96A;
+}
+
+/* 条件ネコ（赤） */
+body.theme-condition{
+  --theme-main:#C63A2D;
+  --theme-deep:#7B211A;
+  --theme-accent:#B9231B;
+  --theme-bg1:#FFE4DF;
+  --theme-bg2:#FFC8C0;
+  --theme-soft:#FFF5F2;
+  --theme-shadow:#E8AAA2;
+}
+
+/* 背景 */
 body.theme-assist,
 body.theme-quick,
-body.theme-condition {
+body.theme-condition{
   background:
     radial-gradient(circle at 10% 12%,rgba(255,255,255,.25) 0 18px,transparent 19px),
     radial-gradient(circle at 88% 18%,rgba(255,255,255,.18) 0 24px,transparent 25px),
     linear-gradient(180deg,var(--theme-bg1),var(--theme-bg2));
 }
 
+/* 本体 */
 body.theme-assist .app,
 body.theme-quick .app,
-body.theme-condition .app {
+body.theme-condition .app{
   border-color:var(--theme-main);
-  box-shadow:0 8px 0 rgba(183,215,192,.95),0 14px 24px rgba(31,75,50,.16);
+  box-shadow:
+    0 8px 0 var(--theme-shadow),
+    0 14px 24px rgba(31,75,50,.16);
 }
 
+/* タブ全体 */
+body.theme-assist .tabs,
+body.theme-quick .tabs,
+body.theme-condition .tabs{
+  background:
+    linear-gradient(180deg,#FFFDF8,var(--theme-soft));
+}
+
+/* 通常タブ */
+body.theme-assist .tab,
+body.theme-quick .tab,
+body.theme-condition .tab{
+  background:var(--theme-soft);
+  border-color:var(--theme-shadow);
+  color:var(--theme-main);
+  box-shadow:0 3px 0 var(--theme-shadow);
+}
+
+/* 選択中タブ */
 body.theme-assist .tab.active,
 body.theme-quick .tab.active,
-body.theme-condition .tab.active {
+body.theme-condition .tab.active{
+  background:#FFFDF8;
   border-color:var(--theme-main);
   color:var(--theme-main);
-  background:var(--theme-soft);
+  box-shadow:0 3px 0 var(--theme-shadow);
+}
+
+body.theme-assist .tab img,
+body.theme-quick .tab img,
+body.theme-condition .tab img{
+  border-color:var(--theme-main);
 }
 
 body.theme-assist .tab.active img,
 body.theme-quick .tab.active img,
-body.theme-condition .tab.active img {
+body.theme-condition .tab.active img{
   border-color:var(--theme-main);
 }
 
-body.theme-assist label,
-body.theme-quick label,
-body.theme-condition label,
-body.theme-assist .score,
-body.theme-quick .score,
-body.theme-condition .score,
-body.theme-assist .cond-main,
-body.theme-quick .cond-main,
-body.theme-condition .cond-main {
-  color:var(--theme-accent);
+/* 見出し */
+body.theme-assist h1,
+body.theme-quick h1,
+body.theme-condition h1{
+  color:var(--theme-main);
 }
 
+/* 入力欄 */
 body.theme-assist select,
 body.theme-assist input,
 body.theme-quick select,
 body.theme-quick input,
 body.theme-condition select,
-body.theme-condition input {
+body.theme-condition input{
   border-color:var(--theme-main);
 }
 
-body.theme-assist .results,
-body.theme-quick .results,
-body.theme-condition .results {
-  background:linear-gradient(180deg,var(--theme-main),var(--theme-deep));
-  box-shadow:0 6px 0 rgba(0,0,0,.22);
+/* ラベル */
+body.theme-assist label,
+body.theme-quick label,
+body.theme-condition label{
+  color:var(--theme-accent);
 }
 
-body.theme-condition .results.fire {
-  background:linear-gradient(180deg,#D6432C,#7B211A);
+/* 結果 */
+body.theme-assist .results,
+body.theme-quick .results,
+body.theme-condition .results{
+  background:
+    linear-gradient(
+      180deg,
+      var(--theme-main),
+      var(--theme-deep)
+    );
+  border-color:var(--theme-main);
+  box-shadow:0 6px 0 var(--theme-deep);
+}
+
+/* コメント欄 */
+body.theme-assist .cat-comment,
+body.theme-quick .cat-comment,
+body.theme-condition .cat-comment{
+  background:
+    linear-gradient(
+      90deg,
+      var(--theme-soft),
+      #FFFDF8
+    );
+  border-color:var(--theme-shadow);
+}
+
+/* 条件ネコだけ炎背景維持 */
+body.theme-condition .results.fire{
+  background:
+    linear-gradient(
+      180deg,
+      #D6432C,
+      #7B211A
+    );
 }
