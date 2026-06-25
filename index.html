@@ -166,8 +166,16 @@
     </section>
 
     <section id="condition" class="tool">
-      <div class="input-box"><label>自分の持ち点 🐾</label><input type="number" id="cond-me" value="24500" oninput="calcCondition()"></div>
-      <div class="input-box"><label>まくりたい相手の点数 👑</label><input type="number" id="cond-target" value="38700" oninput="calcCondition()"></div>
+      <div class="input-box"><label>自分の持ち点 🐾</label><input
+  id="myScore"
+  type="number"
+  placeholder="例）24500"
+  oninput="calcCondition()"></div>
+      <div class="input-box"><label>まくりたい相手の点数 👑</label><input
+  id="targetScore"
+  type="number"
+  placeholder="例）38700"
+  oninput="calcCondition()"></div>
       <div class="row">
         <div class="input-box"><label>自分 🐈</label><select id="cond-my-seat" onchange="calcCondition()"><option value="child">子</option><option value="parent">親</option></select></div>
         <div class="input-box"><label>相手 🐈‍⬛</label><select id="cond-target-seat" onchange="calcCondition()"><option value="child">子</option><option value="parent">親</option></select></div>
