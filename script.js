@@ -245,6 +245,8 @@ function hideSecretBattle(){
 function calcBattle(){
   let total=0;
   let reasons=[];
+  const threat = document.getElementById("battle-threat").value;
+const riskLevel = document.getElementById("battle-risklevel").value;
   let round=document.getElementById("battle-round").value;
   let rank=document.getElementById("battle-rank").value;
   let shanten=document.getElementById("battle-shanten").value;
@@ -272,6 +274,39 @@ function calcBattle(){
 
   if(shape==="bad"){total-=1;reasons.push("愚形 -1")}
   else reasons.push("良形 基準");
+
+  if(shape==="bad"){
+  total-=1;
+  reasons.push("愚形 -1");
+}else{
+  reasons.push("良形 基準");
+}
+
+/* ▼ここから追加▼ */
+
+if(threat==="riichi"){
+  total-=2;
+  reasons.push("リーチ -2");
+}else if(threat==="parent"){
+  total-=3;
+  reasons.push("親リーチ -3");
+}else if(threat==="open"){
+  total-=1;
+  reasons.push("高そうな仕掛け -1");
+}
+
+if(riskLevel==="safe"){
+  total+=1;
+  reasons.push("安全牌 +1");
+}else if(riskLevel==="danger"){
+  total-=2;
+  reasons.push("危険牌 -2");
+}else if(riskLevel==="verydanger"){
+  total-=4;
+  reasons.push("無スジ危険牌 -4");
+}
+
+/* ▲ここまで追加▲ */
 
   let judgement="", risk="";
   if(total>=4){judgement="🔥 全ツにゃ";risk="3枚以上"}
