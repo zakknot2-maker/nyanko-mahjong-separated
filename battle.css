@@ -1,3 +1,6 @@
+body{
+    outline:10px solid hotpink !important;
+}
 /* ===== 戦えるかにゃ？専用CSS ===== */
 
 body.secret-mode{
