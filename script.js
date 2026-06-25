@@ -174,7 +174,20 @@ function setConditionDifficultyCat(resultText){
   }
 }
 
-function calcCondition(){let me=parseInt(document.getElementById("cond-me").value||0),target=parseInt(document.getElementById("cond-target").value||0),mySeat=document.getElementById("cond-my-seat").value,targetSeat=document.getElementById("cond-target-seat").value,honba=parseInt(document.getElementById("cond-honba").value||0),kyotaku=parseInt(document.getElementById("cond-kyotaku").value||0);let bonus=honba*300+kyotaku*1000;let diff=target-me;document.getElementById("cond-diff").innerText=diff>0?fmt(diff)+"点ビハインド":fmt(Math.abs(diff))+"点リード";let ron=findRon(me,target,mySeat,false,bonus),direct=findRon(me,target,mySeat,true,bonus),tsumo=findTsumo(me,target,mySeat,targetSeat,bonus);document.getElementById("cond-ron").innerText=ron;document.getElementById("cond-direct").innerText=direct;document.getElementById("cond-tsumo").innerText=tsumo;
+function calcCondition(){const meInput = document.getElementById("cond-me");
+const targetInput = document.getElementById("cond-target");
+
+if(meInput.value === "" || targetInput.value === ""){
+    document.getElementById("cond-diff").innerText = "点数を入力してください🐾";
+    document.getElementById("cond-ron").innerText = "-";
+    document.getElementById("cond-direct").innerText = "-";
+    document.getElementById("cond-tsumo").innerText = "-";
+    document.getElementById("cond-minimum").innerText = "-";
+    return;
+}
+
+let me = parseInt(meInput.value);
+let target = parseInt(targetInput.value);,mySeat=document.getElementById("cond-my-seat").value,targetSeat=document.getElementById("cond-target-seat").value,honba=parseInt(document.getElementById("cond-honba").value||0),kyotaku=parseInt(document.getElementById("cond-kyotaku").value||0);let bonus=honba*300+kyotaku*1000;let diff=target-me;document.getElementById("cond-diff").innerText=diff>0?fmt(diff)+"点ビハインド":fmt(Math.abs(diff))+"点リード";let ron=findRon(me,target,mySeat,false,bonus),direct=findRon(me,target,mySeat,true,bonus),tsumo=findTsumo(me,target,mySeat,targetSeat,bonus);document.getElementById("cond-ron").innerText=ron;document.getElementById("cond-direct").innerText=direct;document.getElementById("cond-tsumo").innerText=tsumo;
 
 let bestCondition = ron;
 if(bestCondition.includes("届かない")) bestCondition = direct;
