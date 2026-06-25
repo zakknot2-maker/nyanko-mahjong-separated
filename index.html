@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>にゃんこ麻雀ツール集</title>
+<!-- refactor-v1 themed build -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-assist">
+<div class="app">
+  <header class="hero">
+    <button class="secret-hotspot" onclick="showSecretBattle()" aria-label="隠し機能"></button>
+    <div class="hero-row">
+      <div class="cat-frame"><img id="hero-cat" class="cat-avatar avatar-relax" src="images/peek-logo.jpg" alt="白猫の写真"></div>
+      <div class="title-wrap">
+        <h1>にゃんこ<span class="red">麻雀</span>ツール集</h1>
+        <div class="subtitle">スマホでサクッと使える3点セット</div>
+      </div>
+    </div>
+    <div class="hero-message" id="hero-message">🐱 今日も良い配牌にゃ</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" onclick="showTool('assist', this)"><img src="images/kiri.jpg" style="object-position:50% 50%; transform:scale(1.00)"><span>補助輪ネコ</span><small class="tab-sub">符サポート</small></button>
+    <button class="tab" onclick="showTool('quick', this)"><img src="images/ninmari.jpg" style="object-position:50% 50%; transform:scale(1.00)"><span>早いネコ</span><small class="tab-sub">即点数</small></button>
+    <button class="tab" onclick="showTool('condition', this)"><img src="images/tie.jpg" style="object-position:50% 42%; transform:scale(1.04)"><span>条件ネコ</span><small class="tab-sub">オーラス</small></button>
+  </nav>
+
+  <section id="secret-battle" class="secret-panel">
+    <div class="secret-head">
+      <div class="secret-title">戦えるかにゃ？ 🐾</div>
+      <button class="secret-close" onclick="hideSecretBattle()">閉じる</button>
+    </div>
+
+    <div class="row">
+      <div class="input-box">
+        <label>巡目 🀄</label>
+        <select id="battle-round" onchange="calcBattle()">
+          <option value="early">序盤（1〜6巡）</option>
+          <option value="middle" selected>中盤（7〜12巡）</option>
+          <option value="late">終盤（13巡〜）</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>着順状況 🐾</label>
+        <select id="battle-rank" onchange="calcBattle()">
+          <option value="1">1着目</option>
+          <option value="2" selected>2着目</option>
+          <option value="3">3着目</option>
+          <option value="4">4着目</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-box">
+        <label>シャンテン 🐱</label>
+        <select id="battle-shanten" onchange="calcBattle()">
+          <option value="tenpai" selected>テンパイ</option>
+          <option value="one">1シャンテン</option>
+          <option value="two">2シャンテン</option>
+          <option value="three">3シャンテン以上</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>打点目安 💰</label>
+        <select id="battle-value" onchange="calcBattle()">
+          <option value="1000">1000級</option>
+          <option value="2000">2000級</option>
+          <option value="3900" selected>3900級</option>
+          <option value="mangan">満貫以上</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-box">
+      <label>待ち・形 🐾</label>
+      <select id="battle-shape" onchange="calcBattle()">
+        <option value="good" selected>良形</option>
+        <option value="bad">愚形</option>
+      </select>
+    </div>
+
+    <div class="battle-judge" id="battle-judge">-</div>
+    <div class="battle-sub">
+      <div>危険牌目安：<b id="battle-risk">-</b></div>
+      <div>判定スコア：<b id="battle-score">-</b></div>
+      <div id="battle-reason" style="margin-top:6px;">理由がここに出るにゃ。</div>
+    </div>
+  </section>
+
+  <main class="content">
+    <section id="assist" class="tool active">
+      <div class="input-box">
+        <label>はんすう 🀄</label>
+        <select id="assist-han" onchange="calcAssist()">
+          <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻以上</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜 👑🐈</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>あがり方 🐾</label>
+        <select id="assist-win" onchange="calcAssist()"><option value="closedRon">メンゼンロン</option><option value="openRon">鳴きロン</option><option value="tsumo">ツモ</option></select>
+      </div>
+      <div class="row">
+        <div class="input-box"><label>頭 🐱</label><select id="assist-head" onchange="calcAssist()"><option value="0">通常</option><option value="2">役牌 +2</option><option value="4">ダブ風 +4</option></select></div>
+        <div class="input-box"><label>待ち 🐾</label><select id="assist-wait" onchange="calcAssist()"><option value="0">両面</option><option value="2">愚形・単騎 +2</option></select></div>
+      </div>
+      <div class="input-box">
+        <details>
+          <summary>刻子・カン 🀄</summary><br>
+          <div class="grid"><div class="grid-label">明刻（中張牌）</div><select class="small-select assist-set" data-fu="2" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">明刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">暗刻（中張牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">暗刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">明カン（中張牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">明カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">暗カン（中張牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+          <div class="grid"><div class="grid-label">暗カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="32" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+        </details>
+      </div>
+      <div class="input-box"><label>特殊形 👑</label><select id="assist-special" onchange="calcAssist()"><option value="none">なし</option><option value="chitoi">七対子</option><option value="pinfuTsumo">平和ツモ</option></select></div>
+      <div class="results">
+        <div class="result-title">🐱 補助結果にゃ！</div>
+        <div class="result-item"><span class="result-label">🐾 符</span><span class="score" id="assist-fu">-</span></div>
+        <div class="result-item"><span class="result-label">🐈 子ロン</span><span class="score" id="assist-ko-ron">-</span></div>
+        <div class="result-item"><span class="result-label">🐟 子ツモ</span><span class="score" id="assist-ko-tsumo">-</span></div>
+        <div class="result-item"><span class="result-label">👑 親ロン</span><span class="score" id="assist-oya-ron">-</span></div>
+        <div class="result-item"><span class="result-label">🐾 親ツモ</span><span class="score" id="assist-oya-tsumo">-</span></div>
+      </div>
+      <div class="note" id="assist-note">符計算メモがここに表示されるにゃ。</div>
+      <div class="cat-comment"><div class="cat-frame small"><img id="assist-cat" src="images/kiri.jpg" style="object-position:50% 28%" alt="キリッと猫"></div><div class="comment-text" id="assist-comment">符計算をサポートするよ！迷ったときは補助輪ネコにおまかせにゃ 🐾</div></div>
+    </section>
+
+    <section id="quick" class="tool">
+      <div class="input-box">
+        <label>はんすう 🀄</label>
+        <select id="quick-han" onchange="calcQuick()">
+          <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻（満貫）</option><option value="6">6-7翻（跳満）</option><option value="8">8-10翻（倍満）</option><option value="11">11-12翻（三倍満）</option><option value="13">13翻〜（役満）</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>ふすう 🐾</label>
+        <select id="quick-fu" onchange="calcQuick()">
+          <option value="20">20符</option><option value="25">25符（七対子）</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option>
+        </select>
+        <details><summary>🐾 符のざっくり目安</summary><div class="info-box">
+          <p><b>30符：</b>迷ったらここ。ロン平和も30符。</p><p><b>20符：</b>平和ツモ専用。</p><p><b>25符：</b>七対子専用。</p><p><b>40符：</b>役牌ポン、愚形待ち、明刻など。</p><p><b>50符以上：</b>暗刻・カン・役牌複数で重い時。</p>
+        </div></details>
+        <details><summary>📖 符一覧</summary><div class="info-box">
+          <p><b>基本符：</b>20符スタート</p><p><b>切り上げ：</b>最後に10符単位へ切り上げ</p><p><b>七対子：</b>25符固定</p><p><b>平和ツモ：</b>20符固定</p><p><b>ロン平和：</b>30符</p><br>
+          <p><b>メンゼンロン：</b>+10</p><p><b>ツモ：</b>+2</p><p><b>役牌頭：</b>+2 / <b>ダブ風頭：</b>+4</p><p><b>愚形待ち：</b>+2</p><br>
+          <p><b>明刻（中張牌）：</b>+2</p><p><b>明刻（ヤオ九・字牌）：</b>+4</p><p><b>暗刻（中張牌）：</b>+4</p><p><b>暗刻（ヤオ九・字牌）：</b>+8</p><br>
+          <p><b>明カン（中張牌）：</b>+8</p><p><b>明カン（ヤオ九・字牌）：</b>+16</p><p><b>暗カン（中張牌）：</b>+16</p><p><b>暗カン（ヤオ九・字牌）：</b>+32</p>
+        </div></details>
+      </div>
+      <div class="results">
+        <div class="result-title">🐱 点数にゃ！</div>
+        <div class="result-item"><span class="result-label">🐾 子ロン</span><span class="score" id="quick-ko-ron">-</span></div>
+        <div class="result-item"><span class="result-label">🐈 子ツモ</span><span class="score" id="quick-ko-tsumo">-</span></div>
+        <div class="result-item"><span class="result-label">👑 親ロン</span><span class="score" id="quick-oya-ron">-</span></div>
+        <div class="result-item"><span class="result-label">🐟 親ツモ</span><span class="score" id="quick-oya-tsumo">-</span></div>
+      </div>
+      <div class="cat-comment"><div class="cat-frame small"><img id="quick-cat" src="images/ninmari.jpg" style="object-position:50% 28%" alt="面白顔猫"></div><div class="comment-text" id="quick-comment">翻と符がわかる時は早いネコで一発確認にゃ ⚡</div></div>
+    </section>
+
+    <section id="condition" class="tool">
+      <div class="input-box"><label>自分の持ち点 🐾</label><input type="number" id="cond-me" value="24500" oninput="calcCondition()"></div>
+      <div class="input-box"><label>まくりたい相手の点数 👑</label><input type="number" id="cond-target" value="38700" oninput="calcCondition()"></div>
+      <div class="row">
+        <div class="input-box"><label>自分 🐈</label><select id="cond-my-seat" onchange="calcCondition()"><option value="child">子</option><option value="parent">親</option></select></div>
+        <div class="input-box"><label>相手 🐈‍⬛</label><select id="cond-target-seat" onchange="calcCondition()"><option value="child">子</option><option value="parent">親</option></select></div>
+      </div>
+      <div class="row">
+        <div class="input-box">
+          <label>本場 🀄</label>
+          <select id="cond-honba" onchange="calcCondition()">
+            <option value="0" selected>0本場</option>
+            <option value="1">1本場</option>
+            <option value="2">2本場</option>
+            <option value="3">3本場</option>
+            <option value="4">4本場</option>
+            <option value="5">5本場</option>
+            <option value="6">6本場以上</option>
+          </select>
+        </div>
+        <div class="input-box">
+          <label>供託 🐾</label>
+          <select id="cond-kyotaku" onchange="calcCondition()">
+            <option value="0" selected>0本</option>
+            <option value="1">1本</option>
+            <option value="2">2本</option>
+            <option value="3">3本</option>
+            <option value="4">4本</option>
+            <option value="5">5本</option>
+            <option value="6">6本以上</option>
+          </select>
+        </div>
+      </div>
+      <div class="results fire">
+        <div class="result-title">🐱 まくれるかにゃ？</div>
+        <div class="summary"><div>現在差</div><div class="big" id="cond-diff">-</div><div id="cond-minimum">-</div></div>
+        <div class="condition"><div class="cond-head">🐾 ロン条件</div><div class="cond-main" id="cond-ron">-</div><div class="cond-sub">相手以外からロン。相手の点数は減らないにゃ。</div></div>
+        <div class="condition"><div class="cond-head">🔥 直撃条件</div><div class="cond-main" id="cond-direct">-</div><div class="cond-sub">相手からロン。自分加点＋相手失点にゃ。</div></div>
+        <div class="condition"><div class="cond-head">🐈 ツモ条件</div><div class="cond-main" id="cond-tsumo">-</div><div class="cond-sub" id="cond-tsumo-sub">自分の加点＋相手の支払い減点で判定するにゃ。</div></div>
+      </div>
+      <div class="note">同点不可。相手を100点以上上回る条件で判定。本場・供託込みで最小条件を出すにゃ。</div>
+      <div class="cat-comment"><div class="cat-frame small"><img id="condition-cat" src="images/tie.jpg" style="object-position:52% 35%" alt="びっくり猫"></div><div class="comment-text" id="condition-comment">オーラスの炎、燃やしていこうにゃ 🔥</div></div>
+    </section>
+  </main>
+  <div class="footer">© にゃんこ麻雀ツール集 🐈</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
