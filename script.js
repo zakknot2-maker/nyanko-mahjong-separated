@@ -413,10 +413,170 @@ function calcBattleNormal(){
 }
 
 function calcBattleAwaken(){
-  calcBattleNormal();
+  let total = 0;
+  let reasons = [];
+  let expectedMemos = [];
+  let coachingComments = [];
+  let pushWarning = "";
+
+  let round = document.getElementById("battle-round").value;
+  let rank = document.getElementById("battle-rank").value;
+  let shanten = document.getElementById("battle-shanten").value;
+  let value = document.getElementById("battle-value").value;
+  let shape = document.getElementById("battle-shape").value;
+  let threat = document.getElementById("battle-threat").value;
+  let riskLevel = document.getElementById("battle-risklevel").value;
+
+  if(round === "early"){
+    total += 1;
+    reasons.push("序盤 +1");
+    expectedMemos.push("序盤は先制・好形・高打点の価値が高いにゃ。");
+  }else if(round === "middle"){
+    reasons.push("中盤 ±0");
+    expectedMemos.push("中盤は手牌価値と放銃率のバランスを見るにゃ。");
+  }else{
+    reasons.push("終盤 ±0");
+    expectedMemos.push("終盤は放銃率が上がるから、危険牌評価を強めに見るにゃ。");
+  }
+
+  if(rank === "4"){
+    total += 1;
+    reasons.push("4着目 +1");
+    coachingComments.push("4着目は着順上昇の価値が高い。押せる材料を探すにゃ。");
+  }else{
+    reasons.push(rank + "着目 ±0");
+  }
+
+  if(shanten === "tenpai"){
+    total += 3;
+    reasons.push("テンパイ +3");
+    expectedMemos.push("テンパイは和了率が一気に上がる。押し材料として最重要にゃ。");
+  }else if(shanten === "one"){
+    total += 1;
+    reasons.push("1シャンテン +1");
+    expectedMemos.push("1シャンテンは形と打点があれば戦えるにゃ。");
+  }else if(shanten === "two"){
+    total -= 1;
+    reasons.push("2シャンテン -1");
+    expectedMemos.push("2シャンテンはまだ和了率が足りない。相手の攻撃があるなら慎重にゃ。");
+  }else{
+    total -= 3;
+    reasons.push("3シャンテン以上 -3");
+    expectedMemos.push("3シャンテンは押し返しの期待値がかなり低いにゃ。");
+  }
+
+  if(value === "1000"){
+    reasons.push("1000級 ±0");
+    expectedMemos.push("1000点は押し返す理由としては弱いにゃ。");
+  }else if(value === "2000"){
+    reasons.push("2000級 ±0");
+    expectedMemos.push("2000点は状況次第。安全度とシャンテン数を優先するにゃ。");
+  }else if(value === "3900"){
+    total += 1;
+    reasons.push("3900級 +1");
+    expectedMemos.push("3900は十分押せる打点。形が良ければ前向きにゃ。");
+  }else{
+    total += 2;
+    reasons.push("満貫以上 +2");
+    expectedMemos.push("満貫以上は放銃リスクを背負う価値が出やすいにゃ。");
+  }
+
+  if(shape === "good"){
+    total += 1;
+    reasons.push("良形 +1");
+    expectedMemos.push("良形は和了率が高い。押し判断を後押しするにゃ。");
+  }else{
+    total -= 1;
+    reasons.push("愚形 -1");
+    expectedMemos.push("愚形は和了率が落ちる。打点が低いなら無理しないにゃ。");
+  }
+
+  if(threat === "none"){
+    total += 3;
+    reasons.push("相手からの攻撃なし +3");
+    expectedMemos.push("相手からの攻撃なしは自分の和了率を優先しやすいにゃ。");
+  }else if(threat === "riichi"){
+    total -= 2;
+    reasons.push("リーチ -2");
+    expectedMemos.push("リーチ相手は放銃率と失点期待値が上がるにゃ。");
+  }else if(threat === "parent"){
+    total -= 3;
+    reasons.push("親リーチ -3");
+    expectedMemos.push("親リーチは期待値が大きく下がる。押し材料が弱いなら引くにゃ。");
+  }else{
+    total -= 2;
+    reasons.push("高そうな副露 -2");
+    expectedMemos.push("高そうな副露はリーチ級に警戒。安い手で押す価値は下がるにゃ。");
+  }
+
+  if(riskLevel === "safe"){
+    total += 1;
+    reasons.push("安全牌 +1");
+    expectedMemos.push("安全牌を切れるなら局面を進めやすいにゃ。");
+  }else if(riskLevel === "okay"){
+    total += 1;
+    reasons.push("通りそうな牌 +1");
+    expectedMemos.push("通りそうな牌なら、手牌価値がある時は押しやすいにゃ。");
+  }else if(riskLevel === "danger"){
+    total -= 2;
+    reasons.push("危険牌 -2");
+    expectedMemos.push("危険牌は放銃率が重い。押すなら打点かテンパイが必要にゃ。");
+  }else{
+    total -= 3;
+    reasons.push("超危険牌 -3");
+    expectedMemos.push("超危険牌は一気に期待値を削る。押し不足より押しすぎ注意にゃ。");
+  }
+
+  let judgement = "";
+  let risk = "";
+
+  if(total >= 7){
+    judgement = "🔥 全ツにゃ";
+    risk = "3枚以上";
+    coachingComments.push("今回は和了率を優先。押し切る価値が高いにゃ。");
+  }else if(total >= 4){
+    judgement = "😼 押しにゃ";
+    risk = "2枚くらい";
+    coachingComments.push("押し寄り。安全度を見ながら前に出るにゃ。");
+  }else if(total >= 1){
+    judgement = "🐾 やや押し";
+    risk = "1〜2枚";
+    coachingComments.push("やや押し。無スジ連打ではなく、押す牌を選ぶにゃ。");
+  }else if(total === 0){
+    judgement = "🤔 微妙にゃ";
+    risk = "0〜1枚";
+    coachingComments.push("境界線。次の牌で押し引きを決め直すにゃ。");
+  }else if(total >= -3){
+    judgement = "🙀 やや引き";
+    risk = "0〜1枚";
+    coachingComments.push("今回は放銃率を優先。安全牌を探しながら回るにゃ。");
+  }else{
+    judgement = "🚪 引きにゃ";
+    risk = "0枚";
+    coachingComments.push("押し返しの期待値が足りない。ベタオリ寄りで良いにゃ。");
+  }
+
+  if((shanten === "tenpai" || shanten === "one") && value !== "1000" && threat !== "parent" && riskLevel !== "verydanger" && total >= 1){
+    pushWarning = "押し不足注意：この条件は降りすぎると長期期待値を落としやすいにゃ。";
+  }
+
+  applyBattleResult({
+    judgement: judgement,
+    risk: risk,
+    total: total,
+    reasons: reasons,
+    expectedMemos: expectedMemos,
+    coachingComments: coachingComments,
+    pushWarning: pushWarning,
+    logicVersion: "Awaken v1.0"
+  });
+
+  updateDeveloperPanel();
 }
 
 function applyBattleResult(result){
+  window.latestBattleResult = result;
+
   document.getElementById("battle-judge").innerText = result.judgement;
   document.getElementById("battle-risk").innerText = result.risk;
   document.getElementById("battle-score").innerText = result.total;
@@ -426,6 +586,29 @@ function applyBattleResult(result){
 function updateDeveloperPanel(){
   const panel = document.getElementById("developer-mode-panel");
   if(!panel) return;
+  if(!document.body.classList.contains("developer-mode")) return;
+
+  const result = window.latestBattleResult;
+  if(!result) return;
+
+  const memoHtml = (result.expectedMemos || []).slice(0, 4).map(memo => "<li>" + memo + "</li>").join("");
+  const commentHtml = (result.coachingComments || []).slice(0, 3).map(comment => "<li>" + comment + "</li>").join("");
+  const warningHtml = result.pushWarning ? `<div class="developer-warning">⚠️ ${result.pushWarning}</div>` : "";
+  const logicVersion = result.logicVersion || "観察モード";
+
+  panel.innerHTML = `
+    <div class="developer-title">🐾 開発者モード</div>
+    <div class="developer-text">魂天レビュー版ロジックで判定中にゃ。</div>
+    <div class="developer-badge">現在：${logicVersion}</div>
+    <div class="developer-text"><b>期待値メモ</b></div>
+    <ul class="developer-list">${memoHtml}</ul>
+    <div class="developer-text"><b>打ち筋矯正コメント</b></div>
+    <ul class="developer-list">${commentHtml}</ul>
+    ${warningHtml}
+    <button class="developer-close" onclick="hideDeveloperMode()">
+閉じる
+</button>
+  `;
 }
 /* ==========================
 開発者モード隠しコマンド
@@ -533,6 +716,7 @@ battle.animate([
   }
 
   panel.classList.add("active");
+  calcBattle();
 }
 
 document.getElementById("secret-battle").addEventListener("click", handleDeveloperCommandTap);
@@ -556,5 +740,7 @@ function hideDeveloperMode(){
     if(panel){
         panel.classList.remove("active");
     }
+
+    calcBattle();
 
 }
