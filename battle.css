@@ -177,3 +177,15 @@ body.developer-mode #secret-battle::before{
         contrast(1.18)
         saturate(.75);
 }
+/* ===== Developer Mode 画像差し替え ===== */
+
+body.developer-mode #secret-battle::before{
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 65%,rgba(5,5,5,.95) 100%),
+    url("images/battle-cat-awaken.jpg") center top/cover no-repeat !important;
+
+  filter:
+    brightness(.95)
+    contrast(1.12)
+    saturate(1.05);
+}
