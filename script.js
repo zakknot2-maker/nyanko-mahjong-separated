@@ -421,27 +421,27 @@ function setAwakenFieldVisible(name, visible){
 function updateAwakenVisibility(){
   if(!document.body.classList.contains("developer-mode")) return;
 
-  const shanten = getBattleValue("aw-battle-shanten", getBattleValue("battle-shanten", "tenpai"));
-  const threat = getBattleValue("aw-battle-threat", getBattleValue("battle-threat", "none"));
-  const riskLevel = getBattleValue("aw-battle-risklevel", getBattleValue("battle-risklevel", "okay"));
+  const shanten   = getBattleValue("aw-battle-shanten",  "tenpai");
+  const threat    = getBattleValue("aw-battle-threat",   "riichi");
+  const riskLevel = getBattleValue("aw-battle-risklevel","okay");
 
-  const hasAttack = threat !== "none";
-  const isRiichi = threat === "riichi" || threat === "parent";
-  const isOpen = threat === "open";
-  const riskyTile = riskLevel !== "okay";
+  const isRiichi  = (threat === "riichi" || threat === "parent");
+  const isOpen    = (threat === "open");
+  const isDanger  = (riskLevel !== "okay");
 
-  setAwakenFieldVisible("tenpaiShape", shanten === "tenpai");
+  // 自分の手：シャンテン数に応じて形欄を切り替え
+  setAwakenFieldVisible("tenpaiShape",    shanten === "tenpai");
   setAwakenFieldVisible("iishantenShape", shanten === "one");
-  setAwakenFieldVisible("shape", shanten === "two" || shanten === "three");
+  setAwakenFieldVisible("shape", false);
 
-  // 相手攻撃なしの時は、切る牌・危険度系の入力を全部隠す
-  setAwakenFieldVisible("riskLevel", hasAttack);
-  setAwakenFieldVisible("safe", hasAttack);
-  setAwakenFieldVisible("suji", isRiichi && riskyTile);
-  setAwakenFieldVisible("riverInfo", isRiichi && riskyTile);
+  // 相手セクション：副露数は仕掛け時のみ表示
   setAwakenFieldVisible("openCount", isOpen);
-  setAwakenFieldVisible("secondAttacker", hasAttack);
-  setAwakenFieldVisible("pushTile", hasAttack && riskyTile);
+
+  // 切る牌セクション：残り筋はリーチ系かつ無筋の時のみ表示
+  setAwakenFieldVisible("suji", isRiichi && isDanger);
+
+  // 押す牌の性質は無筋を切る時のみ表示
+  setAwakenFieldVisible("pushTile", isDanger);
 }
 
 function calcBattleAwaken(){
@@ -465,29 +465,28 @@ function calcBattleAwaken(){
   updateAwakenVisibility();
 
   // --- 入力読み込み ---
-  let round    = getBattleValue("aw-battle-round",           getBattleValue("battle-round",    "middle"));
-  let position = getBattleValue("aw-battle-position",        "east2");
+  let round    = getBattleValue("aw-battle-round",    "middle");
+  let position = getBattleValue("aw-battle-position", "east2");
   let isSouth  = position.startsWith("south");
   let rank     = position.slice(-1); // "1"〜"4"
-  let shanten  = getBattleValue("aw-battle-shanten",         getBattleValue("battle-shanten",  "tenpai"));
-  let value    = getBattleValue("aw-battle-value",           getBattleValue("battle-value",    "middle"));
-  let shape    = getBattleValue("aw-battle-shape",           getBattleValue("battle-shape",    "good"));
-  let threat   = getBattleValue("aw-battle-threat",          getBattleValue("battle-threat",   "none"));
-  let riskLevel= getBattleValue("aw-battle-risklevel",       getBattleValue("battle-risklevel","okay"));
+  let shanten  = getBattleValue("aw-battle-shanten",  "tenpai");
+  let value    = getBattleValue("aw-battle-value",    "middle");
+  let threat   = getBattleValue("aw-battle-threat",   "riichi"); // デフォルトriichi（攻撃なし廃止）
+  let riskLevel= getBattleValue("aw-battle-risklevel","okay");
 
-  let tenpaiShape    = getBattleValue("aw-battle-tenpai-shape",    shape === "good" ? "ryanmen" : "gukei");
+  let tenpaiShape    = getBattleValue("aw-battle-tenpai-shape",    "ryanmen");
   let iishantenShape = getBattleValue("aw-battle-iishanten-shape", "ryanmen2");
   let suji           = getBattleValue("aw-battle-suji",            "normal");
   let safe           = getBattleValue("aw-battle-safe",            "enough");
-  let riverInfo      = getBattleValue("aw-battle-riverinfo",       "normal");
   let openCount      = getBattleValue("aw-battle-open-count",      "none");
   let secondAttacker = getBattleValue("aw-battle-second-attacker", "none");
   let pushTile       = getBattleValue("aw-battle-push-tile",       "normal");
+  // riverInfo・shape(2シャンテン以下)は削除
 
   // 便利フラグ
   const isRiichi     = (threat === "riichi" || threat === "parent");
   const isOpen       = (threat === "open");
-  const hasAttack    = (threat !== "none");
+  const hasAttack    = true; // 攻撃なし廃止のため常にtrue
   const isTenpai     = (shanten === "tenpai");
   const isOne        = (shanten === "one");
   const isTwoPlus    = (shanten === "two" || shanten === "three");
@@ -693,14 +692,10 @@ function calcBattleAwaken(){
   }
 
   // =============================================
-  // BLOCK C: 脅威評価（相手の攻撃）
+  // BLOCK C: 脅威評価（常に攻撃あり前提）
   // =============================================
 
-  if(threat === "none"){
-    total += 4;
-    reasons.push("相手の攻撃なし +4");
-    expectedMemos.push("攻撃がない局面では、自分の手作りを最優先にするにゃ。");
-  }else if(threat === "riichi"){
+  if(threat === "riichi"){
     total -= 2;
     reasons.push("リーチ -2");
   }else if(threat === "parent"){
@@ -714,66 +709,53 @@ function calcBattleAwaken(){
   }
 
   // =============================================
-  // BLOCK D: 危険度（攻撃がある時のみ）
+  // BLOCK D: 危険度
   // =============================================
 
-  if(hasAttack){
     // 切る牌の危険度
     if(riskLevel === "okay"){
       total += 1;
-      reasons.push("通りそうな牌 +1");
+      reasons.push("現物・筋 +1");
     }else if(riskLevel === "danger"){
       total -= 2;
-      reasons.push("危険牌 -2");
+      reasons.push("無筋（普通） -2");
     }else{
       total -= 5;
-      reasons.push("超危険牌 -5");
-      expectedMemos.push("超危険牌は放銃率が大幅に跳ね上がるにゃ。相当な根拠が必要。");
+      reasons.push("無筋（ドラ周辺・またぎ） -5");
+      expectedMemos.push("ドラ周辺・またぎは放銃率が大幅に跳ね上がるにゃ。相当な根拠が必要。");
     }
 
-    // 残り筋（渡辺太「迷う場面でのみ比重を上げる」）
-    // 満貫以上テンパイなら押し明白なので残り筋の比重を下げる
+    // 残り筋（リーチ系かつ無筋の時のみ有効）
     const sujiWeight = (isTenpai && isMangan) ? 0 : 1;
-    if(sujiWeight > 0){
+    if(isRiichi && isDanger && sujiWeight > 0){
       if(suji === "many"){
-        // 早い読みづらいリーチ＋残り筋多いは特に押し寄り
-        if(isRiichi && riverInfo === "low" && round === "early"){
+        if(round === "early"){
           total += 2;
-          reasons.push("早い読みづらいリーチ＋残り筋多い +2");
-          expectedMemos.push("早い読みづらいリーチは残り筋カウントを重視するにゃ。");
+          reasons.push("序盤リーチ（読みづらい）＋残り筋多い +2");
+          expectedMemos.push("序盤の読みづらいリーチは残り筋カウントを重視するにゃ。");
         }else{
           total += 1;
           reasons.push("残り筋多い +1");
         }
       }else if(suji === "few"){
-        // 残り筋が少ない時は比重を上げる（同じ無筋でも危険度が跳ね上がる）
-        // ただし、満貫テンパイは通常補正のみ
         total -= 2;
         reasons.push("残り筋少ない -2");
         expectedMemos.push("残り筋が少ない時、同じ無筋でも実質危険度が跳ね上がるにゃ。");
       }else{
         reasons.push("残り筋普通 ±0");
       }
-    }else{
+    }else if(isRiichi && isDanger && sujiWeight === 0){
       reasons.push("満貫テンパイのため残り筋比重省略");
-    }
-
-    // 河情報（読み補正）
-    if(riverInfo === "high" && isDanger){
-      total -= 1;
-      reasons.push("河情報多い・読まれやすい -1");
-      expectedMemos.push("ターツ落とし・関連牌がある時は残り筋だけでなく読み補正が入るにゃ。");
     }
 
     // 安牌量（Knowledge: 安牌なし=押しにはしない）
     if(safe === "enough"){
       if(!isTenpai){
-        // テンパイ以外は安牌があると引きやすい
         total -= 1;
         reasons.push("安牌十分：引き選択しやすい -1");
         coachingComments.push("安牌があるなら、まずそちらを使う選択肢を持つにゃ。");
       }else{
-        reasons.push("安牌十分・テンパイ ±0（テンパイは押す）");
+        reasons.push("安牌十分・テンパイ ±0");
       }
     }else if(safe === "none"){
       if(isTenpai){
@@ -781,7 +763,6 @@ function calcBattleAwaken(){
         reasons.push("安牌ほぼなし＋テンパイ +1");
         expectedMemos.push("テンパイで安牌なしなら押し寄りにゃ。");
       }else{
-        // 安牌なしでも押しにはしない（Knowledge: PF-INT-012）
         reasons.push("安牌ほぼなし・テンパイ以外 ±0");
         expectedMemos.push("安牌がない＝押しではないにゃ。手牌価値で判断するにゃ。");
         if(isTwoPlus){
@@ -822,14 +803,13 @@ function calcBattleAwaken(){
     // 開拓プッシュ（PF-INT-014）
     if(isDanger && pushTile === "kaitaku"){
       total += 1;
-      reasons.push("開拓プッシュ +1");
+      reasons.push("通ると安全牌が増える +1");
       expectedMemos.push("どうせ押すなら通った後に安全牌が増える牌からにゃ。");
     }else if(pushTile === "blocked"){
       total -= 1;
-      reasons.push("押しても次が苦しい -1");
+      reasons.push("通っても次で詰まる -1");
       expectedMemos.push("今押したとしても次の牌で詰まりやすい形にゃ。");
     }
-  }
 
   // =============================================
   // BLOCK E: 判定変換（8段階）
