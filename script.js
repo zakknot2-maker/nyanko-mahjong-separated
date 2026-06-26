@@ -428,15 +428,15 @@ function updateAwakenVisibility(){
   const hasAttack = threat !== "none";
   const isRiichi = threat === "riichi" || threat === "parent";
   const isOpen = threat === "open";
-  const needsRisk = hasAttack;
   const riskyTile = riskLevel !== "okay";
 
   setAwakenFieldVisible("tenpaiShape", shanten === "tenpai");
   setAwakenFieldVisible("iishantenShape", shanten === "one");
   setAwakenFieldVisible("shape", shanten === "two" || shanten === "three");
 
-  setAwakenFieldVisible("riskLevel", needsRisk);
-  setAwakenFieldVisible("safe", needsRisk);
+  // 相手攻撃なしの時は、切る牌・危険度系の入力を全部隠す
+  setAwakenFieldVisible("riskLevel", hasAttack);
+  setAwakenFieldVisible("safe", hasAttack);
   setAwakenFieldVisible("suji", isRiichi && riskyTile);
   setAwakenFieldVisible("riverInfo", isRiichi && riskyTile);
   setAwakenFieldVisible("openCount", isOpen);
@@ -455,7 +455,8 @@ function calcBattleAwaken(){
 
   // 覚醒版専用UIから読む。通常版の入力欄はDeveloper Modeでは非表示。
   let round = getBattleValue("aw-battle-round", getBattleValue("battle-round", "middle"));
-  let rank = getBattleValue("aw-battle-rank", getBattleValue("battle-rank", "2"));
+  let position = getBattleValue("aw-battle-position", "east2");
+  let rank = position.slice(-1);
   let shanten = getBattleValue("aw-battle-shanten", getBattleValue("battle-shanten", "tenpai"));
   let value = getBattleValue("aw-battle-value", getBattleValue("battle-value", "middle"));
   let shape = getBattleValue("aw-battle-shape", getBattleValue("battle-shape", "good"));
@@ -470,7 +471,6 @@ function calcBattleAwaken(){
   let openCount = getBattleValue("aw-battle-open-count", "none");
   let secondAttacker = getBattleValue("aw-battle-second-attacker", "none");
   let pushTile = getBattleValue("aw-battle-push-tile", "normal");
-  let situation = getBattleValue("aw-battle-situation", "flat");
 
   // 巡目
   if(round === "early"){
@@ -498,6 +498,7 @@ function calcBattleAwaken(){
   }else{
     reasons.push(rank + "着目 ±0");
   }
+  reasons.push((position.startsWith("south") ? "南場" : "東場") + rank + "着");
 
   // シャンテン本体
   if(shanten === "tenpai"){
@@ -599,20 +600,22 @@ function calcBattleAwaken(){
     reasons.push("高そうな副露 -2");
   }
 
-  // 切る牌危険度
-  if(riskLevel === "okay"){
-    total += 1;
-    reasons.push("通りそうな牌 +1");
-  }else if(riskLevel === "danger"){
-    total -= 2;
-    reasons.push("危険牌 -2");
-  }else{
-    total -= 3;
-    reasons.push("超危険牌 -3");
+  // 切る牌危険度（相手攻撃なしの場合は入力自体を無効扱い）
+  if(threat !== "none"){
+    if(riskLevel === "okay"){
+      total += 1;
+      reasons.push("通りそうな牌 +1");
+    }else if(riskLevel === "danger"){
+      total -= 2;
+      reasons.push("危険牌 -2");
+    }else{
+      total -= 3;
+      reasons.push("超危険牌 -3");
+    }
   }
 
   // 残り筋
-  if(suji === "many"){
+  if(threat !== "none" && suji === "many"){
     total += 1;
     reasons.push("残り筋多い +1");
     if(round === "early" && (threat === "riichi" || threat === "parent") && riverInfo === "low"){
@@ -620,25 +623,25 @@ function calcBattleAwaken(){
       reasons.push("早い読みづらいリーチ＋残り筋多い +1");
       expectedMemos.push("早い読みづらいリーチは残り筋カウントを重視するにゃ。");
     }
-  }else if(suji === "few"){
+  }else if(threat !== "none" && suji === "few"){
     total -= 2;
     reasons.push("残り筋少ない -2");
     expectedMemos.push("残り筋が少ない時は、同じ無筋でも危険度が跳ね上がるにゃ。");
-  }else{
+  }else if(threat !== "none"){
     reasons.push("残り筋普通 ±0");
   }
 
   // 安牌量
-  if(safe === "enough"){
+  if(threat !== "none" && safe === "enough"){
     if(shanten !== "tenpai"){
       total -= 1;
       reasons.push("安牌十分：引きやすい -1");
     }else{
       reasons.push("安牌十分だがテンパイ ±0");
     }
-  }else if(safe === "few"){
+  }else if(threat !== "none" && safe === "few"){
     reasons.push("安牌少ない ±0");
-  }else{
+  }else if(threat !== "none"){
     if(shanten === "tenpai"){
       total += 1;
       reasons.push("安牌ほぼなし＋テンパイ +1");
@@ -653,59 +656,46 @@ function calcBattleAwaken(){
   }
 
   // 河情報
-  if(riverInfo === "high" && riskLevel !== "okay"){
+  if(threat !== "none" && riverInfo === "high" && riskLevel !== "okay"){
     total -= 1;
     reasons.push("河情報多い危険牌 -1");
     expectedMemos.push("ターツ落とし・関連牌がある時は残り筋だけでなく読み補正を入れるにゃ。");
-  }else if(riverInfo === "low"){
+  }else if(threat !== "none" && riverInfo === "low"){
     reasons.push("河情報少ない：残り筋重視");
   }
 
   // 副露対応 222 の考え方
-  if(openCount === "two" && (round === "middle" || round === "late") && (shanten === "two" || shanten === "three")){
+  if(threat !== "none" && openCount === "two" && (round === "middle" || round === "late") && (shanten === "two" || shanten === "three")){
     total -= 2;
     reasons.push("2副露＋中盤以降＋2シャンテン以下 -2");
     expectedMemos.push("副露対応222。2副露・2段目相当・自分が遠い手なら無筋はかなり止めるにゃ。");
-  }else if(openCount === "three" && shanten !== "tenpai"){
+  }else if(threat !== "none" && openCount === "three" && shanten !== "tenpai"){
     total -= 2;
     reasons.push("3副露以上＋ノーテン -2");
     expectedMemos.push("3副露はテンパイ率が高い。ノーテンからの無筋はかなり重いにゃ。");
-  }else if(openCount === "one" && round === "late" && (shanten === "two" || shanten === "three")){
+  }else if(threat !== "none" && openCount === "one" && round === "late" && (shanten === "two" || shanten === "three")){
     total -= 1;
     reasons.push("1副露＋終盤＋遠い手 -1");
   }
 
   // 第2攻撃者
-  if(secondAttacker === "parent"){
+  if(threat !== "none" && secondAttacker === "parent"){
     total -= 2;
     reasons.push("第2攻撃者：親 -2");
     expectedMemos.push("リーチ者の現物でも、押している親には危ない牌があるにゃ。");
-  }else if(secondAttacker === "child"){
+  }else if(threat !== "none" && secondAttacker === "child"){
     total -= 1;
     reasons.push("第2攻撃者：子 -1");
   }
 
   // 開拓プッシュ
-  if(pushTile === "kaitaku" && riskLevel !== "okay"){
+  if(threat !== "none" && pushTile === "kaitaku" && riskLevel !== "okay"){
     total += 1;
     reasons.push("開拓プッシュ +1");
     expectedMemos.push("どうせ押すなら、通った後に安全牌が増える牌からにゃ。");
-  }else if(pushTile === "blocked"){
+  }else if(threat !== "none" && pushTile === "blocked"){
     total -= 1;
     reasons.push("押しても次が苦しい -1");
-  }
-
-  // 局面補正
-  if(situation === "orasTop"){
-    total -= 2;
-    reasons.push("オーラス・トップ確定優先 -2");
-    coachingComments.push("トップ確定が見えるなら、局収支より順位価値を優先するにゃ。");
-  }else if(situation === "orasLastParent"){
-    total += 2;
-    reasons.push("オーラス・押すしかない +2");
-    coachingComments.push("ラス目親番などは通常より押し条件が緩むにゃ。");
-  }else if(situation === "south"){
-    reasons.push("南場通常 ±0");
   }
 
   // 強制に近い補正

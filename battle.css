@@ -380,10 +380,10 @@ body.secret-mode #secret-battle .battle-result {
 }
 
 /* hide old duplicated normal-like top controls only in awaken mode */
-body.secret-mode #secret-battle .normal-battle-panel,
-body.secret-mode #secret-battle .basic-battle-panel,
-body.secret-mode #secret-battle .battle-basic,
-body.secret-mode #secret-battle .normal-fields {
+body.developer-mode #secret-battle .normal-battle-panel,
+body.developer-mode #secret-battle .basic-battle-panel,
+body.developer-mode #secret-battle .battle-basic,
+body.developer-mode #secret-battle .normal-fields {
   display: none !important;
 }
 
