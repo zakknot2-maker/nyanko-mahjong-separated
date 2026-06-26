@@ -305,3 +305,102 @@ body.developer-mode .awaken-extra > .input-box{
     padding:5px 7px;
   }
 }
+
+
+
+/* === Awaken Mode Full Compact Layout === */
+body.secret-mode #secret-battle .battle-grid > .field:not(.awaken-field),
+body.secret-mode #secret-battle .battle-grid > .wide:not(.awaken-field),
+body.secret-mode #secret-battle .battle-grid > label:not(.awaken-field) {
+  display: none !important;
+}
+
+body.secret-mode #secret-battle .awaken-panel {
+  margin-top: 10px !important;
+  padding: 14px 14px 16px !important;
+  border: 2px solid rgba(124, 82, 255, .95) !important;
+  border-radius: 18px !important;
+  background: rgba(12, 10, 18, .92) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.05), 0 8px 22px rgba(0,0,0,.35) !important;
+}
+
+body.secret-mode #secret-battle .awaken-panel .awaken-note {
+  margin: 0 0 10px !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  color: #d9ccff !important;
+  font-weight: 800 !important;
+}
+
+body.secret-mode #secret-battle .awaken-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px 10px !important;
+}
+
+body.secret-mode #secret-battle .awaken-field {
+  padding: 8px 10px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,.045) !important;
+  min-width: 0 !important;
+}
+
+body.secret-mode #secret-battle .awaken-field.awaken-wide {
+  grid-column: 1 / -1 !important;
+}
+
+body.secret-mode #secret-battle .awaken-field .label,
+body.secret-mode #secret-battle .awaken-field label,
+body.secret-mode #secret-battle .awaken-field-title {
+  display: block !important;
+  margin: 0 0 5px !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  color: #d9ccff !important;
+  font-weight: 800 !important;
+}
+
+body.secret-mode #secret-battle .awaken-field select,
+body.secret-mode #secret-battle .awaken-field input {
+  width: 100% !important;
+  min-height: 38px !important;
+  padding: 7px 10px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  background: #0c0c0f !important;
+  color: #fff !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  box-sizing: border-box !important;
+}
+
+body.secret-mode #secret-battle .battle-result {
+  margin-top: 12px !important;
+}
+
+/* hide old duplicated normal-like top controls only in awaken mode */
+body.secret-mode #secret-battle .normal-battle-panel,
+body.secret-mode #secret-battle .basic-battle-panel,
+body.secret-mode #secret-battle .battle-basic,
+body.secret-mode #secret-battle .normal-fields {
+  display: none !important;
+}
+
+@media (max-width: 430px) {
+  body.secret-mode #secret-battle .awaken-panel {
+    padding: 12px !important;
+  }
+  body.secret-mode #secret-battle .awaken-grid {
+    gap: 7px !important;
+  }
+  body.secret-mode #secret-battle .awaken-field {
+    padding: 7px 8px !important;
+    border-radius: 11px !important;
+  }
+  body.secret-mode #secret-battle .awaken-field select,
+  body.secret-mode #secret-battle .awaken-field input {
+    min-height: 36px !important;
+    font-size: 14px !important;
+  }
+}
