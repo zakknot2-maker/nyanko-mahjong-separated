@@ -427,7 +427,7 @@ function updateAwakenVisibility(){
 
   const isRiichi  = (threat === "riichi" || threat === "parent");
   const isOpen    = (threat === "open");
-  const isDanger  = (riskLevel !== "okay");
+  const isAnyDanger = (riskLevel !== "okay");
 
   // 自分の手：シャンテン数に応じて形欄を切り替え
   setAwakenFieldVisible("tenpaiShape",    shanten === "tenpai");
@@ -438,10 +438,10 @@ function updateAwakenVisibility(){
   setAwakenFieldVisible("openCount", isOpen);
 
   // 切る牌セクション：残り筋はリーチ系かつ無筋の時のみ表示
-  setAwakenFieldVisible("suji", isRiichi && isDanger);
+  setAwakenFieldVisible("suji", isRiichi && isAnyDanger);
 
   // 押す牌の性質は無筋を切る時のみ表示
-  setAwakenFieldVisible("pushTile", isDanger);
+  setAwakenFieldVisible("pushTile", isAnyDanger);
 }
 
 function calcBattleAwaken(){
@@ -466,12 +466,10 @@ function calcBattleAwaken(){
 
   // --- 入力読み込み ---
   let round    = getBattleValue("aw-battle-round",    "middle");
-  let position = getBattleValue("aw-battle-position", "east2");
-  let isSouth  = position.startsWith("south");
-  let rank     = position.slice(-1); // "1"〜"4"
+  let rank     = getBattleValue("aw-battle-rank",     "2"); // 着順直読み（1〜4）
   let shanten  = getBattleValue("aw-battle-shanten",  "tenpai");
   let value    = getBattleValue("aw-battle-value",    "middle");
-  let threat   = getBattleValue("aw-battle-threat",   "riichi"); // デフォルトriichi（攻撃なし廃止）
+  let threat   = getBattleValue("aw-battle-threat",   "riichi");
   let riskLevel= getBattleValue("aw-battle-risklevel","okay");
 
   let tenpaiShape    = getBattleValue("aw-battle-tenpai-shape",    "ryanmen");
@@ -481,7 +479,7 @@ function calcBattleAwaken(){
   let openCount      = getBattleValue("aw-battle-open-count",      "none");
   let secondAttacker = getBattleValue("aw-battle-second-attacker", "none");
   let pushTile       = getBattleValue("aw-battle-push-tile",       "normal");
-  // riverInfo・shape(2シャンテン以下)は削除
+  // riverInfo・shape(2シャンテン以下)・position(東南場)は削除済み
 
   // 便利フラグ
   const isRiichi     = (threat === "riichi" || threat === "parent");
@@ -491,41 +489,33 @@ function calcBattleAwaken(){
   const isOne        = (shanten === "one");
   const isTwoPlus    = (shanten === "two" || shanten === "three");
   const isRyanmen    = (isTenpai && tenpaiShape === "ryanmen");
-  const isMangan     = (value === "mangan");
+  const isHaneman    = (value === "haneman");
+  const isMangan     = (value === "mangan" || isHaneman);
   const isLow        = (value === "low");
-  const isVeryDanger = (riskLevel === "verydanger");
-  const isDanger     = (riskLevel === "danger" || isVeryDanger);
+  const isMiddle     = (value === "middle");
+  // 危険度フラグ（4段階）
+  const isSafe19     = (riskLevel === "safe19");  // 無筋1・9・字牌周辺
+  const isDanger     = (riskLevel === "danger");   // 無筋2・3・7・8
+  const isVeryDanger = (riskLevel === "verydanger"); // 無筋4・5・6・またぎ
+  const isAnyDanger  = (isSafe19 || isDanger || isVeryDanger); // 現物・筋以外
 
   // =============================================
-  // BLOCK A: 場況・着順（全シャンテン共通）
+  // BLOCK A: 着順（全シャンテン共通）
   // =============================================
 
-  // 場況（東場/南場）× 着順
-  // 南場はラス・トップ目の価値変動が大きい
   if(rank === "1"){
     total -= 1;
     reasons.push("トップ目 -1");
     coachingComments.push("トップ目は放銃リスクの価値が上がるにゃ。");
-    if(isSouth){
-      total -= 1;
-      reasons.push("南場トップ目 追加 -1");
-      coachingComments.push("南場トップ目は大きな放銃1回でラス争いに転落しやすいにゃ。");
-    }
   }else if(rank === "4"){
     total += 1;
     reasons.push("4着目 +1");
     coachingComments.push("ラス目は着順上昇の価値が高い。押す材料を探すにゃ。");
-    if(isSouth){
-      total += 1;
-      reasons.push("南場ラス目 追加 +1");
-      coachingComments.push("南場ラス目は着順回復のために押し返す価値がさらに高いにゃ。");
-    }
   }else if(rank === "3"){
     reasons.push("3着目 ±0");
   }else{
     reasons.push("2着目 ±0");
   }
-  reasons.push((isSouth ? "南場" : "東場") + rank + "着");
 
   // =============================================
   // BLOCK B: 手牌価値（シャンテン数で別軸評価）
@@ -551,9 +541,13 @@ function calcBattleAwaken(){
     }
 
     // テンパイ時の打点（満貫が見えるかを中心に）
-    if(isMangan){
+    if(isHaneman){
+      total += 3;
+      reasons.push("跳満以上 +3");
+      expectedMemos.push("跳満以上は迷わず押す根拠になるにゃ。");
+    }else if(isMangan){
       total += 2;
-      reasons.push("満貫以上 +2");
+      reasons.push("満貫 +2");
       expectedMemos.push("満貫以上は放銃リスクを背負う価値が出やすいにゃ。");
     }else if(isLow){
       if(isRyanmen){
@@ -566,7 +560,7 @@ function calcBattleAwaken(){
         expectedMemos.push("愚形かつ低打点はかなり押す根拠が弱くなるにゃ。");
       }
     }else{
-      // middle (満貫未満だが3900〜5200)
+      // middle (3900〜5200)
       total += 1;
       reasons.push("中打点 +1");
     }
@@ -622,19 +616,23 @@ function calcBattleAwaken(){
     }
 
     // 打点スコア（1シャンテンはリーチ込み3翻以上が押す基準）
-    if(isMangan){
+    if(isHaneman){
+      total += 3;
+      reasons.push("跳満以上 +3");
+      expectedMemos.push("1シャンテンでも跳満以上なら積極的に押す根拠があるにゃ。");
+    }else if(isMangan){
       total += 2;
-      reasons.push("満貫以上 +2");
+      reasons.push("満貫 +2");
       expectedMemos.push("1シャンテンでも満貫が見えるなら押す価値が出てくるにゃ。");
     }else if(isLow){
       total -= 2;
       reasons.push("低打点1シャンテン -2");
       expectedMemos.push("リーチ込み3翻未満の1シャンテンは押す根拠がかなり薄いにゃ。");
     }else{
-      // middle
-      total += 0;
-      reasons.push("中打点1シャンテン ±0");
-      expectedMemos.push("1シャンテン中打点。形・巡目・残り筋の合計で判断するにゃ。");
+      // middle (3900〜5200) ← 白鳥翔「リーチ込み3翻以上が基準」より、満貫未満中打点は不利寄り
+      total -= 1;
+      reasons.push("中打点1シャンテン -1");
+      expectedMemos.push("満貫未満の1シャンテンは押す根拠がやや薄いにゃ。形・巡目が揃わないと苦しい。");
     }
 
     // 巡目スコア（1シャンテンは巡目の影響が大きい）
@@ -672,14 +670,18 @@ function calcBattleAwaken(){
     }
 
     // 打点（2シャンテン以下はよほど高くないと押せない）
-    if(isMangan){
+    if(isHaneman){
+      total += 2;
+      reasons.push("跳満以上 +2");
+    }else if(isMangan){
       total += 1;
-      reasons.push("満貫以上 +1");
+      reasons.push("満貫 +1");
       expectedMemos.push("2シャンテン以下でも満貫が確実なら多少押せる場面があるにゃ。");
     }else if(isLow){
       total -= 1;
       reasons.push("低打点 -1");
     }
+    // middle(3900〜5200)は補正なし
 
     // 巡目
     if(round === "early"){
@@ -712,22 +714,28 @@ function calcBattleAwaken(){
   // BLOCK D: 危険度
   // =============================================
 
-    // 切る牌の危険度
+    // 切る牌の危険度（4段階）
     if(riskLevel === "okay"){
       total += 1;
       reasons.push("現物・筋 +1");
-    }else if(riskLevel === "danger"){
+    }else if(isSafe19){
       total -= 2;
-      reasons.push("無筋（普通） -2");
+      reasons.push("無筋（1・9・字牌周辺） -2");
+      expectedMemos.push("1・9周辺は両面待ちに刺さる形が少なく比較的通りやすいにゃ。");
+    }else if(isDanger){
+      total -= 3;
+      reasons.push("無筋（2・3・7・8） -3");
+      expectedMemos.push("中間牌周辺は両面・カンチャン両方に刺さる可能性があるにゃ。");
     }else{
+      // verydanger: 無筋4・5・6・またぎ
       total -= 5;
-      reasons.push("無筋（ドラ周辺・またぎ） -5");
-      expectedMemos.push("ドラ周辺・またぎは放銃率が大幅に跳ね上がるにゃ。相当な根拠が必要。");
+      reasons.push("無筋（4・5・6・またぎ） -5");
+      expectedMemos.push("4・5・6と筋またぎは最も放銃率が高い牌にゃ。相当な根拠が必要。");
     }
 
     // 残り筋（リーチ系かつ無筋の時のみ有効）
     const sujiWeight = (isTenpai && isMangan) ? 0 : 1;
-    if(isRiichi && isDanger && sujiWeight > 0){
+    if(isRiichi && isAnyDanger && sujiWeight > 0){
       if(suji === "many"){
         if(round === "early"){
           total += 2;
@@ -744,7 +752,7 @@ function calcBattleAwaken(){
       }else{
         reasons.push("残り筋普通 ±0");
       }
-    }else if(isRiichi && isDanger && sujiWeight === 0){
+    }else if(isRiichi && isAnyDanger && sujiWeight === 0){
       reasons.push("満貫テンパイのため残り筋比重省略");
     }
 
@@ -801,7 +809,7 @@ function calcBattleAwaken(){
     }
 
     // 開拓プッシュ（PF-INT-014）
-    if(isDanger && pushTile === "kaitaku"){
+    if(isAnyDanger && pushTile === "kaitaku"){
       total += 1;
       reasons.push("通ると安全牌が増える +1");
       expectedMemos.push("どうせ押すなら通った後に安全牌が増える牌からにゃ。");
@@ -865,7 +873,7 @@ function calcBattleAwaken(){
     pushWarning = "両面テンパイ押し不足：低打点でも両面は押し有利になりやすいにゃ。";
   }
   // 安牌なし=押しではない警告
-  if(!isTenpai && safe === "none" && hasAttack){
+  if(!isTenpai && safe === "none"){
     pushWarning = "安牌がない＝押しではないにゃ。遠い手からの無筋は無駄押しになりやすいにゃ。";
   }
 

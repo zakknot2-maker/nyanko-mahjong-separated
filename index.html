@@ -108,17 +108,13 @@
       <div class="awaken-section">
         <div class="awaken-section-title">1. 局面</div>
         <div class="awaken-grid">
-          <div class="awaken-field awaken-wide" data-awaken-field="position">
-            <label>現在位置</label>
-            <select id="aw-battle-position" onchange="calcBattle()">
-              <option value="east1">東場 1着</option>
-              <option value="east2" selected>東場 2着</option>
-              <option value="east3">東場 3着</option>
-              <option value="east4">東場 4着</option>
-              <option value="south1">南場 1着</option>
-              <option value="south2">南場 2着</option>
-              <option value="south3">南場 3着</option>
-              <option value="south4">南場 4着</option>
+          <div class="awaken-field" data-awaken-field="rank">
+            <label>着順</label>
+            <select id="aw-battle-rank" onchange="calcBattle()">
+              <option value="1">1着目</option>
+              <option value="2" selected>2着目</option>
+              <option value="3">3着目</option>
+              <option value="4">4着目</option>
             </select>
           </div>
           <div class="awaken-field" data-awaken-field="round">
@@ -166,8 +162,9 @@
             <label>打点</label>
             <select id="aw-battle-value" onchange="calcBattle()">
               <option value="low">1000〜2000</option>
-              <option value="middle" selected>満貫未満</option>
-              <option value="mangan">満貫以上</option>
+              <option value="middle" selected>3900〜5200</option>
+              <option value="mangan">満貫（8000〜）</option>
+              <option value="haneman">跳満以上（12000〜）</option>
             </select>
           </div>
         </div>
@@ -211,8 +208,9 @@
             <label>危険度</label>
             <select id="aw-battle-risklevel" onchange="calcBattle()">
               <option value="okay" selected>現物・筋</option>
-              <option value="danger">無筋（普通）</option>
-              <option value="verydanger">無筋（ドラ周辺・またぎ）</option>
+              <option value="safe19">無筋（1・9・字牌周辺）</option>
+              <option value="danger">無筋（2・3・7・8）</option>
+              <option value="verydanger">無筋（4・5・6・またぎ）</option>
             </select>
           </div>
           <div class="awaken-field" data-awaken-field="suji">
