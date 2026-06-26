@@ -149,23 +149,28 @@ function onSpecialCheck(type){
 
 function updateAssistSpecialUI(){
   const special = getAssistSpecial();
-  const fields  = document.getElementById("assist-detail-fields");
-  const badge   = document.getElementById("assist-special-badge");
+  const allFields = document.getElementById("assist-detail-fields");
+  const subFields = document.getElementById("assist-detail-sub");
+  const badge     = document.getElementById("assist-special-badge");
+
+  // まずリセット
+  allFields.classList.remove("assist-greyed");
+  subFields.classList.remove("assist-greyed");
 
   if(special === "chitoi"){
-    fields.classList.add("assist-greyed");
+    // 七対子：あがり方ごとグレーアウト
+    allFields.classList.add("assist-greyed");
     badge.style.display = "block";
     badge.textContent   = "七対子：25符固定にゃ。下の項目は使わないにゃ 🐾";
   }else if(special === "pinfu"){
-    fields.classList.add("assist-greyed");
+    // ピンフ：あがり方は使う、頭・待ち・刻子カンをグレーアウト
+    subFields.classList.add("assist-greyed");
     badge.style.display = "block";
-    // ピンフはツモで20符固定、ロンは30符固定
     const win = document.getElementById("assist-win").value;
     badge.textContent = win === "tsumo"
-      ? "ピンフツモ：20符固定にゃ。下の項目は使わないにゃ 🐾"
-      : "ピンフロン：30符固定にゃ（メンゼンロン扱い）。下の項目は使わないにゃ 🐾";
+      ? "ピンフツモ：20符固定にゃ。あがり方だけ選んでにゃ 🐾"
+      : "ピンフロン：30符固定にゃ。あがり方だけ選んでにゃ 🐾";
   }else{
-    fields.classList.remove("assist-greyed");
     badge.style.display = "none";
   }
 }

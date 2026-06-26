@@ -273,22 +273,24 @@
           <label>あがり方 🐾</label>
           <select id="assist-win" onchange="calcAssist()"><option value="closedRon">メンゼンロン</option><option value="openRon">鳴きロン</option><option value="tsumo">ツモ</option></select>
         </div>
-        <div class="row">
-          <div class="input-box"><label>頭 🐱</label><select id="assist-head" onchange="calcAssist()"><option value="0">通常</option><option value="2">役牌 +2</option><option value="4">ダブ風 +4</option></select></div>
-          <div class="input-box"><label>待ち 🐾</label><select id="assist-wait" onchange="calcAssist()"><option value="0">両面</option><option value="2">愚形・単騎 +2</option></select></div>
-        </div>
-        <div class="input-box">
-          <details>
-            <summary>刻子・カン 🀄</summary><br>
-            <div class="grid"><div class="grid-label">明刻（中張牌）</div><select class="small-select assist-set" data-fu="2" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">明刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">暗刻（中張牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">暗刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">明カン（中張牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">明カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">暗カン（中張牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-            <div class="grid"><div class="grid-label">暗カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="32" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-          </details>
+        <div id="assist-detail-sub">
+          <div class="row">
+            <div class="input-box"><label>頭 🐱</label><select id="assist-head" onchange="calcAssist()"><option value="0">通常</option><option value="2">役牌 +2</option><option value="4">ダブ風 +4</option></select></div>
+            <div class="input-box"><label>待ち 🐾</label><select id="assist-wait" onchange="calcAssist()"><option value="0">両面</option><option value="2">愚形・単騎 +2</option></select></div>
+          </div>
+          <div class="input-box">
+            <details>
+              <summary>刻子・カン 🀄</summary><br>
+              <div class="grid"><div class="grid-label">明刻（中張牌）</div><select class="small-select assist-set" data-fu="2" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">明刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">暗刻（中張牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">暗刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">明カン（中張牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">明カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">暗カン（中張牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <div class="grid"><div class="grid-label">暗カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="32" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+            </details>
+          </div>
         </div>
       </div>
       <div class="results">
