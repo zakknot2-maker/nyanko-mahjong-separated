@@ -100,6 +100,100 @@
       </select>
     </div>
 
+
+    <div class="developer-only awaken-extra">
+      <div class="awaken-note">覚醒版 詳細入力にゃ。通常版には反映しないにゃ。</div>
+
+      <div class="row">
+        <div class="input-box">
+          <label>テンパイ形（覚醒版）🐾</label>
+          <select id="battle-tenpai-shape" onchange="calcBattle()">
+            <option value="ryanmen" selected>両面・良形テンパイ</option>
+            <option value="gukei">愚形テンパイ</option>
+          </select>
+        </div>
+        <div class="input-box">
+          <label>1シャンテン詳細（覚醒版）🧠</label>
+          <select id="battle-iishanten-shape" onchange="calcBattle()">
+            <option value="ryanmen2" selected>両面両面以上</option>
+            <option value="complete">完全1シャンテン</option>
+            <option value="kuttsuki">くっつき良形</option>
+            <option value="ryankan">リャンカン・最終愚形あり</option>
+            <option value="gukei">愚形含み</option>
+            <option value="gukeiStrong">愚形濃厚</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-box">
+          <label>残り筋（覚醒版）🧮</label>
+          <select id="battle-suji" onchange="calcBattle()">
+            <option value="many" selected>多い</option>
+            <option value="normal">普通</option>
+            <option value="few">少ない</option>
+          </select>
+        </div>
+        <div class="input-box">
+          <label>安牌の量（覚醒版）🛡️</label>
+          <select id="battle-safe" onchange="calcBattle()">
+            <option value="enough" selected>十分ある</option>
+            <option value="few">少ない</option>
+            <option value="none">ほぼない</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-box">
+          <label>河情報（覚醒版）👀</label>
+          <select id="battle-riverinfo" onchange="calcBattle()">
+            <option value="low" selected>少ない（早い・読みづらい）</option>
+            <option value="normal">普通</option>
+            <option value="high">多い（ターツ落とし・関連牌あり）</option>
+          </select>
+        </div>
+        <div class="input-box">
+          <label>副露数（覚醒版）🀄</label>
+          <select id="battle-open-count" onchange="calcBattle()">
+            <option value="none" selected>なし</option>
+            <option value="one">1副露</option>
+            <option value="two">2副露</option>
+            <option value="three">3副露以上</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-box">
+          <label>第2攻撃者（覚醒版）⚡</label>
+          <select id="battle-second-attacker" onchange="calcBattle()">
+            <option value="none" selected>なし</option>
+            <option value="child">子がかなり押している</option>
+            <option value="parent">親がかなり押している</option>
+          </select>
+        </div>
+        <div class="input-box">
+          <label>押す牌の性質（覚醒版）🔓</label>
+          <select id="battle-push-tile" onchange="calcBattle()">
+            <option value="normal" selected>普通</option>
+            <option value="kaitaku">通れば安牌が増える</option>
+            <option value="blocked">通っても次が苦しい</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-box">
+        <label>局面補正（覚醒版）📍</label>
+        <select id="battle-situation" onchange="calcBattle()">
+          <option value="flat" selected>東場・フラット</option>
+          <option value="south">南場・通常</option>
+          <option value="orasTop">オーラス：トップ確定を優先</option>
+          <option value="orasLastParent">オーラス：ラス目親番など押すしかない</option>
+        </select>
+      </div>
+    </div>
+
     <div class="battle-judge" id="battle-judge">-</div>
     <div class="battle-sub">
       <div>危険牌目安：<b id="battle-risk">-</b></div>

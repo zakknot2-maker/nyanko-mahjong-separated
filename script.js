@@ -406,6 +406,11 @@ function calcBattleNormal(){
   updateDeveloperPanel();
 }
 
+function getBattleValue(id, fallback){
+  const el = document.getElementById(id);
+  return el ? el.value : fallback;
+}
+
 function calcBattleAwaken(){
   let total = 0;
   let reasons = [];
@@ -421,19 +426,37 @@ function calcBattleAwaken(){
   let threat = document.getElementById("battle-threat").value;
   let riskLevel = document.getElementById("battle-risklevel").value;
 
+  // 覚醒版限定の詳細入力。通常版 calcBattleNormal では一切使わない。
+  let tenpaiShape = getBattleValue("battle-tenpai-shape", shape === "good" ? "ryanmen" : "gukei");
+  let iishantenShape = getBattleValue("battle-iishanten-shape", "ryanmen2");
+  let suji = getBattleValue("battle-suji", "normal");
+  let safe = getBattleValue("battle-safe", "enough");
+  let riverInfo = getBattleValue("battle-riverinfo", "normal");
+  let openCount = getBattleValue("battle-open-count", "none");
+  let secondAttacker = getBattleValue("battle-second-attacker", "none");
+  let pushTile = getBattleValue("battle-push-tile", "normal");
+  let situation = getBattleValue("battle-situation", "flat");
+
+  // 巡目
   if(round === "early"){
     total += 1;
     reasons.push("序盤 +1");
-    expectedMemos.push("序盤は先制・好形・高打点の価値が高いにゃ。");
+    expectedMemos.push("序盤は自分の和了率が残っている。先制・好形・高打点の価値が高いにゃ。");
   }else if(round === "middle"){
     reasons.push("中盤 ±0");
     expectedMemos.push("中盤は手牌価値と放銃率のバランスを見るにゃ。");
   }else{
-    reasons.push("終盤 ±0");
-    expectedMemos.push("終盤は放銃率が上がるから、危険牌評価を強めに見るにゃ。");
+    total -= 1;
+    reasons.push("終盤 -1");
+    expectedMemos.push("終盤は自分の和了率が落ち、ベタオリの期待値が上がるにゃ。");
   }
 
-  if(rank === "4"){
+  // 着順
+  if(rank === "1"){
+    total -= 1;
+    reasons.push("トップ目 -1");
+    coachingComments.push("トップ目は放銃回避の価値が上がるにゃ。");
+  }else if(rank === "4"){
     total += 1;
     reasons.push("4着目 +1");
     coachingComments.push("4着目は着順上昇の価値が高い。押せる材料を探すにゃ。");
@@ -441,95 +464,242 @@ function calcBattleAwaken(){
     reasons.push(rank + "着目 ±0");
   }
 
+  // シャンテン本体
   if(shanten === "tenpai"){
-    total += 3;
-    reasons.push("テンパイ +3");
-    expectedMemos.push("テンパイは和了率が一気に上がる。押し材料として最重要にゃ。");
+    total += 4;
+    reasons.push("テンパイ +4");
+    expectedMemos.push("テンパイは一向聴以下と別物。和了抽選に入っている価値が大きいにゃ。");
   }else if(shanten === "one"){
-    total += 1;
-    reasons.push("1シャンテン +1");
-    expectedMemos.push("1シャンテンは形と打点があれば戦えるにゃ。");
+    total += 0;
+    reasons.push("1シャンテン ±0");
+    expectedMemos.push("1シャンテンは形・打点・巡目が揃って初めて押し候補にゃ。");
   }else if(shanten === "two"){
-    total -= 1;
-    reasons.push("2シャンテン -1");
-    expectedMemos.push("2シャンテンはまだ和了率が足りない。相手の攻撃があるなら慎重にゃ。");
+    total -= 2;
+    reasons.push("2シャンテン -2");
+    expectedMemos.push("2シャンテンは無筋を複数本押す前提になりやすい。基本はかなり苦しいにゃ。");
   }else{
-    total -= 3;
-    reasons.push("3シャンテン以上 -3");
-    expectedMemos.push("3シャンテンは押し返しの期待値がかなり低いにゃ。");
+    total -= 4;
+    reasons.push("3シャンテン以上 -4");
+    expectedMemos.push("3シャンテン以上は押し返しの期待値がかなり低いにゃ。");
   }
 
+  // テンパイ形・1シャンテン詳細
+  if(shanten === "tenpai"){
+    if(tenpaiShape === "ryanmen"){
+      total += 2;
+      reasons.push("両面テンパイ +2");
+      expectedMemos.push("両面テンパイは1000〜2000点でも偉い。相手の高打点和了を潰す価値もあるにゃ。");
+    }else{
+      total -= 1;
+      reasons.push("愚形テンパイ -1");
+      expectedMemos.push("愚形テンパイは良形より押し価値が下がる。打点と残り筋を見るにゃ。");
+    }
+  }else if(shanten === "one"){
+    if(iishantenShape === "complete"){
+      total += 2;
+      reasons.push("完全1シャンテン +2");
+      expectedMemos.push("完全1シャンテンは受け入れが強い。ただし低打点・終盤なら過信しないにゃ。");
+    }else if(iishantenShape === "kuttsuki"){
+      total += 2;
+      reasons.push("くっつき良形 +2");
+      expectedMemos.push("良い浮き牌のくっつきは両面両面以上に広いことがあるにゃ。");
+    }else if(iishantenShape === "ryanmen2"){
+      total += 1;
+      reasons.push("両面両面以上 +1");
+      expectedMemos.push("1シャンテンで押す最低条件は基本的に両面両面以上にゃ。");
+    }else if(iishantenShape === "ryankan"){
+      reasons.push("リャンカン・最終愚形あり ±0");
+      expectedMemos.push("受け入れは広くても最終愚形率が高い形は別要素で判断にゃ。");
+    }else if(iishantenShape === "gukei"){
+      total -= 1;
+      reasons.push("愚形含み -1");
+      expectedMemos.push("愚形含み1シャンテンは押しすぎ注意にゃ。");
+    }else{
+      total -= 2;
+      reasons.push("愚形濃厚 -2");
+      expectedMemos.push("最終待ちが愚形濃厚なら、相当な打点や序盤補正がないと厳しいにゃ。");
+    }
+  }else{
+    // 2シャンテン以下では既存の形だけ軽く見る
+    if(shape === "good"){
+      total += 1;
+      reasons.push("形は良い +1");
+    }else{
+      total -= 1;
+      reasons.push("形が悪い -1");
+    }
+  }
+
+  // 打点
   if(value === "low"){
-    reasons.push("1000～2000 ±0");
-    expectedMemos.push("1000～2000は状況次第。安全度とシャンテン数を優先するにゃ。");
+    if(shanten === "tenpai" && tenpaiShape === "ryanmen"){
+      total += 1;
+      reasons.push("低打点だが両面テンパイ +1");
+      expectedMemos.push("低打点でも両面テンパイなら押し価値は残るにゃ。");
+    }else{
+      total -= 1;
+      reasons.push("1000〜2000 -1");
+    }
   }else if(value === "middle"){
     total += 1;
-    reasons.push("3900～5200 +1");
-    expectedMemos.push("3900～5200は十分押せる打点。形が良ければ前向きにゃ。");
+    reasons.push("3900〜5200 +1");
   }else{
     total += 2;
     reasons.push("満貫以上 +2");
     expectedMemos.push("満貫以上は放銃リスクを背負う価値が出やすいにゃ。");
   }
 
-  if(shape === "good"){
-    total += 1;
-    reasons.push("良形 +1");
-    expectedMemos.push("良形は和了率が高い。押し判断を後押しするにゃ。");
-  }else{
-    total -= 1;
-    reasons.push("愚形 -1");
-    expectedMemos.push("愚形は和了率が落ちる。打点が低いなら無理しないにゃ。");
-  }
-
+  // 相手の攻撃
   if(threat === "none"){
     total += 3;
     reasons.push("相手からの攻撃なし +3");
-    expectedMemos.push("相手からの攻撃なしは自分の和了率を優先しやすいにゃ。");
   }else if(threat === "riichi"){
     total -= 2;
     reasons.push("リーチ -2");
-    expectedMemos.push("リーチ相手は放銃率と失点期待値が上がるにゃ。");
   }else if(threat === "parent"){
     total -= 3;
     reasons.push("親リーチ -3");
-    expectedMemos.push("親リーチは期待値が大きく下がる。押し材料が弱いなら引くにゃ。");
   }else{
     total -= 2;
     reasons.push("高そうな副露 -2");
-    expectedMemos.push("高そうな副露はリーチ級に警戒。安い手で押す価値は下がるにゃ。");
   }
 
+  // 切る牌危険度
   if(riskLevel === "okay"){
     total += 1;
     reasons.push("通りそうな牌 +1");
-    expectedMemos.push("通りそうな牌なら、手牌価値がある時は押しやすいにゃ。");
   }else if(riskLevel === "danger"){
     total -= 2;
     reasons.push("危険牌 -2");
-    expectedMemos.push("危険牌は放銃率が重い。押すなら打点かテンパイが必要にゃ。");
   }else{
     total -= 3;
     reasons.push("超危険牌 -3");
-    expectedMemos.push("超危険牌は一気に期待値を削る。押し不足より押しすぎ注意にゃ。");
+  }
+
+  // 残り筋
+  if(suji === "many"){
+    total += 1;
+    reasons.push("残り筋多い +1");
+    if(round === "early" && (threat === "riichi" || threat === "parent") && riverInfo === "low"){
+      total += 1;
+      reasons.push("早い読みづらいリーチ＋残り筋多い +1");
+      expectedMemos.push("早い読みづらいリーチは残り筋カウントを重視するにゃ。");
+    }
+  }else if(suji === "few"){
+    total -= 2;
+    reasons.push("残り筋少ない -2");
+    expectedMemos.push("残り筋が少ない時は、同じ無筋でも危険度が跳ね上がるにゃ。");
+  }else{
+    reasons.push("残り筋普通 ±0");
+  }
+
+  // 安牌量
+  if(safe === "enough"){
+    if(shanten !== "tenpai"){
+      total -= 1;
+      reasons.push("安牌十分：引きやすい -1");
+    }else{
+      reasons.push("安牌十分だがテンパイ ±0");
+    }
+  }else if(safe === "few"){
+    reasons.push("安牌少ない ±0");
+  }else{
+    if(shanten === "tenpai"){
+      total += 1;
+      reasons.push("安牌ほぼなし＋テンパイ +1");
+    }else if(shanten === "one"){
+      reasons.push("安牌ほぼなし＋1シャンテン ±0");
+      expectedMemos.push("安牌がないだけでは押しではない。手牌価値で判断するにゃ。");
+    }else{
+      total -= 1;
+      reasons.push("安牌ほぼなしだが2シャンテン以下 -1");
+      expectedMemos.push("安牌なしでも遠い手は苦しいオリ。少しでもマシな牌を探すにゃ。");
+    }
+  }
+
+  // 河情報
+  if(riverInfo === "high" && riskLevel !== "okay"){
+    total -= 1;
+    reasons.push("河情報多い危険牌 -1");
+    expectedMemos.push("ターツ落とし・関連牌がある時は残り筋だけでなく読み補正を入れるにゃ。");
+  }else if(riverInfo === "low"){
+    reasons.push("河情報少ない：残り筋重視");
+  }
+
+  // 副露対応 222 の考え方
+  if(openCount === "two" && (round === "middle" || round === "late") && (shanten === "two" || shanten === "three")){
+    total -= 2;
+    reasons.push("2副露＋中盤以降＋2シャンテン以下 -2");
+    expectedMemos.push("副露対応222。2副露・2段目相当・自分が遠い手なら無筋はかなり止めるにゃ。");
+  }else if(openCount === "three" && shanten !== "tenpai"){
+    total -= 2;
+    reasons.push("3副露以上＋ノーテン -2");
+    expectedMemos.push("3副露はテンパイ率が高い。ノーテンからの無筋はかなり重いにゃ。");
+  }else if(openCount === "one" && round === "late" && (shanten === "two" || shanten === "three")){
+    total -= 1;
+    reasons.push("1副露＋終盤＋遠い手 -1");
+  }
+
+  // 第2攻撃者
+  if(secondAttacker === "parent"){
+    total -= 2;
+    reasons.push("第2攻撃者：親 -2");
+    expectedMemos.push("リーチ者の現物でも、押している親には危ない牌があるにゃ。");
+  }else if(secondAttacker === "child"){
+    total -= 1;
+    reasons.push("第2攻撃者：子 -1");
+  }
+
+  // 開拓プッシュ
+  if(pushTile === "kaitaku" && riskLevel !== "okay"){
+    total += 1;
+    reasons.push("開拓プッシュ +1");
+    expectedMemos.push("どうせ押すなら、通った後に安全牌が増える牌からにゃ。");
+  }else if(pushTile === "blocked"){
+    total -= 1;
+    reasons.push("押しても次が苦しい -1");
+  }
+
+  // 局面補正
+  if(situation === "orasTop"){
+    total -= 2;
+    reasons.push("オーラス・トップ確定優先 -2");
+    coachingComments.push("トップ確定が見えるなら、局収支より順位価値を優先するにゃ。");
+  }else if(situation === "orasLastParent"){
+    total += 2;
+    reasons.push("オーラス・押すしかない +2");
+    coachingComments.push("ラス目親番などは通常より押し条件が緩むにゃ。");
+  }else if(situation === "south"){
+    reasons.push("南場通常 ±0");
+  }
+
+  // 強制に近い補正
+  if((shanten === "two" || shanten === "three") && (threat === "parent" || threat === "riichi") && safe !== "none"){
+    total -= 1;
+    reasons.push("遠い手で攻撃あり：追加引き -1");
+  }
+
+  if(shanten === "tenpai" && tenpaiShape === "ryanmen" && threat !== "parent" && suji !== "few"){
+    total += 1;
+    reasons.push("両面テンパイ基本押し補正 +1");
   }
 
   let judgement = "";
   let risk = "";
 
-  if(total >= 7){
+  if(total >= 8){
     judgement = "🔥 全ツにゃ";
     risk = "3枚以上";
     coachingComments.push("今回は和了率を優先。押し切る価値が高いにゃ。");
-  }else if(total >= 4){
+  }else if(total >= 5){
     judgement = "😼 押しにゃ";
     risk = "2枚くらい";
     coachingComments.push("押し寄り。安全度を見ながら前に出るにゃ。");
-  }else if(total >= 1){
+  }else if(total >= 2){
     judgement = "🐾 やや押し";
     risk = "1〜2枚";
-    coachingComments.push("やや押し。無スジ連打ではなく、押す牌を選ぶにゃ。");
-  }else if(total === 0){
+    coachingComments.push("やや押し。無筋連打ではなく、押す牌を選ぶにゃ。");
+  }else if(total >= 0){
     judgement = "🤔 微妙にゃ";
     risk = "0〜1枚";
     coachingComments.push("境界線。次の牌で押し引きを決め直すにゃ。");
@@ -546,6 +716,9 @@ function calcBattleAwaken(){
   if((shanten === "tenpai" || shanten === "one") && value !== "low" && threat !== "parent" && riskLevel !== "verydanger" && total >= 1){
     pushWarning = "押し不足注意：この条件は降りすぎると長期期待値を落としやすいにゃ。";
   }
+  if(shanten !== "tenpai" && safe === "none"){
+    pushWarning = "安牌がない＝押し、ではないにゃ。手牌価値が足りないなら苦しいオリを選ぶにゃ。";
+  }
 
   applyBattleResult({
     judgement: judgement,
@@ -555,7 +728,7 @@ function calcBattleAwaken(){
     expectedMemos: expectedMemos,
     coachingComments: coachingComments,
     pushWarning: pushWarning,
-    logicVersion: "Awaken v1.0"
+    logicVersion: "Awaken v2.0"
   });
 
   updateDeveloperPanel();

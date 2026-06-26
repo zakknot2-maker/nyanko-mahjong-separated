@@ -206,3 +206,29 @@ body.developer-mode #secret-battle::before{
 .developer-close:active{
     transform:scale(.98);
 }
+
+/* ===== Awaken v2 detailed inputs ===== */
+.developer-only{
+  display:none;
+}
+
+body.developer-mode .developer-only{
+  display:block;
+}
+
+body.developer-mode .awaken-extra{
+  margin:12px 0 14px;
+  padding:12px;
+  border:2px solid #7A5CFF;
+  border-radius:22px;
+  background:linear-gradient(180deg,rgba(22,16,42,.92),rgba(8,8,18,.95));
+  box-shadow:0 4px 0 #26144A,0 0 18px rgba(122,92,255,.20);
+}
+
+body.developer-mode .awaken-note{
+  margin:0 0 10px;
+  color:#DCD3FF;
+  font-size:12px;
+  font-weight:900;
+  line-height:1.5;
+}
