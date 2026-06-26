@@ -547,6 +547,54 @@ summary{
   color:#7A3C28;
 }
 
+/* ピンフ/七対子 チェックボックス */
+.special-checks{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+.check-label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  font-weight:900;
+  font-size:14px;
+  color:var(--theme-main);
+  user-select:none;
+}
+.check-label input[type="checkbox"]{
+  width:20px;
+  height:20px;
+  accent-color:var(--theme-main);
+  cursor:pointer;
+  border-radius:6px;
+  flex:none;
+}
+.check-label small{
+  font-size:10px;
+  font-weight:800;
+  color:var(--theme-muted);
+}
+.special-badge{
+  margin-top:8px;
+  padding:7px 10px;
+  border-radius:12px;
+  background:var(--theme-soft);
+  border:2px dashed var(--theme-shadow);
+  font-size:12px;
+  font-weight:900;
+  color:var(--theme-main);
+}
+
+/* グレーアウト */
+.assist-greyed{
+  opacity:.38;
+  pointer-events:none;
+  user-select:none;
+  transition:opacity .2s ease;
+}
+
 /* スマホ微調整 */
 @media (max-width:390px){
   .title-wrap{max-width:218px}
