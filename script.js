@@ -411,6 +411,39 @@ function getBattleValue(id, fallback){
   return el ? el.value : fallback;
 }
 
+
+function setAwakenFieldVisible(name, visible){
+  document.querySelectorAll('[data-awaken-field="' + name + '"]').forEach(el => {
+    el.classList.toggle('awaken-hidden', !visible);
+  });
+}
+
+function updateAwakenVisibility(){
+  if(!document.body.classList.contains("developer-mode")) return;
+
+  const shanten = getBattleValue("aw-battle-shanten", getBattleValue("battle-shanten", "tenpai"));
+  const threat = getBattleValue("aw-battle-threat", getBattleValue("battle-threat", "none"));
+  const riskLevel = getBattleValue("aw-battle-risklevel", getBattleValue("battle-risklevel", "okay"));
+
+  const hasAttack = threat !== "none";
+  const isRiichi = threat === "riichi" || threat === "parent";
+  const isOpen = threat === "open";
+  const needsRisk = hasAttack;
+  const riskyTile = riskLevel !== "okay";
+
+  setAwakenFieldVisible("tenpaiShape", shanten === "tenpai");
+  setAwakenFieldVisible("iishantenShape", shanten === "one");
+  setAwakenFieldVisible("shape", shanten === "two" || shanten === "three");
+
+  setAwakenFieldVisible("riskLevel", needsRisk);
+  setAwakenFieldVisible("safe", needsRisk);
+  setAwakenFieldVisible("suji", isRiichi && riskyTile);
+  setAwakenFieldVisible("riverInfo", isRiichi && riskyTile);
+  setAwakenFieldVisible("openCount", isOpen);
+  setAwakenFieldVisible("secondAttacker", hasAttack);
+  setAwakenFieldVisible("pushTile", hasAttack && riskyTile);
+}
+
 function calcBattleAwaken(){
   let total = 0;
   let reasons = [];
@@ -418,24 +451,26 @@ function calcBattleAwaken(){
   let coachingComments = [];
   let pushWarning = "";
 
-  let round = document.getElementById("battle-round").value;
-  let rank = document.getElementById("battle-rank").value;
-  let shanten = document.getElementById("battle-shanten").value;
-  let value = document.getElementById("battle-value").value;
-  let shape = document.getElementById("battle-shape").value;
-  let threat = document.getElementById("battle-threat").value;
-  let riskLevel = document.getElementById("battle-risklevel").value;
+  updateAwakenVisibility();
 
-  // 覚醒版限定の詳細入力。通常版 calcBattleNormal では一切使わない。
-  let tenpaiShape = getBattleValue("battle-tenpai-shape", shape === "good" ? "ryanmen" : "gukei");
-  let iishantenShape = getBattleValue("battle-iishanten-shape", "ryanmen2");
-  let suji = getBattleValue("battle-suji", "normal");
-  let safe = getBattleValue("battle-safe", "enough");
-  let riverInfo = getBattleValue("battle-riverinfo", "normal");
-  let openCount = getBattleValue("battle-open-count", "none");
-  let secondAttacker = getBattleValue("battle-second-attacker", "none");
-  let pushTile = getBattleValue("battle-push-tile", "normal");
-  let situation = getBattleValue("battle-situation", "flat");
+  // 覚醒版専用UIから読む。通常版の入力欄はDeveloper Modeでは非表示。
+  let round = getBattleValue("aw-battle-round", getBattleValue("battle-round", "middle"));
+  let rank = getBattleValue("aw-battle-rank", getBattleValue("battle-rank", "2"));
+  let shanten = getBattleValue("aw-battle-shanten", getBattleValue("battle-shanten", "tenpai"));
+  let value = getBattleValue("aw-battle-value", getBattleValue("battle-value", "middle"));
+  let shape = getBattleValue("aw-battle-shape", getBattleValue("battle-shape", "good"));
+  let threat = getBattleValue("aw-battle-threat", getBattleValue("battle-threat", "none"));
+  let riskLevel = getBattleValue("aw-battle-risklevel", getBattleValue("battle-risklevel", "okay"));
+
+  let tenpaiShape = getBattleValue("aw-battle-tenpai-shape", shape === "good" ? "ryanmen" : "gukei");
+  let iishantenShape = getBattleValue("aw-battle-iishanten-shape", "ryanmen2");
+  let suji = getBattleValue("aw-battle-suji", "normal");
+  let safe = getBattleValue("aw-battle-safe", "enough");
+  let riverInfo = getBattleValue("aw-battle-riverinfo", "normal");
+  let openCount = getBattleValue("aw-battle-open-count", "none");
+  let secondAttacker = getBattleValue("aw-battle-second-attacker", "none");
+  let pushTile = getBattleValue("aw-battle-push-tile", "normal");
+  let situation = getBattleValue("aw-battle-situation", "flat");
 
   // 巡目
   if(round === "early"){
