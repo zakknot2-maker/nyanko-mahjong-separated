@@ -36,6 +36,13 @@
 
     <div class="row normal-battle-panel">
       <div class="input-box">
+        <label>待ち・形 🐾</label>
+        <select id="battle-shape" onchange="calcBattle()">
+          <option value="good" selected>良形</option>
+          <option value="bad">愚形</option>
+        </select>
+      </div>
+      <div class="input-box">
         <label>シャンテン 🐱</label>
         <select id="battle-shanten" onchange="calcBattle()">
           <option value="tenpai" selected>テンパイ</option>
@@ -44,11 +51,24 @@
           <option value="three">3シャンテン以上</option>
         </select>
       </div>
+    </div>
+
+    <div class="row normal-battle-panel">
       <div class="input-box">
-        <label>待ち・形 🐾</label>
-        <select id="battle-shape" onchange="calcBattle()">
-          <option value="good" selected>良形</option>
-          <option value="bad">愚形</option>
+        <label>巡目 🀄</label>
+        <select id="battle-round" onchange="calcBattle()">
+          <option value="early">序盤（1〜6巡）</option>
+          <option value="middle" selected>中盤（7〜12巡）</option>
+          <option value="late">終盤（13巡〜）</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>着順状況 🐾</label>
+        <select id="battle-rank" onchange="calcBattle()">
+          <option value="1">1着目</option>
+          <option value="2" selected>2着目</option>
+          <option value="3">3着目</option>
+          <option value="4">4着目</option>
         </select>
       </div>
     </div>
@@ -68,37 +88,17 @@
           <option value="none" selected>なし</option>
           <option value="riichi">リーチ</option>
           <option value="parent">親リーチ</option>
-          <option value="open">仕掛け（テンパイっぽい）</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row normal-battle-panel">
-      <div class="input-box">
-        <label>切る牌 🀄</label>
-        <select id="battle-risklevel" onchange="calcBattle()">
-          <option value="okay" selected>通りそうな牌</option>
-          <option value="danger">危険牌</option>
-          <option value="verydanger">超危険牌</option>
-        </select>
-      </div>
-      <div class="input-box">
-        <label>巡目 🀄</label>
-        <select id="battle-round" onchange="calcBattle()">
-          <option value="early">序盤（1〜6巡）</option>
-          <option value="middle" selected>中盤（7〜12巡）</option>
-          <option value="late">終盤（13巡〜）</option>
+          <option value="open">高そうな仕掛け</option>
         </select>
       </div>
     </div>
 
     <div class="input-box normal-battle-panel">
-      <label>着順状況 🐾</label>
-      <select id="battle-rank" onchange="calcBattle()">
-        <option value="1">1着目</option>
-        <option value="2" selected>2着目</option>
-        <option value="3">3着目</option>
-        <option value="4">4着目</option>
+      <label>切る牌 🀄</label>
+      <select id="battle-risklevel" onchange="calcBattle()">
+        <option value="okay" selected>通りそうな牌</option>
+        <option value="danger">危険牌</option>
+        <option value="verydanger">超危険牌</option>
       </select>
     </div>
 
@@ -106,19 +106,15 @@
       <div class="awaken-note">覚醒版専用。不要な項目は条件に応じて自動で隠れるにゃ。</div>
 
       <div class="awaken-section">
-        <div class="awaken-section-title">1. 現在位置</div>
+        <div class="awaken-section-title">1. 局面</div>
         <div class="awaken-grid">
-          <div class="awaken-field awaken-wide" data-awaken-field="position">
-            <label>現在位置</label>
-            <select id="aw-battle-position" onchange="calcBattle()">
-              <option value="east1">東場 1着</option>
-              <option value="east2" selected>東場 2着</option>
-              <option value="east3">東場 3着</option>
-              <option value="east4">東場 4着</option>
-              <option value="south1">南場 1着</option>
-              <option value="south2">南場 2着</option>
-              <option value="south3">南場 3着</option>
-              <option value="south4">南場 4着</option>
+          <div class="awaken-field" data-awaken-field="rank">
+            <label>着順</label>
+            <select id="aw-battle-rank" onchange="calcBattle()">
+              <option value="1">1着目</option>
+              <option value="2" selected>2着目</option>
+              <option value="3">3着目</option>
+              <option value="4">4着目</option>
             </select>
           </div>
           <div class="awaken-field" data-awaken-field="round">
@@ -162,66 +158,27 @@
               <option value="gukeiStrong">愚形濃厚</option>
             </select>
           </div>
-          <div class="awaken-field" data-awaken-field="shape">
-            <label>2シャンテン以下の形</label>
-            <select id="aw-battle-shape" onchange="calcBattle()">
-              <option value="good" selected>形は良い</option>
-              <option value="bad">形が悪い</option>
-            </select>
-          </div>
           <div class="awaken-field" data-awaken-field="value">
             <label>打点</label>
             <select id="aw-battle-value" onchange="calcBattle()">
               <option value="low">1000〜2000</option>
               <option value="middle" selected>3900〜5200</option>
-              <option value="mangan">満貫以上</option>
+              <option value="mangan">満貫（8000〜）</option>
+              <option value="haneman">跳満以上（12000〜）</option>
             </select>
           </div>
         </div>
       </div>
 
       <div class="awaken-section">
-        <div class="awaken-section-title">3. 相手と切る牌</div>
+        <div class="awaken-section-title">3. 相手</div>
         <div class="awaken-grid">
           <div class="awaken-field awaken-wide" data-awaken-field="threat">
             <label>相手の攻撃</label>
             <select id="aw-battle-threat" onchange="calcBattle()">
-              <option value="none" selected>なし</option>
-              <option value="riichi">リーチ</option>
+              <option value="riichi" selected>リーチ</option>
               <option value="parent">親リーチ</option>
               <option value="open">高そうな仕掛け</option>
-            </select>
-          </div>
-          <div class="awaken-field" data-awaken-field="riskLevel">
-            <label>切る牌</label>
-            <select id="aw-battle-risklevel" onchange="calcBattle()">
-              <option value="okay" selected>通りそうな牌</option>
-              <option value="danger">危険牌</option>
-              <option value="verydanger">超危険牌</option>
-            </select>
-          </div>
-          <div class="awaken-field" data-awaken-field="safe">
-            <label>安牌</label>
-            <select id="aw-battle-safe" onchange="calcBattle()">
-              <option value="enough" selected>十分ある</option>
-              <option value="few">少ない</option>
-              <option value="none">ほぼない</option>
-            </select>
-          </div>
-          <div class="awaken-field" data-awaken-field="suji">
-            <label>残り筋</label>
-            <select id="aw-battle-suji" onchange="calcBattle()">
-              <option value="many" selected>多い</option>
-              <option value="normal">普通</option>
-              <option value="few">少ない</option>
-            </select>
-          </div>
-          <div class="awaken-field" data-awaken-field="riverInfo">
-            <label>河情報</label>
-            <select id="aw-battle-riverinfo" onchange="calcBattle()">
-              <option value="low" selected>少ない</option>
-              <option value="normal">普通</option>
-              <option value="high">多い</option>
             </select>
           </div>
           <div class="awaken-field" data-awaken-field="openCount">
@@ -241,12 +198,43 @@
               <option value="parent">親が押し</option>
             </select>
           </div>
+        </div>
+      </div>
+
+      <div class="awaken-section">
+        <div class="awaken-section-title">4. 切る牌</div>
+        <div class="awaken-grid">
+          <div class="awaken-field awaken-wide" data-awaken-field="riskLevel">
+            <label>危険度</label>
+            <select id="aw-battle-risklevel" onchange="calcBattle()">
+              <option value="okay" selected>現物・筋</option>
+              <option value="safe19">無筋（1・9・字牌周辺）</option>
+              <option value="danger">無筋（2・3・7・8）</option>
+              <option value="verydanger">無筋（4・5・6・またぎ）</option>
+            </select>
+          </div>
+          <div class="awaken-field" data-awaken-field="suji">
+            <label>残り筋</label>
+            <select id="aw-battle-suji" onchange="calcBattle()">
+              <option value="many" selected>多い</option>
+              <option value="normal">普通</option>
+              <option value="few">少ない</option>
+            </select>
+          </div>
+          <div class="awaken-field" data-awaken-field="safe">
+            <label>安牌</label>
+            <select id="aw-battle-safe" onchange="calcBattle()">
+              <option value="enough" selected>十分ある</option>
+              <option value="few">少ない</option>
+              <option value="none">ほぼない</option>
+            </select>
+          </div>
           <div class="awaken-field" data-awaken-field="pushTile">
-            <label>押す牌</label>
+            <label>押す牌の性質</label>
             <select id="aw-battle-push-tile" onchange="calcBattle()">
               <option value="normal" selected>普通</option>
-              <option value="kaitaku">開拓できる</option>
-              <option value="blocked">次が苦しい</option>
+              <option value="kaitaku">通ると安全牌が増える</option>
+              <option value="blocked">通っても次で詰まる</option>
             </select>
           </div>
         </div>
