@@ -36,13 +36,6 @@
 
     <div class="row normal-battle-panel">
       <div class="input-box">
-        <label>待ち・形 🐾</label>
-        <select id="battle-shape" onchange="calcBattle()">
-          <option value="good" selected>良形</option>
-          <option value="bad">愚形</option>
-        </select>
-      </div>
-      <div class="input-box">
         <label>シャンテン 🐱</label>
         <select id="battle-shanten" onchange="calcBattle()">
           <option value="tenpai" selected>テンパイ</option>
@@ -51,24 +44,11 @@
           <option value="three">3シャンテン以上</option>
         </select>
       </div>
-    </div>
-
-    <div class="row normal-battle-panel">
       <div class="input-box">
-        <label>巡目 🀄</label>
-        <select id="battle-round" onchange="calcBattle()">
-          <option value="early">序盤（1〜6巡）</option>
-          <option value="middle" selected>中盤（7〜12巡）</option>
-          <option value="late">終盤（13巡〜）</option>
-        </select>
-      </div>
-      <div class="input-box">
-        <label>着順状況 🐾</label>
-        <select id="battle-rank" onchange="calcBattle()">
-          <option value="1">1着目</option>
-          <option value="2" selected>2着目</option>
-          <option value="3">3着目</option>
-          <option value="4">4着目</option>
+        <label>待ち・形 🐾</label>
+        <select id="battle-shape" onchange="calcBattle()">
+          <option value="good" selected>良形</option>
+          <option value="bad">愚形</option>
         </select>
       </div>
     </div>
@@ -93,12 +73,32 @@
       </div>
     </div>
 
+    <div class="row normal-battle-panel">
+      <div class="input-box">
+        <label>切る牌 🀄</label>
+        <select id="battle-risklevel" onchange="calcBattle()">
+          <option value="okay" selected>通りそうな牌</option>
+          <option value="danger">危険牌</option>
+          <option value="verydanger">超危険牌</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>巡目 🀄</label>
+        <select id="battle-round" onchange="calcBattle()">
+          <option value="early">序盤（1〜6巡）</option>
+          <option value="middle" selected>中盤（7〜12巡）</option>
+          <option value="late">終盤（13巡〜）</option>
+        </select>
+      </div>
+    </div>
+
     <div class="input-box normal-battle-panel">
-      <label>切る牌 🀄</label>
-      <select id="battle-risklevel" onchange="calcBattle()">
-        <option value="okay" selected>通りそうな牌</option>
-        <option value="danger">危険牌</option>
-        <option value="verydanger">超危険牌</option>
+      <label>着順状況 🐾</label>
+      <select id="battle-rank" onchange="calcBattle()">
+        <option value="1">1着目</option>
+        <option value="2" selected>2着目</option>
+        <option value="3">3着目</option>
+        <option value="4">4着目</option>
       </select>
     </div>
 
