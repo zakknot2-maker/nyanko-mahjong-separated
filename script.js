@@ -127,13 +127,93 @@ document.getElementById("quick-comment").innerText =
   fu===25 ? "七対子は25符固定、ここ大事にゃ 🐾" :
   han>=5 ? randomComment("quick") :
   randomComment("quick");}
-function calcAssistFu(){let special=document.getElementById("assist-special").value;if(special==="chitoi")return{fu:25,memo:"七対子は25符固定にゃ。"};if(special==="pinfuTsumo")return{fu:20,memo:"平和ツモは20符固定にゃ。"};let raw=20,memo=[];let win=document.getElementById("assist-win").value;if(win==="closedRon"){raw+=10;memo.push("メンゼンロン +10")}if(win==="tsumo"){raw+=2;memo.push("ツモ +2")}let head=parseInt(document.getElementById("assist-head").value);if(head>0){raw+=head;memo.push((head===4?"ダブ風頭":"役牌頭")+" +"+head)}let wait=parseInt(document.getElementById("assist-wait").value);if(wait>0){raw+=wait;memo.push("愚形/単騎 +2")}document.querySelectorAll(".assist-set").forEach(el=>{let count=parseInt(el.value),fu=parseInt(el.dataset.fu);if(count>0){raw+=count*fu;memo.push(count+"個×"+fu+"符")}});let rounded=ceil10(raw);return{fu:rounded,memo:(memo.length?memo.join(" / "):"基本符のみ")+" → "+raw+"符 → "+rounded+"符"}}
-function calcAssist(){let han=parseInt(document.getElementById("assist-han").value);let f=calcAssistFu();document.getElementById("assist-fu").innerText="🐾 "+f.fu+"符";setPoint("assist",scoreFromFuHan(f.fu,han));document.getElementById("assist-note").innerText=f.memo;setCommentCatByName("assist-cat", "キリッ猫");
-document.getElementById("assist-comment").innerText =
-  f.fu===20 ? "平和ツモは20符固定にゃ。きれいな形にゃ ✨" :
-  f.fu===25 ? "七対子は25符固定にゃ。迷わないにゃ 🐾" :
-  f.fu>=50 ? "重めの手にゃ。符が乗ってるにゃ 🔥" :
-  randomComment("assist");}
+function getAssistSpecial(){
+  const pinfu  = document.getElementById("assist-pinfu").checked;
+  const chitoi = document.getElementById("assist-chitoi").checked;
+  if(chitoi) return "chitoi";
+  if(pinfu)  return "pinfu";
+  return "none";
+}
+
+function onSpecialCheck(type){
+  // 排他：どちらかにチェックを入れたらもう一方を外す
+  if(type === "pinfu" && document.getElementById("assist-pinfu").checked){
+    document.getElementById("assist-chitoi").checked = false;
+  }
+  if(type === "chitoi" && document.getElementById("assist-chitoi").checked){
+    document.getElementById("assist-pinfu").checked = false;
+  }
+  updateAssistSpecialUI();
+  calcAssist();
+}
+
+function updateAssistSpecialUI(){
+  const special = getAssistSpecial();
+  const allFields = document.getElementById("assist-detail-fields");
+  const subFields = document.getElementById("assist-detail-sub");
+  const badge     = document.getElementById("assist-special-badge");
+
+  // まずリセット
+  allFields.classList.remove("assist-greyed");
+  subFields.classList.remove("assist-greyed");
+
+  if(special === "chitoi"){
+    // 七対子：あがり方ごとグレーアウト
+    allFields.classList.add("assist-greyed");
+    badge.style.display = "block";
+    badge.textContent   = "七対子：25符固定にゃ。下の項目は使わないにゃ 🐾";
+  }else if(special === "pinfu"){
+    // ピンフ：あがり方は使う、頭・待ち・刻子カンをグレーアウト
+    subFields.classList.add("assist-greyed");
+    badge.style.display = "block";
+    const win = document.getElementById("assist-win").value;
+    badge.textContent = win === "tsumo"
+      ? "ピンフツモ：20符固定にゃ。あがり方だけ選んでにゃ 🐾"
+      : "ピンフロン：30符固定にゃ。あがり方だけ選んでにゃ 🐾";
+  }else{
+    badge.style.display = "none";
+  }
+}
+
+function calcAssistFu(){
+  const special = getAssistSpecial();
+  if(special === "chitoi") return {fu:25, memo:"七対子：25符固定にゃ。"};
+  if(special === "pinfu"){
+    const win = document.getElementById("assist-win").value;
+    if(win === "tsumo") return {fu:20, memo:"ピンフツモ：20符固定にゃ。"};
+    // ロン・鳴きロン → 30符
+    return {fu:30, memo:"ピンフロン：30符固定にゃ（メンゼンロン +10 で30符）。"};
+  }
+  let raw=20,memo=[];
+  let win=document.getElementById("assist-win").value;
+  if(win==="closedRon"){raw+=10;memo.push("メンゼンロン +10")}
+  if(win==="tsumo"){raw+=2;memo.push("ツモ +2")}
+  let head=parseInt(document.getElementById("assist-head").value);
+  if(head>0){raw+=head;memo.push((head===4?"ダブ風頭":"役牌頭")+" +"+head)}
+  let wait=parseInt(document.getElementById("assist-wait").value);
+  if(wait>0){raw+=wait;memo.push("愚形/単騎 +2")}
+  document.querySelectorAll(".assist-set").forEach(el=>{
+    let count=parseInt(el.value),fu=parseInt(el.dataset.fu);
+    if(count>0){raw+=count*fu;memo.push(count+"個×"+fu+"符")}
+  });
+  let rounded=ceil10(raw);
+  return{fu:rounded,memo:"基本20符"+(memo.length?" / "+memo.join(" / "):"")+" → "+raw+"符 → 切り上げ → "+rounded+"符"};
+}
+
+function calcAssist(){
+  updateAssistSpecialUI();
+  let han=parseInt(document.getElementById("assist-han").value);
+  let f=calcAssistFu();
+  document.getElementById("assist-fu").innerText="🐾 "+f.fu+"符";
+  setPoint("assist",scoreFromFuHan(f.fu,han));
+  document.getElementById("assist-note").innerText=f.memo;
+  setCommentCatByName("assist-cat", "キリッ猫");
+  document.getElementById("assist-comment").innerText =
+    f.fu===20 ? "ピンフツモは20符固定にゃ。きれいな形にゃ ✨" :
+    f.fu===25 ? "七対子は25符固定にゃ。迷わないにゃ 🐾" :
+    f.fu>=50  ? "重めの手にゃ。符が乗ってるにゃ 🔥" :
+    randomComment("assist");
+}
 const ronChild=[{name:"1000ロン",point:1000},{name:"2000ロン",point:2000},{name:"3900ロン",point:3900},{name:"5200ロン",point:5200},{name:"満貫ロン",point:8000},{name:"跳満ロン",point:12000},{name:"倍満ロン",point:16000},{name:"三倍満ロン",point:24000},{name:"役満ロン",point:32000}];
 const ronParent=[{name:"1500ロン",point:1500},{name:"2900ロン",point:2900},{name:"5800ロン",point:5800},{name:"満貫ロン",point:12000},{name:"跳満ロン",point:18000},{name:"倍満ロン",point:24000},{name:"三倍満ロン",point:36000},{name:"役満ロン",point:48000}];
 const tsumoChild=[{name:"500 / 1000ツモ",gain:2000,childPay:500,parentPay:1000},{name:"1000 / 2000ツモ",gain:4000,childPay:1000,parentPay:2000},{name:"1300 / 2600ツモ",gain:5200,childPay:1300,parentPay:2600},{name:"2000 / 4000ツモ",gain:8000,childPay:2000,parentPay:4000},{name:"3000 / 6000ツモ",gain:12000,childPay:3000,parentPay:6000},{name:"4000 / 8000ツモ",gain:16000,childPay:4000,parentPay:8000},{name:"6000 / 12000ツモ",gain:24000,childPay:6000,parentPay:12000},{name:"8000 / 16000ツモ",gain:32000,childPay:8000,parentPay:16000}];
@@ -289,19 +369,18 @@ function calcBattleNormal(){
     total += 3;
     reasons.push("テンパイ +3");
   }else if(shanten === "one"){
-    total += 1;
-    reasons.push("1シャンテン +1");
+    reasons.push("1シャンテン ±0");
   }else if(shanten === "two"){
-    total -= 2;
-    reasons.push("2シャンテン -2");
+    total -= 3;
+    reasons.push("2シャンテン -3");
   }else{
     total -= 4;
     reasons.push("3シャンテン以上 -4");
   }
 
   if(value === "low"){
-    total -= 1;
-    reasons.push("1000～2000 -1");
+    total -= 2;
+    reasons.push("1000～2000 -2");
   }else if(value === "mangan"){
     total += 2;
     reasons.push("満貫以上 +2");
@@ -324,8 +403,8 @@ function calcBattleNormal(){
     total -= 3;
     reasons.push("親リーチ -3");
   }else if(threat === "open"){
-    total -= 2;
-    reasons.push("高そうな仕掛け -2");
+    total -= 1;
+    reasons.push("仕掛け（テンパイっぽい） -1");
   }else{
     reasons.push("相手攻撃なし 基準");
   }
