@@ -183,6 +183,7 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
       idx = clamp(idx);
       currentIndex = idx;
       sel.selectedIndex = idx;
+      sel.value = options[idx].value;
       sel.dispatchEvent(new Event('change'));
       list.querySelectorAll('.drum-item[data-index]').forEach(el => {
         el.classList.toggle('selected', parseInt(el.dataset.index) === idx);
