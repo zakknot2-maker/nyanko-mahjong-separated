@@ -251,10 +251,12 @@ function buildDrumPicker(containerId, defKey, onChangeCb) {
 
 // PADDING行分オフセットを加味してtranslateYを計算
 // index → translateY変換
-// リスト先頭はダミー行1個。drum-listのtop=0の状態でダミー行が0px位置にあり、
-// 選択窓はtop:36px（=ITEM_H*1）なので、index=0のとき translateY(0) で正しく合う。
+// リストは [ダミー, 値0, 値1, ...] の順。
+// drum-listのtop:0の状態でダミー行がtop:0px、値0が36px（選択窓位置）にある。
+// translateY(0) → ダミー行が選択窓に入ってしまう。
+// translateY(+ITEM_H) → 値0（index=0）が選択窓に入る。
 function idxToY(index) {
-  return -index * ITEM_H;
+  return (PADDING - index) * ITEM_H;
 }
 
 function setPickerIndex(defKey, newIndex, animate) {
