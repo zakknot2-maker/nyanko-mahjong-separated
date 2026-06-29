@@ -677,17 +677,15 @@ summary{
   cursor:grab;
   user-select:none;
   -webkit-user-select:none;
-  touch-action:pan-y;
+  touch-action:none;
 }
 .drum-picker:active{ cursor:grabbing; }
 
-/* スクロールするリスト：z-index:2でフェードより前面 */
+/* スクロールリスト */
 .drum-list{
   position:absolute;
-  left:0; right:0;
-  top:0;
-  z-index:2;
-  will-change:transform;
+  left:0; right:0; top:0;
+  z-index:1;
 }
 
 .drum-item{
@@ -700,41 +698,40 @@ summary{
   color:#bbb;
   pointer-events:none;
 }
-
 .drum-item.selected{
   color:var(--theme-main);
   font-size:16px;
 }
 
-/* 選択ハイライト帯：z-index:1（リストの後ろ） */
-.drum-picker::before{
-  content:"";
+/* ハイライト帯（最背面 z-index:0） */
+.drum-highlight{
   position:absolute;
-  left:4px; right:4px;
+  left:6px; right:6px;
   top:50%;
   transform:translateY(-50%);
   height:32px;
   background:var(--theme-bg1);
-  border-radius:8px;
   border:1.5px solid var(--theme-shadow);
+  border-radius:8px;
+  z-index:0;
   pointer-events:none;
-  z-index:1;
 }
 
-/* 上下フェード：z-index:3でリストの前面 */
-.drum-picker::after{
-  content:"";
+/* 上下フェード（最前面 z-index:2） */
+.drum-fade{
   position:absolute;
-  inset:0;
-  background:
-    linear-gradient(180deg,
-      rgba(255,255,255,.88) 0%,
-      rgba(255,255,255,.0) 28%,
-      rgba(255,255,255,.0) 72%,
-      rgba(255,255,255,.88) 100%
-    );
+  left:0; right:0;
+  height:32px;
   pointer-events:none;
-  z-index:3;
+  z-index:2;
+}
+.drum-fade-top{
+  top:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.0) 100%);
+}
+.drum-fade-bot{
+  bottom:0;
+  background:linear-gradient(0deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.0) 100%);
 }
 
 @media (max-width:390px){
@@ -743,7 +740,7 @@ summary{
   .drum-picker{ height:88px; }
   .drum-item{ height:29px; font-size:13px; }
   .drum-item.selected{ font-size:15px; }
-  .drum-picker::before{ height:29px; }
+  .drum-highlight{ height:29px; }
 }
 
 /* グレーアウト */
