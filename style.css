@@ -587,6 +587,69 @@ summary{
   color:var(--theme-main);
 }
 
+/* ===== 早いネコ：ロン／ツモ 2列グリッド ===== */
+.quick-dual-grid{
+  display:grid;
+  grid-template-columns:1fr 1px 1fr;
+  gap:0 10px;
+  margin-bottom:10px;
+}
+
+.quick-col{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* 列ヘッダー */
+.quick-col-head{
+  font-size:13px;
+  font-weight:900;
+  color:var(--theme-main);
+  text-align:center;
+  padding:5px 0 2px;
+  border-bottom:2px solid var(--theme-shadow);
+  margin-bottom:2px;
+}
+
+/* 各列のinput-box：余白をタイトに */
+.quick-col-box{
+  margin-bottom:0;
+  padding:8px 10px;
+  box-shadow:0 3px 0 var(--theme-shadow);
+}
+
+.quick-col-box label{
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.quick-col-box select{
+  padding:8px 10px;
+  font-size:14px;
+}
+
+/* 縦区切り線 */
+.quick-divider{
+  background:var(--theme-shadow);
+  border-radius:999px;
+  align-self:stretch;
+  margin:4px 0;
+}
+
+@media (max-width:390px){
+  .quick-col-box{
+    padding:7px 8px;
+  }
+  .quick-col-box select{
+    font-size:13px;
+    padding:7px 8px;
+  }
+  .quick-col-head{
+    font-size:12px;
+  }
+}
+
 /* グレーアウト */
 .assist-greyed{
   opacity:.38;

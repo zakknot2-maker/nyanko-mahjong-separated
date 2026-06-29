@@ -122,11 +122,39 @@ function ceil10(n){return Math.ceil(n/10)*10}
 function fmt(n){return Number(n).toLocaleString()}
 function scoreFromFuHan(fu,han){let base;if(han>=13)base=8000;else if(han>=11)base=6000;else if(han>=8)base=4000;else if(han>=6)base=3000;else if(han>=5)base=2000;else{base=fu*Math.pow(2,han+2);if(base>=2000||(han===4&&fu>=30)||(han===3&&fu>=60))base=2000;}let koRon=ceil100(base*4),oyaRon=ceil100(base*6),koTsumoKo=ceil100(base),koTsumoOya=ceil100(base*2),oyaTsumo=ceil100(base*2);if(fu===25&&han===2){koRon=1600;oyaRon=2400;koTsumoKo=400;koTsumoOya=800;oyaTsumo=800;}return{koRon,oyaRon,koTsumoKo,koTsumoOya,oyaTsumo}}
 function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText="🐾 "+fmt(s.koRon)+" 点";document.getElementById(prefix+"-ko-tsumo").innerText="🐈 "+fmt(s.koTsumoKo)+" / "+fmt(s.koTsumoOya);document.getElementById(prefix+"-oya-ron").innerText="👑 "+fmt(s.oyaRon)+" 点";document.getElementById(prefix+"-oya-tsumo").innerText="🐟 "+fmt(s.oyaTsumo)+" ALL";}
-function calcQuick(){let han=parseInt(document.getElementById("quick-han").value),fu=parseInt(document.getElementById("quick-fu").value);if((han===1&&fu===20)||(han===1&&fu===25)){["quick-ko-ron","quick-ko-tsumo","quick-oya-ron","quick-oya-tsumo"].forEach(id=>document.getElementById(id).innerText="-");return;}setPoint("quick",scoreFromFuHan(fu,han));setCommentCatByName("quick-cat", "ニンマリ猫");
-document.getElementById("quick-comment").innerText =
-  fu===25 ? "七対子は25符固定、ここ大事にゃ 🐾" :
-  han>=5 ? randomComment("quick") :
-  randomComment("quick");}
+function calcQuick(){
+  const ronHan  = parseInt(document.getElementById("quick-ron-han").value);
+  const ronFu   = parseInt(document.getElementById("quick-ron-fu").value);
+  const tsumoHan = parseInt(document.getElementById("quick-tsumo-han").value);
+  const tsumoFu  = parseInt(document.getElementById("quick-tsumo-fu").value);
+
+  // ロン系（子ロン・親ロン）
+  const invalid_ron = (ronHan === 1 && (ronFu === 20 || ronFu === 25));
+  if(invalid_ron){
+    document.getElementById("quick-ko-ron").innerText  = "-";
+    document.getElementById("quick-oya-ron").innerText = "-";
+  }else{
+    const r = scoreFromFuHan(ronFu, ronHan);
+    document.getElementById("quick-ko-ron").innerText  = "🐾 " + fmt(r.koRon)  + " 点";
+    document.getElementById("quick-oya-ron").innerText = "👑 " + fmt(r.oyaRon) + " 点";
+  }
+
+  // ツモ系（子ツモ・親ツモ）
+  const invalid_tsumo = (tsumoHan === 1 && tsumoFu === 25);
+  if(invalid_tsumo){
+    document.getElementById("quick-ko-tsumo").innerText  = "-";
+    document.getElementById("quick-oya-tsumo").innerText = "-";
+  }else{
+    const t = scoreFromFuHan(tsumoFu, tsumoHan);
+    document.getElementById("quick-ko-tsumo").innerText  = "🐈 " + fmt(t.koTsumoKo) + " / " + fmt(t.koTsumoOya);
+    document.getElementById("quick-oya-tsumo").innerText = "🐟 " + fmt(t.oyaTsumo) + " ALL";
+  }
+
+  setCommentCatByName("quick-cat", "ニンマリ猫");
+  document.getElementById("quick-comment").innerText =
+    (ronFu === 25 || tsumoFu === 25) ? "七対子は25符固定、ここ大事にゃ 🐾" :
+    randomComment("quick");
+}
 function getAssistSpecial(){
   const pinfu  = document.getElementById("assist-pinfu").checked;
   const chitoi = document.getElementById("assist-chitoi").checked;

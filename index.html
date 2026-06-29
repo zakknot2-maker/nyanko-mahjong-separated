@@ -306,27 +306,55 @@
     </section>
 
     <section id="quick" class="tool">
-      <div class="input-box">
-        <label>はんすう 🀄</label>
-        <select id="quick-han" onchange="calcQuick()">
-          <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻（満貫）</option><option value="6">6-7翻（跳満）</option><option value="8">8-10翻（倍満）</option><option value="11">11-12翻（三倍満）</option><option value="13">13翻〜（役満）</option>
-        </select>
-      </div>
-      <div class="input-box">
-        <label>ふすう 🐾</label>
-        <select id="quick-fu" onchange="calcQuick()">
-          <option value="20">20符</option><option value="25">25符（七対子）</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option>
-        </select>
-        <details><summary>🐾 符のざっくり目安</summary><div class="info-box">
-          <p><b>30符：</b>迷ったらここ。ロン平和も30符。</p><p><b>20符：</b>平和ツモ専用。</p><p><b>25符：</b>七対子専用。</p><p><b>40符：</b>役牌ポン、愚形待ち、明刻など。</p><p><b>50符以上：</b>暗刻・カン・役牌複数で重い時。</p>
-        </div></details>
-        <details><summary>📖 符一覧</summary><div class="info-box">
-          <p><b>基本符：</b>20符スタート</p><p><b>切り上げ：</b>最後に10符単位へ切り上げ</p><p><b>七対子：</b>25符固定</p><p><b>平和ツモ：</b>20符固定</p><p><b>ロン平和：</b>30符</p><br>
-          <p><b>メンゼンロン：</b>+10</p><p><b>ツモ：</b>+2</p><p><b>役牌頭：</b>+2 / <b>ダブ風頭：</b>+4</p><p><b>愚形待ち：</b>+2</p><br>
-          <p><b>明刻（中張牌）：</b>+2</p><p><b>明刻（ヤオ九・字牌）：</b>+4</p><p><b>暗刻（中張牌）：</b>+4</p><p><b>暗刻（ヤオ九・字牌）：</b>+8</p><br>
-          <p><b>明カン（中張牌）：</b>+8</p><p><b>明カン（ヤオ九・字牌）：</b>+16</p><p><b>暗カン（中張牌）：</b>+16</p><p><b>暗カン（ヤオ九・字牌）：</b>+32</p>
-        </div></details>
-      </div>
+
+      <!-- ロン／ツモ 2列入力 -->
+      <div class="quick-dual-grid">
+
+        <!-- ロン列 -->
+        <div class="quick-col quick-col-ron">
+          <div class="quick-col-head">🀄 ロン</div>
+          <div class="input-box quick-col-box">
+            <label>はんすう</label>
+            <select id="quick-ron-han" onchange="calcQuick()">
+              <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜</option>
+            </select>
+          </div>
+          <div class="input-box quick-col-box">
+            <label>ふすう</label>
+            <select id="quick-ron-fu" onchange="calcQuick()">
+              <option value="20">20符</option><option value="25">25符</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 区切り -->
+        <div class="quick-divider" aria-hidden="true"></div>
+
+        <!-- ツモ列 -->
+        <div class="quick-col quick-col-tsumo">
+          <div class="quick-col-head">🐾 ツモ</div>
+          <div class="input-box quick-col-box">
+            <label>はんすう</label>
+            <select id="quick-tsumo-han" onchange="calcQuick()">
+              <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜</option>
+            </select>
+          </div>
+          <div class="input-box quick-col-box">
+            <label>ふすう</label>
+            <select id="quick-tsumo-fu" onchange="calcQuick()">
+              <option value="20">20符</option><option value="25">25符</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option>
+            </select>
+          </div>
+        </div>
+
+      </div><!-- /.quick-dual-grid -->
+
+      <!-- 符ヒント（折りたたみ） -->
+      <details style="margin-bottom:8px"><summary>🐾 符のざっくり目安</summary><div class="info-box">
+        <p><b>30符：</b>迷ったらここ。ロン平和も30符。</p><p><b>20符：</b>平和ツモ専用。</p><p><b>25符：</b>七対子専用。</p><p><b>40符：</b>役牌ポン、愚形待ち、明刻など。</p><p><b>50符以上：</b>暗刻・カン・役牌複数で重い時。</p>
+      </div></details>
+
+      <!-- 結果（4行は変えない） -->
       <div class="results">
         <div class="result-title">🐱 点数にゃ！</div>
         <div class="result-item"><span class="result-label">🐾 子ロン</span><span class="score" id="quick-ko-ron">-</span></div>
