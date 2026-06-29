@@ -124,6 +124,45 @@ function scoreFromFuHan(fu,han){let base;if(han>=13)base=8000;else if(han>=11)ba
 function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText="🐾 "+fmt(s.koRon)+" 点";document.getElementById(prefix+"-ko-tsumo").innerText="🐈 "+fmt(s.koTsumoKo)+" / "+fmt(s.koTsumoOya);document.getElementById(prefix+"-oya-ron").innerText="👑 "+fmt(s.oyaRon)+" 点";document.getElementById(prefix+"-oya-tsumo").innerText="🐟 "+fmt(s.oyaTsumo)+" ALL";}
 
 
+
+// ===== 補助輪ネコ：セグメント・トグルヘルパー =====
+function assistSeg(field, btn) {
+  const group = btn.closest('.assist-seg-group');
+  group.querySelectorAll('.assist-seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sel = document.getElementById('assist-' + field);
+  if (sel) sel.value = btn.dataset.val;
+  calcAssist();
+}
+
+function assistToggle(field, btn) {
+  const group = btn.closest('.toggle-group');
+  group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sel = document.getElementById('assist-' + field);
+  if (sel) sel.value = btn.dataset.value;
+  calcAssist();
+}
+
+function assistSetSeg(btn) {
+  const group = btn.closest('.assist-seg-group');
+  group.querySelectorAll('.assist-seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  calcAssist();
+}
+
+
+// ===== 条件ネコ：本場・供託セグメント =====
+const condSegState = { honba: 0, kyotaku: 0 };
+
+function condNumSeg(field, btn) {
+  const group = btn.closest('.cond-num-seg');
+  group.querySelectorAll('.cond-num-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  condSegState[field] = parseInt(btn.dataset.val);
+  calcCondition();
+}
+
 // ===== トグルボタン状態管理 =====
 const toggleState = {
   'my-seat':     'child',
@@ -148,8 +187,7 @@ const PICKER_DEFS = {
   'ron-fu':      { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
   'tsumo-han':   { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
   'tsumo-fu':    { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
-  'cond-honba':  { values:[0,1,2,3,4,5,6], labels:['0本場','1本場','2本場','3本場','4本場','5本場','6本場以上'], initIndex:0 },
-  'cond-kyotaku':{ values:[0,1,2,3,4,5,6], labels:['0本','1本','2本','3本','4本','5本','6本以上'], initIndex:0 },
+  'assist-han':  { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻以上','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2, syncId:'assist-han' },
 };
 
 // 状態管理オブジェクト（引き継ぎメモのpickerState）
@@ -161,7 +199,7 @@ Object.keys(PICKER_DEFS).forEach(key => {
 const ITEM_H    = 36; // px
 const PADDING   = 1;  // 上下パディング行数
 
-function buildDrumPicker(containerId, defKey) {
+function buildDrumPicker(containerId, defKey, onChangeCb) {
   const def       = PICKER_DEFS[defKey];
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -290,7 +328,8 @@ function attachDrumEvents(container, defKey) {
       pickerState[defKey].index + fling
     ));
     setPickerIndex(defKey, finalIdx, true);
-    calcQuick();
+    if (onChangeCb) onChangeCb(PICKER_DEFS[defKey].values[finalIdx]);
+    else calcQuick();
   }
 
   // Touch
@@ -321,10 +360,10 @@ function attachDrumEvents(container, defKey) {
     const relY = e.clientY - rect.top;
     if (relY < ITEM_H) {
       setPickerIndex(defKey, pickerState[defKey].index - 1, true);
-      calcQuick();
+      if (onChangeCb) onChangeCb(drumVal(defKey)); else calcQuick();
     } else if (relY >= ITEM_H * 2) {
       setPickerIndex(defKey, pickerState[defKey].index + 1, true);
-      calcQuick();
+      if (onChangeCb) onChangeCb(drumVal(defKey)); else calcQuick();
     }
   });
 }
@@ -439,8 +478,8 @@ function calcAssistFu(){
   if(head>0){raw+=head;memo.push((head===4?"ダブ風頭":"役牌頭")+" +"+head)}
   let wait=parseInt(document.getElementById("assist-wait").value);
   if(wait>0){raw+=wait;memo.push("愚形/単騎 +2")}
-  document.querySelectorAll(".assist-set").forEach(el=>{
-    let count=parseInt(el.value),fu=parseInt(el.dataset.fu);
+  document.querySelectorAll(".assist-set-row .assist-seg-btn.active").forEach(el=>{
+    let count=parseInt(el.dataset.val),fu=parseInt(el.dataset.fu);
     if(count>0){raw+=count*fu;memo.push(count+"個×"+fu+"符")}
   });
   let rounded=ceil10(raw);
@@ -507,8 +546,8 @@ function calcCondition(){
 
   const mySeat = toggleState['my-seat'];
   const targetSeat = toggleState['target-seat'];
-  const honba = drumVal('cond-honba');
-  const kyotaku = drumVal('cond-kyotaku');
+  const honba = condSegState.honba;
+  const kyotaku = condSegState.kyotaku;
 
   if(meInput.value === "" || targetInput.value === ""){
     document.getElementById("cond-diff").innerText = "点数を入力してください🐾";
@@ -1369,8 +1408,12 @@ buildDrumPicker('drum-ron-han',     'ron-han');
 buildDrumPicker('drum-ron-fu',      'ron-fu');
 buildDrumPicker('drum-tsumo-han',   'tsumo-han');
 buildDrumPicker('drum-tsumo-fu',    'tsumo-fu');
-buildDrumPicker('drum-cond-honba',  'cond-honba');
-buildDrumPicker('drum-cond-kyotaku','cond-kyotaku');
+
+buildDrumPicker('drum-assist-han',  'assist-han', function(val){
+  var sel = document.getElementById('assist-han');
+  if(sel) sel.value = String(val);
+  calcAssist();
+});
 
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');

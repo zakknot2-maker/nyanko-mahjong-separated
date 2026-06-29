@@ -253,9 +253,8 @@
     <section id="assist" class="tool active">
       <div class="input-box">
         <label>はんすう 🀄</label>
-        <select id="assist-han" onchange="calcAssist()">
-          <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻以上</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜 👑🐈</option>
-        </select>
+        <select id="assist-han" onchange="calcAssist()" style="display:none"></select>
+        <div class="drum-picker" id="drum-assist-han"></div>
         <div class="special-checks">
           <label class="check-label">
             <input type="checkbox" id="assist-pinfu" onchange="onSpecialCheck('pinfu')">
@@ -271,24 +270,46 @@
       <div id="assist-detail-fields">
         <div class="input-box">
           <label>あがり方 🐾</label>
-          <select id="assist-win" onchange="calcAssist()"><option value="closedRon">メンゼンロン</option><option value="openRon">鳴きロン</option><option value="tsumo">ツモ</option></select>
+          <select id="assist-win" style="display:none"><option value="closedRon">メンゼンロン</option><option value="openRon">鳴きロン</option><option value="tsumo">ツモ</option></select>
+          <div class="assist-seg-group" id="seg-assist-win">
+            <button class="assist-seg-btn active" data-val="closedRon" onclick="assistSeg('win',this)">メンゼンロン</button>
+            <button class="assist-seg-btn" data-val="openRon" onclick="assistSeg('win',this)">鳴きロン</button>
+            <button class="assist-seg-btn" data-val="tsumo" onclick="assistSeg('win',this)">ツモ</button>
+          </div>
         </div>
         <div id="assist-detail-sub">
           <div class="row">
-            <div class="input-box"><label>頭 🐱</label><select id="assist-head" onchange="calcAssist()"><option value="0">通常</option><option value="2">役牌 +2</option><option value="4">ダブ風 +4</option></select></div>
-            <div class="input-box"><label>待ち 🐾</label><select id="assist-wait" onchange="calcAssist()"><option value="0">両面</option><option value="2">愚形・単騎 +2</option></select></div>
+            <div class="input-box">
+              <label>頭 🐱</label>
+              <select id="assist-head" style="display:none"><option value="0">通常</option><option value="2">役牌 +2</option><option value="4">ダブ風 +4</option></select>
+              <div class="assist-seg-group" id="seg-assist-head">
+                <button class="assist-seg-btn active" data-val="0" onclick="assistSeg('head',this)">通常</button>
+                <button class="assist-seg-btn" data-val="2" onclick="assistSeg('head',this)">役牌+2</button>
+                <button class="assist-seg-btn" data-val="4" onclick="assistSeg('head',this)">ダブ風+4</button>
+              </div>
+            </div>
+            <div class="input-box">
+              <label>待ち 🐾</label>
+              <select id="assist-wait" style="display:none"><option value="0">両面</option><option value="2">愚形・単騎 +2</option></select>
+              <div class="toggle-group" id="toggle-assist-wait">
+                <button class="toggle-btn active" data-value="0" onclick="assistToggle('wait',this)">両面</button>
+                <button class="toggle-btn" data-value="2" onclick="assistToggle('wait',this)">愚形+2</button>
+              </div>
+            </div>
           </div>
           <div class="input-box">
             <details>
-              <summary>刻子・カン 🀄</summary><br>
-              <div class="grid"><div class="grid-label">明刻（中張牌）</div><select class="small-select assist-set" data-fu="2" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">明刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">暗刻（中張牌）</div><select class="small-select assist-set" data-fu="4" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">暗刻（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">明カン（中張牌）</div><select class="small-select assist-set" data-fu="8" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">明カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">暗カン（中張牌）</div><select class="small-select assist-set" data-fu="16" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
-              <div class="grid"><div class="grid-label">暗カン（ヤオ九・字牌）</div><select class="small-select assist-set" data-fu="32" onchange="calcAssist()"><option>0</option><option>1</option><option>2</option><option>3</option></select></div>
+              <summary>刻子・カン 🀄</summary>
+              <div style="margin-top:10px">
+                <div class="assist-set-row"><span class="assist-set-label">明刻（中張牌）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="2" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="2" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="2" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="2" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">明刻（ヤオ九）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="4" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="4" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="4" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="4" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">暗刻（中張牌）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="4" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="4" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="4" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="4" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">暗刻（ヤオ九）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="8" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="8" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="8" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="8" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">明カン（中張牌）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="8" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="8" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="8" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="8" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">明カン（ヤオ九）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="16" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="16" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="16" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="16" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">暗カン（中張牌）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="16" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="16" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="16" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="16" onclick="assistSetSeg(this)">3</button></div></div>
+                <div class="assist-set-row"><span class="assist-set-label">暗カン（ヤオ九）</span><div class="assist-seg-group"><button class="assist-seg-btn active" data-val="0" data-fu="32" onclick="assistSetSeg(this)">0</button><button class="assist-seg-btn" data-val="1" data-fu="32" onclick="assistSetSeg(this)">1</button><button class="assist-seg-btn" data-val="2" data-fu="32" onclick="assistSetSeg(this)">2</button><button class="assist-seg-btn" data-val="3" data-fu="32" onclick="assistSetSeg(this)">3</button></div></div>
+              </div>
             </details>
           </div>
         </div>
@@ -398,11 +419,27 @@
       <div class="row">
         <div class="input-box">
           <label>本場 🀄</label>
-          <div class="drum-picker" id="drum-cond-honba"></div>
+          <div class="cond-num-seg" id="seg-cond-honba">
+            <button class="cond-num-btn active" data-val="0" onclick="condNumSeg('honba',this)">0</button>
+            <button class="cond-num-btn" data-val="1" onclick="condNumSeg('honba',this)">1</button>
+            <button class="cond-num-btn" data-val="2" onclick="condNumSeg('honba',this)">2</button>
+            <button class="cond-num-btn" data-val="3" onclick="condNumSeg('honba',this)">3</button>
+            <button class="cond-num-btn" data-val="4" onclick="condNumSeg('honba',this)">4</button>
+            <button class="cond-num-btn" data-val="5" onclick="condNumSeg('honba',this)">5</button>
+            <button class="cond-num-btn" data-val="6" onclick="condNumSeg('honba',this)">6+</button>
+          </div>
         </div>
         <div class="input-box">
           <label>供託 🐾</label>
-          <div class="drum-picker" id="drum-cond-kyotaku"></div>
+          <div class="cond-num-seg" id="seg-cond-kyotaku">
+            <button class="cond-num-btn active" data-val="0" onclick="condNumSeg('kyotaku',this)">0</button>
+            <button class="cond-num-btn" data-val="1" onclick="condNumSeg('kyotaku',this)">1</button>
+            <button class="cond-num-btn" data-val="2" onclick="condNumSeg('kyotaku',this)">2</button>
+            <button class="cond-num-btn" data-val="3" onclick="condNumSeg('kyotaku',this)">3</button>
+            <button class="cond-num-btn" data-val="4" onclick="condNumSeg('kyotaku',this)">4</button>
+            <button class="cond-num-btn" data-val="5" onclick="condNumSeg('kyotaku',this)">5</button>
+            <button class="cond-num-btn" data-val="6" onclick="condNumSeg('kyotaku',this)">6+</button>
+          </div>
         </div>
       </div>
       <div class="results fire">
