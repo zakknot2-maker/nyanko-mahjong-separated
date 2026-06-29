@@ -123,16 +123,33 @@ function fmt(n){return Number(n).toLocaleString()}
 function scoreFromFuHan(fu,han){let base;if(han>=13)base=8000;else if(han>=11)base=6000;else if(han>=8)base=4000;else if(han>=6)base=3000;else if(han>=5)base=2000;else{base=fu*Math.pow(2,han+2);if(base>=2000||(han===4&&fu>=30)||(han===3&&fu>=60))base=2000;}let koRon=ceil100(base*4),oyaRon=ceil100(base*6),koTsumoKo=ceil100(base),koTsumoOya=ceil100(base*2),oyaTsumo=ceil100(base*2);if(fu===25&&han===2){koRon=1600;oyaRon=2400;koTsumoKo=400;koTsumoOya=800;oyaTsumo=800;}return{koRon,oyaRon,koTsumoKo,koTsumoOya,oyaTsumo}}
 function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText="🐾 "+fmt(s.koRon)+" 点";document.getElementById(prefix+"-ko-tsumo").innerText="🐈 "+fmt(s.koTsumoKo)+" / "+fmt(s.koTsumoOya);document.getElementById(prefix+"-oya-ron").innerText="👑 "+fmt(s.oyaRon)+" 点";document.getElementById(prefix+"-oya-tsumo").innerText="🐟 "+fmt(s.oyaTsumo)+" ALL";}
 
+
+// ===== トグルボタン状態管理 =====
+const toggleState = {
+  'my-seat':     'child',
+  'target-seat': 'child',
+};
+
+function toggleSeat(key, btn) {
+  const group = btn.closest('.toggle-group');
+  group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  toggleState[key] = btn.dataset.value;
+  calcCondition();
+}
+
 // ========================================================
 //  ドラム式ピッカー
 //  引き継ぎメモ推奨アプローチ：select不使用、JSで値を管理
 // ========================================================
 
 const PICKER_DEFS = {
-  'ron-han':   { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
-  'ron-fu':    { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
-  'tsumo-han': { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
-  'tsumo-fu':  { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
+  'ron-han':     { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
+  'ron-fu':      { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
+  'tsumo-han':   { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
+  'tsumo-fu':    { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
+  'cond-honba':  { values:[0,1,2,3,4,5,6], labels:['0本場','1本場','2本場','3本場','4本場','5本場','6本場以上'], initIndex:0 },
+  'cond-kyotaku':{ values:[0,1,2,3,4,5,6], labels:['0本','1本','2本','3本','4本','5本','6本以上'], initIndex:0 },
 };
 
 // 状態管理オブジェクト（引き継ぎメモのpickerState）
@@ -488,10 +505,10 @@ function calcCondition(){
   const meInput = document.getElementById("cond-me");
   const targetInput = document.getElementById("cond-target");
 
-  const mySeat = document.getElementById("cond-my-seat").value;
-  const targetSeat = document.getElementById("cond-target-seat").value;
-  const honba = parseInt(document.getElementById("cond-honba").value || 0);
-  const kyotaku = parseInt(document.getElementById("cond-kyotaku").value || 0);
+  const mySeat = toggleState['my-seat'];
+  const targetSeat = toggleState['target-seat'];
+  const honba = drumVal('cond-honba');
+  const kyotaku = drumVal('cond-kyotaku');
 
   if(meInput.value === "" || targetInput.value === ""){
     document.getElementById("cond-diff").innerText = "点数を入力してください🐾";
@@ -1348,10 +1365,12 @@ battle.animate([
 document.getElementById("secret-battle").addEventListener("click", handleDeveloperCommandTap);
 
 // ドラムピッカー初期化
-buildDrumPicker('drum-ron-han',   'ron-han');
-buildDrumPicker('drum-ron-fu',    'ron-fu');
-buildDrumPicker('drum-tsumo-han', 'tsumo-han');
-buildDrumPicker('drum-tsumo-fu',  'tsumo-fu');
+buildDrumPicker('drum-ron-han',     'ron-han');
+buildDrumPicker('drum-ron-fu',      'ron-fu');
+buildDrumPicker('drum-tsumo-han',   'tsumo-han');
+buildDrumPicker('drum-tsumo-fu',    'tsumo-fu');
+buildDrumPicker('drum-cond-honba',  'cond-honba');
+buildDrumPicker('drum-cond-kyotaku','cond-kyotaku');
 
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');

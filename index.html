@@ -373,33 +373,29 @@
   placeholder="例）38700"
   oninput="calcCondition()"></div>
       <div class="row">
-        <div class="input-box"><label>自分 🐈</label><select id="cond-my-seat" onchange="calcCondition()"><option value="child">子</option><option value="parent">親</option></select></div>
-        <div class="input-box"><label>相手 🐈‍⬛</label><select id="cond-target-seat" onchange="calcCondition()"><option value="child">子</option><option value="parent">親</option></select></div>
+        <div class="input-box">
+          <label>自分 🐈</label>
+          <div class="toggle-group" id="toggle-my-seat">
+            <button class="toggle-btn active" data-value="child" onclick="toggleSeat('my-seat', this)">子</button>
+            <button class="toggle-btn" data-value="parent" onclick="toggleSeat('my-seat', this)">親</button>
+          </div>
+        </div>
+        <div class="input-box">
+          <label>相手 🐈‍⬛</label>
+          <div class="toggle-group" id="toggle-target-seat">
+            <button class="toggle-btn active" data-value="child" onclick="toggleSeat('target-seat', this)">子</button>
+            <button class="toggle-btn" data-value="parent" onclick="toggleSeat('target-seat', this)">親</button>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="input-box">
           <label>本場 🀄</label>
-          <select id="cond-honba" onchange="calcCondition()">
-            <option value="0" selected>0本場</option>
-            <option value="1">1本場</option>
-            <option value="2">2本場</option>
-            <option value="3">3本場</option>
-            <option value="4">4本場</option>
-            <option value="5">5本場</option>
-            <option value="6">6本場以上</option>
-          </select>
+          <div class="drum-picker" id="drum-cond-honba"></div>
         </div>
         <div class="input-box">
           <label>供託 🐾</label>
-          <select id="cond-kyotaku" onchange="calcCondition()">
-            <option value="0" selected>0本</option>
-            <option value="1">1本</option>
-            <option value="2">2本</option>
-            <option value="3">3本</option>
-            <option value="4">4本</option>
-            <option value="5">5本</option>
-            <option value="6">6本以上</option>
-          </select>
+          <div class="drum-picker" id="drum-cond-kyotaku"></div>
         </div>
       </div>
       <div class="results fire">

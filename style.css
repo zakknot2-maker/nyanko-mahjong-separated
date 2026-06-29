@@ -770,3 +770,35 @@ summary{
 .drum-picker.dragging .drum-list{
   transition:none !important;
 }
+
+/* ===== トグルボタン（2択） ===== */
+.toggle-group{
+  display:flex;
+  border:1.5px solid var(--theme-shadow,#ccc);
+  border-radius:10px;
+  overflow:hidden;
+  width:100%;
+}
+.toggle-btn{
+  flex:1;
+  padding:9px 0;
+  font-size:14px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  background:var(--c-white);
+  color:var(--theme-text,#555);
+  transition:background .12s,color .12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.toggle-btn+.toggle-btn{
+  border-left:1.5px solid var(--theme-shadow,#ccc);
+}
+.toggle-btn.active{
+  background:var(--theme-main);
+  color:#fff;
+}
+.toggle-btn:active{
+  opacity:.8;
+}
