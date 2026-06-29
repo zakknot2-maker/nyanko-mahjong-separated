@@ -488,7 +488,7 @@ function calcAssistFu(){
 
 function calcAssist(){
   updateAssistSpecialUI();
-  let han=parseInt(document.getElementById("assist-han").value);
+  let han=drumVal('assist-han');
   let f=calcAssistFu();
   document.getElementById("assist-fu").innerText="🐾 "+f.fu+"符";
   setPoint("assist",scoreFromFuHan(f.fu,han));
