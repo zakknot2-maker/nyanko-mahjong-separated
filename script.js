@@ -128,6 +128,26 @@ function copyRonToTsumo(){
   calcQuick();
 }
 
+function calcQuick(){
+  const ronHan   = parseInt(document.getElementById("quick-ron-han").value);
+  const ronFu    = parseInt(document.getElementById("quick-ron-fu").value);
+  const tsumoHan = parseInt(document.getElementById("quick-tsumo-han").value);
+  const tsumoFu  = parseInt(document.getElementById("quick-tsumo-fu").value);
+
+  // ロン系
+  if(ronHan === 1 && (ronFu === 20 || ronFu === 25)){
+    document.getElementById("quick-ko-ron").innerText  = "-";
+    document.getElementById("quick-oya-ron").innerText = "-";
+  }else{
+    const r = scoreFromFuHan(ronFu, ronHan);
+    document.getElementById("quick-ko-ron").innerText  = "🐾 " + fmt(r.koRon)  + " 点";
+    document.getElementById("quick-oya-ron").innerText = "👑 " + fmt(r.oyaRon) + " 点";
+  }
+
+  // ツモ系
+  if(tsumoHan === 1 && tsumoFu === 25){
+    document.getElementById("quick-ko-tsumo").innerText  = "-";
+    document.getElementById("quick-oya-tsumo").innerText = "-";
   }else{
     const t = scoreFromFuHan(tsumoFu, tsumoHan);
     document.getElementById("quick-ko-tsumo").innerText  = "🐈 " + fmt(t.koTsumoKo) + " / " + fmt(t.koTsumoOya);
