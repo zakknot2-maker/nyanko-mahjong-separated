@@ -347,12 +347,10 @@ function attachDrumEvents(container, defKey) {
     onStart(e.clientY);
     e.preventDefault();
   });
-  window.addEventListener('mousemove', e => {
-    if (isDragging) onMove(e.clientY);
-  });
-  window.addEventListener('mouseup', () => {
-    if (isDragging) onEnd();
-  });
+  // mousemove/mouseup はグローバルマネージャーで一元管理（多重登録防止）
+  container._drumOnMove = onMove;
+  container._drumOnEnd  = onEnd;
+  container._drumIsDragging = () => isDragging;
 
   // クリック（タップで一項目移動）
   container.addEventListener('click', e => {
@@ -367,6 +365,18 @@ function attachDrumEvents(container, defKey) {
     }
   });
 }
+
+// グローバルマウスイベント（一度だけ登録）
+window.addEventListener('mousemove', e => {
+  document.querySelectorAll('.drum-picker').forEach(el => {
+    if (el._drumIsDragging && el._drumIsDragging()) el._drumOnMove(e.clientY);
+  });
+});
+window.addEventListener('mouseup', () => {
+  document.querySelectorAll('.drum-picker').forEach(el => {
+    if (el._drumIsDragging && el._drumIsDragging()) el._drumOnEnd();
+  });
+});
 
 // ドラムから値を読む（calcQuick()用）
 function drumVal(key) {
