@@ -249,10 +249,9 @@ function buildDrumPicker(containerId, defKey, onChangeCb) {
   attachDrumEvents(container, defKey, onChangeCb);
 }
 
-function getPickerY(defKey) {
-  const idx    = pickerState[defKey].index;
-  const offset = -(idx) * ITEM_H; // padding=1のリスト先頭はdummy、index0→translateY(0)
-  return offset;
+// PADDING行分オフセットを加味してtranslateYを計算
+function idxToY(index) {
+  return -(index + PADDING) * ITEM_H;
 }
 
 function setPickerIndex(defKey, newIndex, animate) {
@@ -262,107 +261,146 @@ function setPickerIndex(defKey, newIndex, animate) {
 
   const list = document.getElementById('drum-list-' + defKey);
   if (!list) return;
-  const y = -clamp * ITEM_H;
-  if (animate) {
-    list.style.transition = 'transform 0.18s cubic-bezier(.25,.8,.25,1)';
-  } else {
-    list.style.transition = 'none';
-  }
+  const y = idxToY(clamp);
+  list.style.transition = animate
+    ? 'transform 0.18s cubic-bezier(.25,.8,.25,1)'
+    : 'none';
   list.style.transform = 'translateY(' + y + 'px)';
 }
 
-function attachDrumEvents(container, defKey, onChangeCb) {
-  let startY    = 0;
-  let startIdx  = 0;
-  let isDragging = false;
-  let lastY     = 0;
-  let velocity  = 0;
-  let lastTime  = 0;
+function attachDrumEvents(container, defKey, onChange) {
+  // 引き継ぎメモ推奨アプローチ：クロージャでスコープを確実に閉じ込める
+  let startY   = 0;
+  let startIdx = 0;
+  let dragging = false;
+  let lastY    = 0;
+  let velocity = 0;
+  let lastTime = 0;
 
-  function onStart(clientY) {
-    isDragging = true;
-    startY     = clientY;
-    lastY      = clientY;
-    startIdx   = pickerState[defKey].index;
-    velocity   = 0;
-    lastTime   = Date.now();
-    container.classList.add('dragging');
-
-    const list = document.getElementById('drum-list-' + defKey);
-    if (list) list.style.transition = 'none';
+  function fireChange() {
+    if (onChange) onChange(drumVal(defKey));
+    else calcQuick();
   }
 
-  function onMove(clientY) {
-    if (!isDragging) return;
-    const now   = Date.now();
-    const dt    = now - lastTime;
-    const dy    = clientY - lastY;
-    if (dt > 0) velocity = dy / dt;
+  // ---- タッチ ----
+  container.addEventListener('touchstart', e => {
+    startY   = e.touches[0].clientY;
+    lastY    = startY;
+    startIdx = pickerState[defKey].index;
+    velocity = 0;
+    lastTime = Date.now();
+    dragging = true;
+    const list = document.getElementById('drum-list-' + defKey);
+    if (list) list.style.transition = 'none';
+  }, { passive: true });
+
+  container.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    e.preventDefault();
+
+    const clientY = e.touches[0].clientY;
+    const now = Date.now();
+    const dt  = now - lastTime;
+    if (dt > 0) velocity = (clientY - lastY) / dt;
     lastY    = clientY;
     lastTime = now;
 
-    const delta   = startY - clientY;
-    const idxDiff = Math.round(delta / ITEM_H);
-    const newIdx  = Math.max(0, Math.min(PICKER_DEFS[defKey].values.length - 1, startIdx + idxDiff));
+    const delta  = startY - clientY;
+    const newIdx = Math.max(0, Math.min(
+      PICKER_DEFS[defKey].values.length - 1,
+      startIdx + Math.round(delta / ITEM_H)
+    ));
     pickerState[defKey].index = newIdx;
 
+    // 生ピクセル追従（PADDINGオフセット込み）
+    const rawY     = idxToY(startIdx) - delta;
+    const minY     = idxToY(PICKER_DEFS[defKey].values.length - 1);
+    const maxY     = idxToY(0);
     const list = document.getElementById('drum-list-' + defKey);
-    if (list) {
-      // ドラッグ中はアニメなし・生のピクセル追従
-      const rawY = -(startIdx * ITEM_H) - delta;
-      const minY = -(PICKER_DEFS[defKey].values.length - 1) * ITEM_H;
-      const clampedY = Math.max(minY, Math.min(0, rawY));
-      list.style.transform = 'translateY(' + clampedY + 'px)';
-    }
-  }
+    if (list) list.style.transform = 'translateY(' +
+      Math.max(minY, Math.min(maxY, rawY)) + 'px)';
+  }, { passive: false });
 
-  function onEnd() {
-    if (!isDragging) return;
-    isDragging = false;
-    container.classList.remove('dragging');
+  container.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
 
-    // 慣性でインデックスをずらす
-    const fling = Math.round(-velocity * 80 / ITEM_H);
+    const fling    = Math.round(-velocity * 80 / ITEM_H);
     const finalIdx = Math.max(0, Math.min(
       PICKER_DEFS[defKey].values.length - 1,
       pickerState[defKey].index + fling
     ));
     setPickerIndex(defKey, finalIdx, true);
-    if (onChangeCb) onChangeCb(PICKER_DEFS[defKey].values[finalIdx]);
-    else calcQuick();
-  }
-
-  // Touch
-  container.addEventListener('touchstart', e => {
-    onStart(e.touches[0].clientY);
-  }, { passive: true });
-  container.addEventListener('touchmove', e => {
-    e.preventDefault();
-    onMove(e.touches[0].clientY);
-  }, { passive: false });
-  container.addEventListener('touchend', () => onEnd());
-
-  // Mouse
-  container.addEventListener('mousedown', e => {
-    onStart(e.clientY);
-    e.preventDefault();
+    fireChange();
   });
-  // mousemove/mouseup はグローバルマネージャーで一元管理（多重登録防止）
-  container._drumOnMove = onMove;
-  container._drumOnEnd  = onEnd;
-  container._drumIsDragging = () => isDragging;
 
-  // クリック（タップで一項目移動）
+  container.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    setPickerIndex(defKey, pickerState[defKey].index, true);
+    fireChange();
+  });
+
+  // ---- マウス（PC確認用） ----
+  container.addEventListener('mousedown', e => {
+    startY   = e.clientY;
+    lastY    = startY;
+    startIdx = pickerState[defKey].index;
+    velocity = 0;
+    lastTime = Date.now();
+    dragging = true;
+    e.preventDefault();
+    const list = document.getElementById('drum-list-' + defKey);
+    if (list) list.style.transition = 'none';
+  });
+
+  container._drumIsDragging = () => dragging;
+  container._drumOnMove = clientY => {
+    if (!dragging) return;
+    const now = Date.now();
+    const dt  = now - lastTime;
+    if (dt > 0) velocity = (clientY - lastY) / dt;
+    lastY    = clientY;
+    lastTime = now;
+
+    const delta  = startY - clientY;
+    const newIdx = Math.max(0, Math.min(
+      PICKER_DEFS[defKey].values.length - 1,
+      startIdx + Math.round(delta / ITEM_H)
+    ));
+    pickerState[defKey].index = newIdx;
+
+    const rawY = idxToY(startIdx) - delta;
+    const minY = idxToY(PICKER_DEFS[defKey].values.length - 1);
+    const maxY = idxToY(0);
+    const list = document.getElementById('drum-list-' + defKey);
+    if (list) list.style.transform = 'translateY(' +
+      Math.max(minY, Math.min(maxY, rawY)) + 'px)';
+  };
+  container._drumOnEnd = () => {
+    if (!dragging) return;
+    dragging = false;
+    const fling    = Math.round(-velocity * 80 / ITEM_H);
+    const finalIdx = Math.max(0, Math.min(
+      PICKER_DEFS[defKey].values.length - 1,
+      pickerState[defKey].index + fling
+    ));
+    setPickerIndex(defKey, finalIdx, true);
+    fireChange();
+  };
+
+  // クリック（上半分→前の項目、下半分→次の項目）
   container.addEventListener('click', e => {
+    if (Math.abs(startY - e.clientY) > 4) return; // ドラッグ後の誤発火を防ぐ
     const rect = container.getBoundingClientRect();
     const relY = e.clientY - rect.top;
-    if (relY < ITEM_H) {
+    const mid  = rect.height / 2;
+    if (relY < mid) {
       setPickerIndex(defKey, pickerState[defKey].index - 1, true);
-      if (onChangeCb) onChangeCb(drumVal(defKey)); else calcQuick();
-    } else if (relY >= ITEM_H * 2) {
+    } else {
       setPickerIndex(defKey, pickerState[defKey].index + 1, true);
-      if (onChangeCb) onChangeCb(drumVal(defKey)); else calcQuick();
     }
+    fireChange();
   });
 }
 
@@ -1419,16 +1457,9 @@ buildDrumPicker('drum-ron-fu',      'ron-fu');
 buildDrumPicker('drum-tsumo-han',   'tsumo-han');
 buildDrumPicker('drum-tsumo-fu',    'tsumo-fu');
 
-buildDrumPicker('drum-assist-han',  'assist-han', function(val){
-  var sel = document.getElementById('assist-han');
-  if(sel) sel.value = String(val);
+buildDrumPicker('drum-assist-han',  'assist-han', function() {
   calcAssist();
 });
-// assist-han selectの初期値をpickerStateと同期
-(function(){
-  var sel = document.getElementById('assist-han');
-  if(sel) sel.value = String(PICKER_DEFS['assist-han'].values[PICKER_DEFS['assist-han'].initIndex]);
-})();
 
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');
