@@ -740,7 +740,7 @@ summary{
   position:absolute;
   left:0; right:0;
   height:36px;
-  top:36px; /* padding=1 → 1*36px */
+  top:36px; /* ダミー行1個分下 = 中央 */
   background:var(--theme-main);
   opacity:.18;
   border-radius:8px;

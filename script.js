@@ -197,7 +197,7 @@ Object.keys(PICKER_DEFS).forEach(key => {
 });
 
 const ITEM_H    = 36; // px
-const PADDING   = 1;  // 上下パディング行数
+const PADDING   = 1;  // 上下パディング行数（選択窓を中央に見せるためのダミー）
 
 function buildDrumPicker(containerId, defKey, onChangeCb) {
   const def       = PICKER_DEFS[defKey];
@@ -242,8 +242,10 @@ function buildDrumPicker(containerId, defKey, onChangeCb) {
   fadeTop.style.setProperty('--bg', bgColor);
   fadeBottom.style.setProperty('--bg', bgColor);
 
-  // 初期位置セット
-  setPickerIndex(defKey, pickerState[defKey].index, false);
+  // 初期位置セット（DOMが確実に描画された後に実行）
+  requestAnimationFrame(() => {
+    setPickerIndex(defKey, pickerState[defKey].index, false);
+  });
 
   // タッチ・マウスイベント
   attachDrumEvents(container, defKey, onChangeCb);
@@ -251,12 +253,13 @@ function buildDrumPicker(containerId, defKey, onChangeCb) {
 
 // PADDING行分オフセットを加味してtranslateYを計算
 // index → translateY変換
-// リストは [ダミー, 値0, 値1, ...] の順。
-// drum-listのtop:0の状態でダミー行がtop:0px、値0が36px（選択窓位置）にある。
-// translateY(0) → ダミー行が選択窓に入ってしまう。
-// translateY(+ITEM_H) → 値0（index=0）が選択窓に入る。
+// リスト構造: [ダミー, 値0(idx=0), 値1(idx=1), ..., ダミー]
+// drum-list top:0、highlight top:36px（=ITEM_H）
+// idx=0を選択窓(36px)に入れる → 値0がリスト内の2番目(offset:36px)
+// → translateY(0) でdrum-listを動かすと 値0がtop:36pxに来る → ✓
+// idx=1 → translateY(-36px) → 値1がtop:36pxに来る → ✓
 function idxToY(index) {
-  return (PADDING - index) * ITEM_H;
+  return -index * ITEM_H;
 }
 
 function setPickerIndex(defKey, newIndex, animate) {
