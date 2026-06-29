@@ -125,7 +125,7 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
 /* ===== ドラムピッカー エンジン ===== */
 (function(){
   const VISIBLE = 3;
-  const PADDING = Math.floor(VISIBLE / 2);
+  const PADDING = Math.floor(VISIBLE / 2); // = 1
 
   function itemH(){ return window.innerWidth <= 390 ? 29 : 32; }
 
@@ -137,19 +137,18 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
     const options = Array.from(sel.options);
     const total   = options.length;
 
-    // ── ハイライト帯（最背面）
+    // ── ハイライト帯（z:0）：topをJS計算で確定
     const highlight = document.createElement('div');
     highlight.className = 'drum-highlight';
+    function posHighlight(){ highlight.style.top = (PADDING * itemH()) + 'px'; }
+    posHighlight();
     container.appendChild(highlight);
 
-    // ── スクロールリスト
+    // ── スクロールリスト（z:1）
     const list = document.createElement('div');
     list.className = 'drum-list';
-
     for(let i = 0; i < PADDING; i++){
-      const pad = document.createElement('div');
-      pad.className = 'drum-item';
-      list.appendChild(pad);
+      const pad = document.createElement('div'); pad.className = 'drum-item'; list.appendChild(pad);
     }
     options.forEach((opt, i) => {
       const el = document.createElement('div');
@@ -159,17 +158,14 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
       list.appendChild(el);
     });
     for(let i = 0; i < PADDING; i++){
-      const pad = document.createElement('div');
-      pad.className = 'drum-item';
-      list.appendChild(pad);
+      const pad = document.createElement('div'); pad.className = 'drum-item'; list.appendChild(pad);
     }
     container.appendChild(list);
 
-    // ── 上下フェード（最前面）
+    // ── 上下フェード（z:2）
     const fadeTop = document.createElement('div');
     fadeTop.className = 'drum-fade drum-fade-top';
     container.appendChild(fadeTop);
-
     const fadeBot = document.createElement('div');
     fadeBot.className = 'drum-fade drum-fade-bot';
     container.appendChild(fadeBot);
@@ -181,10 +177,7 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
 
     function indexToY(idx){ return -(idx * itemH()); }
     function clamp(idx){ return Math.max(0, Math.min(total - 1, idx)); }
-
-    function applyY(y){
-      list.style.transform = 'translateY(' + (y + itemH() * PADDING) + 'px)';
-    }
+    function applyY(y){ list.style.transform = 'translateY(' + (y + itemH() * PADDING) + 'px)'; }
 
     function updateSelected(idx){
       idx = clamp(idx);
@@ -199,21 +192,15 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
     function snapTo(idx, fast){
       idx = clamp(Math.round(idx));
       const toY = indexToY(idx);
-      if(fast){
-        currentY = toY;
-        applyY(currentY);
-        updateSelected(idx);
-      } else {
-        animateTo(toY, idx);
-      }
+      if(fast){ currentY = toY; applyY(currentY); updateSelected(idx); }
+      else { animateTo(toY, idx); }
     }
 
     function animateTo(toY, idx){
       cancelAnimationFrame(rafId);
-      const startY = currentY;
-      const dist   = toY - startY;
-      const dur    = Math.min(300, Math.max(100, Math.abs(dist) * 0.8));
-      const t0     = performance.now();
+      const startY = currentY, dist = toY - startY;
+      const dur = Math.min(300, Math.max(100, Math.abs(dist) * 0.8));
+      const t0 = performance.now();
       function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
       function step(now){
         const t = Math.min(1, (now - t0) / dur);
@@ -226,34 +213,29 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
     }
 
     snapTo(currentIndex, true);
+    window.addEventListener('resize', posHighlight);
 
     // ── タッチ
     let startTouchY = 0, startYVal = 0, lastY = 0, lastT = 0, velocity = 0;
-
     container.addEventListener('touchstart', e => {
       cancelAnimationFrame(rafId);
       const touch = e.touches[0];
-      startTouchY = touch.clientY;
-      startYVal   = currentY;
-      lastY = touch.clientY;
-      lastT = e.timeStamp;
-      velocity = 0;
+      startTouchY = touch.clientY; startYVal = currentY;
+      lastY = touch.clientY; lastT = e.timeStamp; velocity = 0;
     }, { passive: true });
-
     container.addEventListener('touchmove', e => {
       e.preventDefault();
       const touch = e.touches[0];
       const dt = e.timeStamp - lastT;
       velocity = dt > 0 ? (touch.clientY - lastY) / dt : 0;
-      lastY = touch.clientY;
-      lastT = e.timeStamp;
+      lastY = touch.clientY; lastT = e.timeStamp;
       currentY = startYVal + (touch.clientY - startTouchY);
       applyY(currentY);
     }, { passive: false });
-
     container.addEventListener('touchend', () => {
-      const rawIdx  = -(currentY + velocity * 80) / itemH();
-      animateTo(indexToY(clamp(Math.round(rawIdx))), clamp(Math.round(rawIdx)));
+      const rawIdx = -(currentY + velocity * 80) / itemH();
+      const si = clamp(Math.round(rawIdx));
+      animateTo(indexToY(si), si);
     });
 
     // ── マウス（PC確認用）
@@ -264,28 +246,22 @@ function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText=
     });
     window.addEventListener('mousemove', e => {
       if(!dragging) return;
-      currentY = mouseStartVal + (e.clientY - mouseStartY);
-      applyY(currentY);
+      currentY = mouseStartVal + (e.clientY - mouseStartY); applyY(currentY);
     });
     window.addEventListener('mouseup', () => {
-      if(!dragging) return;
-      dragging = false;
-      const snapIdx = clamp(Math.round(-currentY / itemH()));
-      animateTo(indexToY(snapIdx), snapIdx);
+      if(!dragging) return; dragging = false;
+      const si = clamp(Math.round(-currentY / itemH()));
+      animateTo(indexToY(si), si);
     });
 
     container._snapTo     = idx => snapTo(idx, false);
     container._snapToFast = idx => snapTo(idx, true);
   }
 
-  function initAllPickers(){
-    document.querySelectorAll('.drum-picker').forEach(buildPicker);
-  }
+  function initAllPickers(){ document.querySelectorAll('.drum-picker').forEach(buildPicker); }
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', initAllPickers);
-  } else {
-    initAllPickers();
-  }
+  } else { initAllPickers(); }
 
   window._drumSnapTo = function(targetId, idx, fast){
     const picker = document.querySelector('.drum-picker[data-target="' + targetId + '"]');

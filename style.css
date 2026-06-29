@@ -681,7 +681,6 @@ summary{
 }
 .drum-picker:active{ cursor:grabbing; }
 
-/* スクロールリスト */
 .drum-list{
   position:absolute;
   left:0; right:0; top:0;
@@ -693,22 +692,19 @@ summary{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:14px;
+  font-size:15px;
   font-weight:900;
-  color:#bbb;
+  color:#555;
   pointer-events:none;
 }
 .drum-item.selected{
-  color:var(--theme-main);
   font-size:16px;
 }
 
-/* ハイライト帯（最背面 z-index:0） */
+/* ハイライト帯（最背面） */
 .drum-highlight{
   position:absolute;
   left:6px; right:6px;
-  top:50%;
-  transform:translateY(-50%);
   height:32px;
   background:var(--theme-bg1);
   border:1.5px solid var(--theme-shadow);
@@ -717,7 +713,7 @@ summary{
   pointer-events:none;
 }
 
-/* 上下フェード（最前面 z-index:2） */
+/* 上下フェード（最前面） */
 .drum-fade{
   position:absolute;
   left:0; right:0;
@@ -738,7 +734,7 @@ summary{
   .quick-col-head{ font-size:12px; }
   .quick-col-box{ padding:6px 8px; }
   .drum-picker{ height:88px; }
-  .drum-item{ height:29px; font-size:13px; }
+  .drum-item{ height:29px; font-size:14px; }
   .drum-item.selected{ font-size:15px; }
   .drum-highlight{ height:29px; }
 }
