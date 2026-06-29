@@ -122,17 +122,215 @@ function ceil10(n){return Math.ceil(n/10)*10}
 function fmt(n){return Number(n).toLocaleString()}
 function scoreFromFuHan(fu,han){let base;if(han>=13)base=8000;else if(han>=11)base=6000;else if(han>=8)base=4000;else if(han>=6)base=3000;else if(han>=5)base=2000;else{base=fu*Math.pow(2,han+2);if(base>=2000||(han===4&&fu>=30)||(han===3&&fu>=60))base=2000;}let koRon=ceil100(base*4),oyaRon=ceil100(base*6),koTsumoKo=ceil100(base),koTsumoOya=ceil100(base*2),oyaTsumo=ceil100(base*2);if(fu===25&&han===2){koRon=1600;oyaRon=2400;koTsumoKo=400;koTsumoOya=800;oyaTsumo=800;}return{koRon,oyaRon,koTsumoKo,koTsumoOya,oyaTsumo}}
 function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText="🐾 "+fmt(s.koRon)+" 点";document.getElementById(prefix+"-ko-tsumo").innerText="🐈 "+fmt(s.koTsumoKo)+" / "+fmt(s.koTsumoOya);document.getElementById(prefix+"-oya-ron").innerText="👑 "+fmt(s.oyaRon)+" 点";document.getElementById(prefix+"-oya-tsumo").innerText="🐟 "+fmt(s.oyaTsumo)+" ALL";}
+
+// ========================================================
+//  ドラム式ピッカー
+//  引き継ぎメモ推奨アプローチ：select不使用、JSで値を管理
+// ========================================================
+
+const PICKER_DEFS = {
+  'ron-han':   { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
+  'ron-fu':    { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
+  'tsumo-han': { values:[1,2,3,4,5,6,8,11,13], labels:['1翻','2翻','3翻','4翻','5翻','6-7翻','8-10翻','11-12翻','13翻〜'], initIndex:2 },
+  'tsumo-fu':  { values:[20,25,30,40,50,60,70,80,90,100], labels:['20符','25符','30符','40符','50符','60符','70符','80符','90符','100符'], initIndex:2 },
+};
+
+// 状態管理オブジェクト（引き継ぎメモのpickerState）
+const pickerState = {};
+Object.keys(PICKER_DEFS).forEach(key => {
+  pickerState[key] = { index: PICKER_DEFS[key].initIndex };
+});
+
+const ITEM_H    = 36; // px
+const PADDING   = 1;  // 上下パディング行数
+
+function buildDrumPicker(containerId, defKey) {
+  const def       = PICKER_DEFS[defKey];
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // 上下にPADDING行のダミーを付けた全アイテムリスト
+  const allLabels = [
+    ...Array(PADDING).fill(''),
+    ...def.labels,
+    ...Array(PADDING).fill(''),
+  ];
+
+  // DOM構築
+  const list = document.createElement('div');
+  list.className = 'drum-list';
+  list.id = 'drum-list-' + defKey;
+  allLabels.forEach(label => {
+    const item = document.createElement('div');
+    item.className = 'drum-item';
+    item.textContent = label;
+    list.appendChild(item);
+  });
+
+  const highlight = document.createElement('div');
+  highlight.className = 'drum-highlight';
+
+  const fadeTop = document.createElement('div');
+  fadeTop.className = 'drum-fade-top';
+
+  const fadeBottom = document.createElement('div');
+  fadeBottom.className = 'drum-fade-bottom';
+
+  container.innerHTML = '';
+  container.appendChild(list);
+  container.appendChild(highlight);
+  container.appendChild(fadeTop);
+  container.appendChild(fadeBottom);
+
+  // フェードのCSS変数を親のbg色に合わせる
+  const bgColor = getComputedStyle(document.body).getPropertyValue('--c-white').trim() || '#fff';
+  fadeTop.style.setProperty('--bg', bgColor);
+  fadeBottom.style.setProperty('--bg', bgColor);
+
+  // 初期位置セット
+  setPickerIndex(defKey, pickerState[defKey].index, false);
+
+  // タッチ・マウスイベント
+  attachDrumEvents(container, defKey);
+}
+
+function getPickerY(defKey) {
+  const idx    = pickerState[defKey].index;
+  const offset = -(idx) * ITEM_H; // padding=1のリスト先頭はdummy、index0→translateY(0)
+  return offset;
+}
+
+function setPickerIndex(defKey, newIndex, animate) {
+  const def   = PICKER_DEFS[defKey];
+  const clamp = Math.max(0, Math.min(def.values.length - 1, newIndex));
+  pickerState[defKey].index = clamp;
+
+  const list = document.getElementById('drum-list-' + defKey);
+  if (!list) return;
+  const y = -clamp * ITEM_H;
+  if (animate) {
+    list.style.transition = 'transform 0.18s cubic-bezier(.25,.8,.25,1)';
+  } else {
+    list.style.transition = 'none';
+  }
+  list.style.transform = 'translateY(' + y + 'px)';
+}
+
+function attachDrumEvents(container, defKey) {
+  let startY    = 0;
+  let startIdx  = 0;
+  let isDragging = false;
+  let lastY     = 0;
+  let velocity  = 0;
+  let lastTime  = 0;
+
+  function onStart(clientY) {
+    isDragging = true;
+    startY     = clientY;
+    lastY      = clientY;
+    startIdx   = pickerState[defKey].index;
+    velocity   = 0;
+    lastTime   = Date.now();
+    container.classList.add('dragging');
+
+    const list = document.getElementById('drum-list-' + defKey);
+    if (list) list.style.transition = 'none';
+  }
+
+  function onMove(clientY) {
+    if (!isDragging) return;
+    const now   = Date.now();
+    const dt    = now - lastTime;
+    const dy    = clientY - lastY;
+    if (dt > 0) velocity = dy / dt;
+    lastY    = clientY;
+    lastTime = now;
+
+    const delta   = startY - clientY;
+    const idxDiff = Math.round(delta / ITEM_H);
+    const newIdx  = Math.max(0, Math.min(PICKER_DEFS[defKey].values.length - 1, startIdx + idxDiff));
+    pickerState[defKey].index = newIdx;
+
+    const list = document.getElementById('drum-list-' + defKey);
+    if (list) {
+      // ドラッグ中はアニメなし・生のピクセル追従
+      const rawY = -(startIdx * ITEM_H) - delta;
+      const minY = -(PICKER_DEFS[defKey].values.length - 1) * ITEM_H;
+      const clampedY = Math.max(minY, Math.min(0, rawY));
+      list.style.transform = 'translateY(' + clampedY + 'px)';
+    }
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    container.classList.remove('dragging');
+
+    // 慣性でインデックスをずらす
+    const fling = Math.round(-velocity * 80 / ITEM_H);
+    const finalIdx = Math.max(0, Math.min(
+      PICKER_DEFS[defKey].values.length - 1,
+      pickerState[defKey].index + fling
+    ));
+    setPickerIndex(defKey, finalIdx, true);
+    calcQuick();
+  }
+
+  // Touch
+  container.addEventListener('touchstart', e => {
+    onStart(e.touches[0].clientY);
+  }, { passive: true });
+  container.addEventListener('touchmove', e => {
+    e.preventDefault();
+    onMove(e.touches[0].clientY);
+  }, { passive: false });
+  container.addEventListener('touchend', () => onEnd());
+
+  // Mouse
+  container.addEventListener('mousedown', e => {
+    onStart(e.clientY);
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (isDragging) onMove(e.clientY);
+  });
+  window.addEventListener('mouseup', () => {
+    if (isDragging) onEnd();
+  });
+
+  // クリック（タップで一項目移動）
+  container.addEventListener('click', e => {
+    const rect = container.getBoundingClientRect();
+    const relY = e.clientY - rect.top;
+    if (relY < ITEM_H) {
+      setPickerIndex(defKey, pickerState[defKey].index - 1, true);
+      calcQuick();
+    } else if (relY >= ITEM_H * 2) {
+      setPickerIndex(defKey, pickerState[defKey].index + 1, true);
+      calcQuick();
+    }
+  });
+}
+
+// ドラムから値を読む（calcQuick()用）
+function drumVal(key) {
+  const def = PICKER_DEFS[key];
+  return def.values[pickerState[key].index];
+}
+
+
 function copyRonToTsumo(){
-  document.getElementById('quick-tsumo-han').value = document.getElementById('quick-ron-han').value;
-  document.getElementById('quick-tsumo-fu').value  = document.getElementById('quick-ron-fu').value;
+  setPickerIndex('tsumo-han', pickerState['ron-han'].index, true);
+  setPickerIndex('tsumo-fu',  pickerState['ron-fu'].index,  true);
   calcQuick();
 }
 
 function calcQuick(){
-  const ronHan   = parseInt(document.getElementById("quick-ron-han").value);
-  const ronFu    = parseInt(document.getElementById("quick-ron-fu").value);
-  const tsumoHan = parseInt(document.getElementById("quick-tsumo-han").value);
-  const tsumoFu  = parseInt(document.getElementById("quick-tsumo-fu").value);
+  // pickerStateから直接値を読む（selectは使わない）
+  const ronHan   = drumVal('ron-han');
+  const ronFu    = drumVal('ron-fu');
+  const tsumoHan = drumVal('tsumo-han');
+  const tsumoFu  = drumVal('tsumo-fu');
 
   // ロン系
   if(ronHan === 1 && (ronFu === 20 || ronFu === 25)){
@@ -1148,6 +1346,12 @@ battle.animate([
 }
 
 document.getElementById("secret-battle").addEventListener("click", handleDeveloperCommandTap);
+
+// ドラムピッカー初期化
+buildDrumPicker('drum-ron-han',   'ron-han');
+buildDrumPicker('drum-ron-fu',    'ron-fu');
+buildDrumPicker('drum-tsumo-han', 'tsumo-han');
+buildDrumPicker('drum-tsumo-fu',  'tsumo-fu');
 
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');
