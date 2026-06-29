@@ -681,13 +681,13 @@ summary{
 }
 .drum-picker:active{ cursor:grabbing; }
 
-/* スクロールするリスト */
+/* スクロールするリスト：z-index:2でフェードより前面 */
 .drum-list{
   position:absolute;
   left:0; right:0;
   top:0;
+  z-index:2;
   will-change:transform;
-  transition:transform .0s;
 }
 
 .drum-item{
@@ -695,47 +695,46 @@ summary{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
+  font-size:14px;
   font-weight:900;
-  color:#999;
-  transition:color .15s, font-size .15s;
+  color:#bbb;
   pointer-events:none;
 }
 
 .drum-item.selected{
   color:var(--theme-main);
-  font-size:17px;
+  font-size:16px;
 }
 
-/* 選択ハイライト帯 */
+/* 選択ハイライト帯：z-index:1（リストの後ろ） */
 .drum-picker::before{
   content:"";
   position:absolute;
-  left:0; right:0;
+  left:4px; right:4px;
   top:50%;
   transform:translateY(-50%);
   height:32px;
   background:var(--theme-bg1);
-  border-top:2px solid var(--theme-shadow);
-  border-bottom:2px solid var(--theme-shadow);
+  border-radius:8px;
+  border:1.5px solid var(--theme-shadow);
   pointer-events:none;
   z-index:1;
 }
 
-/* 上下フェード */
+/* 上下フェード：z-index:3でリストの前面 */
 .drum-picker::after{
   content:"";
   position:absolute;
   inset:0;
   background:
     linear-gradient(180deg,
-      rgba(255,253,248,.92) 0%,
-      transparent 30%,
-      transparent 70%,
-      rgba(255,253,248,.92) 100%
+      rgba(255,255,255,.88) 0%,
+      rgba(255,255,255,.0) 28%,
+      rgba(255,255,255,.0) 72%,
+      rgba(255,255,255,.88) 100%
     );
   pointer-events:none;
-  z-index:2;
+  z-index:3;
 }
 
 @media (max-width:390px){
