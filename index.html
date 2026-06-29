@@ -307,13 +307,7 @@
 
     <section id="quick" class="tool">
 
-      <!-- 非表示select（値の同期用）display:noneだとselectedIndexが効かないブラウザ対策 -->
-      <select id="quick-ron-han"  style="visibility:hidden;position:absolute;width:0;height:0" onchange="calcQuick()"><option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜</option></select>
-      <select id="quick-ron-fu"   style="visibility:hidden;position:absolute;width:0;height:0" onchange="calcQuick()"><option value="20">20符</option><option value="25">25符</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option></select>
-      <select id="quick-tsumo-han" style="visibility:hidden;position:absolute;width:0;height:0" onchange="calcQuick()"><option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜</option></select>
-      <select id="quick-tsumo-fu"  style="visibility:hidden;position:absolute;width:0;height:0" onchange="calcQuick()"><option value="20">20符</option><option value="25">25符</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option></select>
-
-      <!-- ロン／ツモ 2列ダイヤル -->
+      <!-- ロン／ツモ 2列入力 -->
       <div class="quick-dual-grid">
 
         <!-- ロン列 -->
@@ -321,15 +315,19 @@
           <div class="quick-col-head">🀄 ロン</div>
           <div class="input-box quick-col-box">
             <label>はんすう</label>
-            <div class="drum-picker" data-target="quick-ron-han"></div>
+            <select id="quick-ron-han" onchange="calcQuick()">
+              <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜</option>
+            </select>
           </div>
           <div class="input-box quick-col-box">
             <label>ふすう</label>
-            <div class="drum-picker" data-target="quick-ron-fu"></div>
+            <select id="quick-ron-fu" onchange="calcQuick()">
+              <option value="20">20符</option><option value="25">25符</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option>
+            </select>
           </div>
         </div>
 
-        <!-- 中央：区切り＋コピーボタン -->
+        <!-- 中央：コピーボタン -->
         <div class="quick-center-col">
           <div class="quick-divider-line"></div>
           <button class="quick-copy-btn" onclick="copyRonToTsumo()" title="ロンの値をツモにコピー">▶▶</button>
@@ -341,15 +339,19 @@
           <div class="quick-col-head">🐾 ツモ</div>
           <div class="input-box quick-col-box">
             <label>はんすう</label>
-            <div class="drum-picker" data-target="quick-tsumo-han"></div>
+            <select id="quick-tsumo-han" onchange="calcQuick()">
+              <option value="1">1翻</option><option value="2">2翻</option><option value="3" selected>3翻</option><option value="4">4翻</option><option value="5">5翻</option><option value="6">6-7翻</option><option value="8">8-10翻</option><option value="11">11-12翻</option><option value="13">13翻〜</option>
+            </select>
           </div>
           <div class="input-box quick-col-box">
             <label>ふすう</label>
-            <div class="drum-picker" data-target="quick-tsumo-fu"></div>
+            <select id="quick-tsumo-fu" onchange="calcQuick()">
+              <option value="20">20符</option><option value="25">25符</option><option value="30" selected>30符</option><option value="40">40符</option><option value="50">50符</option><option value="60">60符</option><option value="70">70符</option><option value="80">80符</option><option value="90">90符</option><option value="100">100符</option>
+            </select>
           </div>
         </div>
 
-      </div><!-- /.quick-dual-grid -->
+      </div>
 
       <!-- 符ヒント -->
       <details style="margin-bottom:8px"><summary>🐾 符のざっくり目安</summary><div class="info-box">

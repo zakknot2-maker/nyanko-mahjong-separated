@@ -666,77 +666,15 @@ summary{
   background:var(--theme-bg1);
 }
 
-/* ===== ドラムピッカー ===== */
-.drum-picker{
-  position:relative;
-  height:96px;
-  overflow:hidden;
-  border-radius:14px;
-  background:#fff;
-  border:2px solid var(--theme-main);
-  cursor:grab;
-  user-select:none;
-  -webkit-user-select:none;
-  touch-action:none;
-}
-.drum-picker:active{ cursor:grabbing; }
-
-.drum-list{
-  position:absolute;
-  left:0; right:0; top:0;
-  z-index:1;
-}
-
-.drum-item{
-  height:32px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:15px;
-  font-weight:900;
-  color:#555;
-  pointer-events:none;
-}
-.drum-item.selected{
-  font-size:16px;
-}
-
-/* ハイライト帯（最背面） */
-.drum-highlight{
-  position:absolute;
-  left:6px; right:6px;
-  height:32px;
-  background:var(--theme-bg1);
-  border:1.5px solid var(--theme-shadow);
-  border-radius:8px;
-  z-index:0;
-  pointer-events:none;
-}
-
-/* 上下フェード（最前面） */
-.drum-fade{
-  position:absolute;
-  left:0; right:0;
-  height:32px;
-  pointer-events:none;
-  z-index:2;
-}
-.drum-fade-top{
-  top:0;
-  background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.0) 100%);
-}
-.drum-fade-bot{
-  bottom:0;
-  background:linear-gradient(0deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.0) 100%);
+.quick-col-box select{
+  padding:8px 10px;
+  font-size:14px;
 }
 
 @media (max-width:390px){
   .quick-col-head{ font-size:12px; }
   .quick-col-box{ padding:6px 8px; }
-  .drum-picker{ height:88px; }
-  .drum-item{ height:29px; font-size:14px; }
-  .drum-item.selected{ font-size:15px; }
-  .drum-highlight{ height:29px; }
+  .quick-col-box select{ font-size:13px; padding:7px 8px; }
 }
 
 /* グレーアウト */
