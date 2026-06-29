@@ -802,3 +802,37 @@ summary{
 .toggle-btn:active{
   opacity:.8;
 }
+
+/* ===== 符一覧テーブル ===== */
+.fu-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  margin-top:10px;
+}
+.fu-table th{
+  text-align:left;
+  padding:4px 6px;
+  border-bottom:2px solid var(--theme-shadow);
+  color:var(--theme-main);
+  font-weight:900;
+}
+.fu-table td{
+  padding:4px 6px;
+  border-bottom:0.5px solid var(--theme-shadow);
+  color:var(--theme-text,#555);
+}
+.fu-table td:last-child{
+  text-align:right;
+  font-weight:700;
+  color:var(--theme-main);
+  white-space:nowrap;
+}
+.fu-table .fu-section{
+  background:var(--theme-shadow);
+  color:var(--theme-main);
+  font-weight:900;
+  font-size:11px;
+  padding:3px 6px;
+  text-align:left;
+}
