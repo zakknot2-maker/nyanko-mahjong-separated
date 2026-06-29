@@ -122,6 +122,219 @@ function ceil10(n){return Math.ceil(n/10)*10}
 function fmt(n){return Number(n).toLocaleString()}
 function scoreFromFuHan(fu,han){let base;if(han>=13)base=8000;else if(han>=11)base=6000;else if(han>=8)base=4000;else if(han>=6)base=3000;else if(han>=5)base=2000;else{base=fu*Math.pow(2,han+2);if(base>=2000||(han===4&&fu>=30)||(han===3&&fu>=60))base=2000;}let koRon=ceil100(base*4),oyaRon=ceil100(base*6),koTsumoKo=ceil100(base),koTsumoOya=ceil100(base*2),oyaTsumo=ceil100(base*2);if(fu===25&&han===2){koRon=1600;oyaRon=2400;koTsumoKo=400;koTsumoOya=800;oyaTsumo=800;}return{koRon,oyaRon,koTsumoKo,koTsumoOya,oyaTsumo}}
 function setPoint(prefix,s){document.getElementById(prefix+"-ko-ron").innerText="🐾 "+fmt(s.koRon)+" 点";document.getElementById(prefix+"-ko-tsumo").innerText="🐈 "+fmt(s.koTsumoKo)+" / "+fmt(s.koTsumoOya);document.getElementById(prefix+"-oya-ron").innerText="👑 "+fmt(s.oyaRon)+" 点";document.getElementById(prefix+"-oya-tsumo").innerText="🐟 "+fmt(s.oyaTsumo)+" ALL";}
+/* ===== ドラムピッカー エンジン ===== */
+(function(){
+  const ITEM_H = 32; // .drum-item の高さ（px）
+  const VISIBLE = 3; // 表示行数（奇数）
+  const PADDING = Math.floor(VISIBLE / 2); // 上下の空白行数
+
+  function getItemH(){
+    return window.innerWidth <= 390 ? 29 : 32;
+  }
+
+  function buildPicker(container){
+    const targetId = container.dataset.target;
+    const sel = document.getElementById(targetId);
+    if(!sel) return;
+
+    const options = Array.from(sel.options);
+    const total   = options.length;
+
+    // ラップを作る
+    const list = document.createElement('div');
+    list.className = 'drum-list';
+
+    // 上パディング
+    for(let i = 0; i < PADDING; i++){
+      const pad = document.createElement('div');
+      pad.className = 'drum-item';
+      list.appendChild(pad);
+    }
+    // 実アイテム
+    options.forEach((opt, i) => {
+      const el = document.createElement('div');
+      el.className = 'drum-item';
+      el.textContent = opt.text;
+      el.dataset.index = i;
+      list.appendChild(el);
+    });
+    // 下パディング
+    for(let i = 0; i < PADDING; i++){
+      const pad = document.createElement('div');
+      pad.className = 'drum-item';
+      list.appendChild(pad);
+    }
+
+    container.appendChild(list);
+
+    // 現在のselect値からindexを取得
+    let currentIndex = sel.selectedIndex >= 0 ? sel.selectedIndex : 0;
+    let targetY = 0;
+    let currentY = 0;
+    let rafId = null;
+
+    function itemH(){ return window.innerWidth <= 390 ? 29 : 32; }
+
+    function indexToY(idx){
+      return -(idx * itemH());
+    }
+
+    function clamp(idx){ return Math.max(0, Math.min(total - 1, idx)); }
+
+    function updateSelected(idx, animate){
+      idx = clamp(idx);
+      currentIndex = idx;
+      sel.selectedIndex = idx;
+      sel.dispatchEvent(new Event('change'));
+      // ハイライト
+      list.querySelectorAll('.drum-item[data-index]').forEach(el => {
+        el.classList.toggle('selected', parseInt(el.dataset.index) === idx);
+      });
+    }
+
+    function snapTo(idx, fast){
+      idx = clamp(Math.round(idx));
+      targetY = indexToY(idx);
+      currentIndex = idx;
+      if(fast){
+        currentY = targetY;
+        list.style.transition = 'none';
+        list.style.transform = 'translateY(' + (targetY + itemH() * PADDING) + 'px)';
+        updateSelected(idx, false);
+      } else {
+        animateTo(targetY, idx);
+      }
+    }
+
+    function animateTo(toY, idx){
+      cancelAnimationFrame(rafId);
+      const startY = currentY;
+      const dist   = toY - startY;
+      const dur    = Math.min(300, Math.max(120, Math.abs(dist) * 0.8));
+      const start  = performance.now();
+
+      function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
+
+      function step(now){
+        const t = Math.min(1, (now - start) / dur);
+        currentY = startY + dist * easeOut(t);
+        list.style.transition = 'none';
+        list.style.transform = 'translateY(' + (currentY + itemH() * PADDING) + 'px)';
+        if(t < 1){
+          rafId = requestAnimationFrame(step);
+        } else {
+          currentY = toY;
+          updateSelected(idx, false);
+        }
+      }
+      rafId = requestAnimationFrame(step);
+    }
+
+    // 初期位置
+    snapTo(currentIndex, true);
+
+    // タッチ操作
+    let startTouchY = 0;
+    let startY_val  = 0;
+    let lastY       = 0;
+    let lastT       = 0;
+    let velocity    = 0;
+
+    container.addEventListener('touchstart', e => {
+      cancelAnimationFrame(rafId);
+      const t = e.touches[0];
+      startTouchY = t.clientY;
+      startY_val  = currentY;
+      lastY = t.clientY;
+      lastT = e.timeStamp;
+      velocity = 0;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const t    = e.touches[0];
+      const dy   = t.clientY - startTouchY;
+      const dt   = e.timeStamp - lastT;
+      velocity   = dt > 0 ? (t.clientY - lastY) / dt : 0;
+      lastY      = t.clientY;
+      lastT      = e.timeStamp;
+      currentY   = startY_val + dy;
+      list.style.transition = 'none';
+      list.style.transform  = 'translateY(' + (currentY + itemH() * PADDING) + 'px)';
+    }, { passive: false });
+
+    container.addEventListener('touchend', () => {
+      // 慣性
+      const momentumDist = velocity * 80;
+      const rawIdx  = -(currentY + momentumDist) / itemH();
+      const snapIdx = clamp(Math.round(rawIdx));
+      animateTo(indexToY(snapIdx), snapIdx);
+    });
+
+    // マウス操作（PC確認用）
+    let dragging = false;
+    let mouseStartY = 0;
+    let mouseStartVal = 0;
+
+    container.addEventListener('mousedown', e => {
+      dragging = true;
+      mouseStartY   = e.clientY;
+      mouseStartVal = currentY;
+      cancelAnimationFrame(rafId);
+    });
+    window.addEventListener('mousemove', e => {
+      if(!dragging) return;
+      const dy = e.clientY - mouseStartY;
+      currentY = mouseStartVal + dy;
+      list.style.transition = 'none';
+      list.style.transform  = 'translateY(' + (currentY + itemH() * PADDING) + 'px)';
+    });
+    window.addEventListener('mouseup', () => {
+      if(!dragging) return;
+      dragging = false;
+      const rawIdx  = -currentY / itemH();
+      const snapIdx = clamp(Math.round(rawIdx));
+      animateTo(indexToY(snapIdx), snapIdx);
+    });
+
+    // 外部からindex設定できるようにcontainerに関数を保持
+    container._snapTo = (idx) => snapTo(idx, false);
+    container._snapToFast = (idx) => snapTo(idx, true);
+  }
+
+  // DOMContentLoaded or call after DOM ready
+  function initAllPickers(){
+    document.querySelectorAll('.drum-picker').forEach(buildPicker);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initAllPickers);
+  } else {
+    initAllPickers();
+  }
+
+  window._drumSnapTo = function(targetId, idx, fast){
+    const picker = document.querySelector('.drum-picker[data-target="' + targetId + '"]');
+    if(picker && picker._snapTo) fast ? picker._snapToFast(idx) : picker._snapTo(idx);
+  };
+})();
+
+function copyRonToTsumo(){
+  const ronHanSel  = document.getElementById('quick-ron-han');
+  const ronFuSel   = document.getElementById('quick-ron-fu');
+  const tsumoHanSel = document.getElementById('quick-tsumo-han');
+  const tsumoFuSel  = document.getElementById('quick-tsumo-fu');
+
+  tsumoHanSel.selectedIndex = ronHanSel.selectedIndex;
+  tsumoFuSel.selectedIndex  = ronFuSel.selectedIndex;
+
+  // ドラムUIを同期
+  window._drumSnapTo('quick-tsumo-han', ronHanSel.selectedIndex, false);
+  window._drumSnapTo('quick-tsumo-fu',  ronFuSel.selectedIndex,  false);
+
+  calcQuick();
+}
+
 function calcQuick(){
   const ronHan  = parseInt(document.getElementById("quick-ron-han").value);
   const ronFu   = parseInt(document.getElementById("quick-ron-fu").value);
