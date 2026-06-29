@@ -246,7 +246,7 @@ function buildDrumPicker(containerId, defKey, onChangeCb) {
   setPickerIndex(defKey, pickerState[defKey].index, false);
 
   // タッチ・マウスイベント
-  attachDrumEvents(container, defKey);
+  attachDrumEvents(container, defKey, onChangeCb);
 }
 
 function getPickerY(defKey) {
@@ -271,7 +271,7 @@ function setPickerIndex(defKey, newIndex, animate) {
   list.style.transform = 'translateY(' + y + 'px)';
 }
 
-function attachDrumEvents(container, defKey) {
+function attachDrumEvents(container, defKey, onChangeCb) {
   let startY    = 0;
   let startIdx  = 0;
   let isDragging = false;
