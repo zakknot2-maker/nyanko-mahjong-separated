@@ -1414,6 +1414,11 @@ buildDrumPicker('drum-assist-han',  'assist-han', function(val){
   if(sel) sel.value = String(val);
   calcAssist();
 });
+// assist-han selectの初期値をpickerStateと同期
+(function(){
+  var sel = document.getElementById('assist-han');
+  if(sel) sel.value = String(PICKER_DEFS['assist-han'].values[PICKER_DEFS['assist-han'].initIndex]);
+})();
 
 applyCatImage("hero-cat", CAT_LIBRARY[0]);
 setCommentCatByName('assist-cat', 'キリッ猫');
