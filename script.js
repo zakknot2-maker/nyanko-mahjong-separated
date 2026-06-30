@@ -810,7 +810,7 @@ function calcBattleNormal(){
     reasons.push("終盤の超危険牌：一段階引き");
   }
 
-  if(value === "low" && shape === "bad"){
+  if(value === "low" && shape === "bad" && threat !== "openLow"){
     if(total <= 1){
       judgement = "🚪 ベタオリにゃ";
       risk = "0枚";
