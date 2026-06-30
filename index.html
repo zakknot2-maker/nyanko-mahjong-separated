@@ -80,16 +80,16 @@
       <div class="input-box">
         <label>相手の攻撃 ⚠️</label>
         <select id="battle-threat" onchange="calcBattle()" style="display:none">
-          <option value="none" selected>なし</option>
-          <option value="riichi">リーチ</option>
+          <option value="riichi" selected>リーチ</option>
           <option value="parent">親リーチ</option>
-          <option value="open">仕掛け（テンパイっぽい）</option>
+          <option value="openLow">安い仕掛け</option>
+          <option value="openHigh">高い仕掛け</option>
         </select>
         <div class="battle-seg-group">
-          <button type="button" class="battle-seg-btn active" data-val="none" onclick="battleSeg('battle-threat',this)">なし</button>
-          <button type="button" class="battle-seg-btn" data-val="riichi" onclick="battleSeg('battle-threat',this)">リーチ</button>
+          <button type="button" class="battle-seg-btn active" data-val="riichi" onclick="battleSeg('battle-threat',this)">リーチ</button>
           <button type="button" class="battle-seg-btn" data-val="parent" onclick="battleSeg('battle-threat',this)">親リーチ</button>
-          <button type="button" class="battle-seg-btn" data-val="open" onclick="battleSeg('battle-threat',this)">仕掛け</button>
+          <button type="button" class="battle-seg-btn" data-val="openLow" onclick="battleSeg('battle-threat',this)">安い仕掛け</button>
+          <button type="button" class="battle-seg-btn" data-val="openHigh" onclick="battleSeg('battle-threat',this)">高い仕掛け</button>
         </div>
       </div>
     </div>

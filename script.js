@@ -752,11 +752,12 @@ function calcBattleNormal(){
   }else if(threat === "parent"){
     total -= 3;
     reasons.push("親リーチ -3");
-  }else if(threat === "open"){
+  }else if(threat === "openHigh"){
+    total -= 2;
+    reasons.push("高い仕掛け -2");
+  }else if(threat === "openLow"){
     total -= 1;
-    reasons.push("仕掛け（テンパイっぽい） -1");
-  }else{
-    reasons.push("相手攻撃なし 基準");
+    reasons.push("安い仕掛け -1");
   }
 
   if(riskLevel === "danger"){
