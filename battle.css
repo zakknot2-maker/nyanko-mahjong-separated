@@ -1,10 +1,19 @@
 /* ===== 戦えるかにゃ？専用CSS ===== */
 
+/* 通常版：セグメントボタンが入る行は1列固定（はみ出し防止） */
+.secret-panel .row.normal-battle-panel{
+  grid-template-columns:1fr !important;
+}
+.secret-panel .normal-battle-panel .input-box{
+  min-width:0;
+}
+
 /* ===== 通常版：入力スピード重視のミニセグメントボタン ===== */
 .battle-seg-group{
   display:flex;
   gap:5px;
   width:100%;
+  min-width:0;
 }
 .battle-seg-btn{
   flex:1;
