@@ -856,7 +856,7 @@ function updateAwakenVisibility(){
   const riskLevel = getBattleValue("aw-battle-risklevel","okay");
 
   const isRiichi  = (threat === "riichi" || threat === "parent");
-  const isOpen    = (threat === "open");
+  const isOpen    = (threat === "openLow" || threat === "openHigh");
   const isAnyDanger = (riskLevel !== "okay");
 
   // 自分の手：シャンテン数に応じて形欄を切り替え
@@ -913,7 +913,7 @@ function calcBattleAwaken(){
 
   // 便利フラグ
   const isRiichi     = (threat === "riichi" || threat === "parent");
-  const isOpen       = (threat === "open");
+  const isOpen       = (threat === "openLow" || threat === "openHigh");
   const hasAttack    = true; // 攻撃なし廃止のため常にtrue
   const isTenpai     = (shanten === "tenpai");
   const isOne        = (shanten === "one");
@@ -1134,10 +1134,13 @@ function calcBattleAwaken(){
     total -= 4;
     reasons.push("親リーチ -4");
     coachingComments.push("親リーチは打点・放銃点ともに重い。押す根拠が強くないとオリ有利にゃ。");
+  }else if(threat === "openHigh"){
+    total -= 2;
+    reasons.push("高い仕掛け -2");
   }else{
-    // 高そうな仕掛け
+    // openLow: 安い仕掛け
     total -= 1;
-    reasons.push("高そうな仕掛け -1");
+    reasons.push("安い仕掛け -1");
   }
 
   // =============================================

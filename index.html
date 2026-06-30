@@ -147,20 +147,31 @@
         <div class="awaken-grid">
           <div class="awaken-field" data-awaken-field="rank">
             <label>着順</label>
-            <select id="aw-battle-rank" onchange="calcBattle()">
+            <select id="aw-battle-rank" style="display:none">
               <option value="1">1着目</option>
               <option value="2" selected>2着目</option>
               <option value="3">3着目</option>
               <option value="4">4着目</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn" data-val="1" onclick="battleSeg('aw-battle-rank',this)">1着目</button>
+              <button type="button" class="battle-seg-btn active" data-val="2" onclick="battleSeg('aw-battle-rank',this)">2着目</button>
+              <button type="button" class="battle-seg-btn" data-val="3" onclick="battleSeg('aw-battle-rank',this)">3着目</button>
+              <button type="button" class="battle-seg-btn" data-val="4" onclick="battleSeg('aw-battle-rank',this)">4着目</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="round">
             <label>巡目</label>
-            <select id="aw-battle-round" onchange="calcBattle()">
+            <select id="aw-battle-round" style="display:none">
               <option value="early">序盤 1〜6</option>
               <option value="middle" selected>中盤 7〜12</option>
               <option value="late">終盤 13〜</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn" data-val="early" onclick="battleSeg('aw-battle-round',this)">序盤</button>
+              <button type="button" class="battle-seg-btn active" data-val="middle" onclick="battleSeg('aw-battle-round',this)">中盤</button>
+              <button type="button" class="battle-seg-btn" data-val="late" onclick="battleSeg('aw-battle-round',this)">終盤</button>
+            </div>
           </div>
         </div>
       </div>
@@ -170,23 +181,33 @@
         <div class="awaken-grid">
           <div class="awaken-field" data-awaken-field="shanten">
             <label>シャンテン</label>
-            <select id="aw-battle-shanten" onchange="calcBattle()">
+            <select id="aw-battle-shanten" style="display:none">
               <option value="tenpai" selected>テンパイ</option>
               <option value="one">1シャンテン</option>
               <option value="two">2シャンテン</option>
               <option value="three">3シャンテン以上</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="tenpai" onclick="battleSeg('aw-battle-shanten',this)">テンパイ</button>
+              <button type="button" class="battle-seg-btn" data-val="one" onclick="battleSeg('aw-battle-shanten',this)">1シャンテン</button>
+              <button type="button" class="battle-seg-btn" data-val="two" onclick="battleSeg('aw-battle-shanten',this)">2シャンテン</button>
+              <button type="button" class="battle-seg-btn" data-val="three" onclick="battleSeg('aw-battle-shanten',this)">3シャンテン以上</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="tenpaiShape">
             <label>テンパイ形</label>
-            <select id="aw-battle-tenpai-shape" onchange="calcBattle()">
+            <select id="aw-battle-tenpai-shape" style="display:none">
               <option value="ryanmen" selected>両面・良形</option>
               <option value="gukei">愚形テンパイ</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="ryanmen" onclick="battleSeg('aw-battle-tenpai-shape',this)">両面・良形</button>
+              <button type="button" class="battle-seg-btn" data-val="gukei" onclick="battleSeg('aw-battle-tenpai-shape',this)">愚形テンパイ</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="iishantenShape">
             <label>1シャンテン形</label>
-            <select id="aw-battle-iishanten-shape" onchange="calcBattle()">
+            <select id="aw-battle-iishanten-shape" style="display:none">
               <option value="ryanmen2" selected>両面両面+</option>
               <option value="complete">完全形</option>
               <option value="kuttsuki">くっつき</option>
@@ -194,15 +215,29 @@
               <option value="gukei">愚形含み</option>
               <option value="gukeiStrong">愚形濃厚</option>
             </select>
+            <div class="battle-seg-group battle-seg-wrap">
+              <button type="button" class="battle-seg-btn active" data-val="ryanmen2" onclick="battleSeg('aw-battle-iishanten-shape',this)">両面両面+</button>
+              <button type="button" class="battle-seg-btn" data-val="complete" onclick="battleSeg('aw-battle-iishanten-shape',this)">完全形</button>
+              <button type="button" class="battle-seg-btn" data-val="kuttsuki" onclick="battleSeg('aw-battle-iishanten-shape',this)">くっつき</button>
+              <button type="button" class="battle-seg-btn" data-val="ryankan" onclick="battleSeg('aw-battle-iishanten-shape',this)">リャンカン</button>
+              <button type="button" class="battle-seg-btn" data-val="gukei" onclick="battleSeg('aw-battle-iishanten-shape',this)">愚形含み</button>
+              <button type="button" class="battle-seg-btn" data-val="gukeiStrong" onclick="battleSeg('aw-battle-iishanten-shape',this)">愚形濃厚</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="value">
             <label>打点</label>
-            <select id="aw-battle-value" onchange="calcBattle()">
+            <select id="aw-battle-value" style="display:none">
               <option value="low">1000〜2000</option>
               <option value="middle" selected>3900〜5200</option>
               <option value="mangan">満貫（8000〜）</option>
               <option value="haneman">跳満以上（12000〜）</option>
             </select>
+            <div class="battle-seg-group battle-seg-wrap">
+              <button type="button" class="battle-seg-btn" data-val="low" onclick="battleSeg('aw-battle-value',this)">1000〜2000</button>
+              <button type="button" class="battle-seg-btn active" data-val="middle" onclick="battleSeg('aw-battle-value',this)">3900〜5200</button>
+              <button type="button" class="battle-seg-btn" data-val="mangan" onclick="battleSeg('aw-battle-value',this)">満貫（8000〜）</button>
+              <button type="button" class="battle-seg-btn" data-val="haneman" onclick="battleSeg('aw-battle-value',this)">跳満以上（12000〜）</button>
+            </div>
           </div>
         </div>
       </div>
@@ -212,28 +247,46 @@
         <div class="awaken-grid">
           <div class="awaken-field awaken-wide" data-awaken-field="threat">
             <label>相手の攻撃</label>
-            <select id="aw-battle-threat" onchange="calcBattle()">
+            <select id="aw-battle-threat" style="display:none">
               <option value="riichi" selected>リーチ</option>
               <option value="parent">親リーチ</option>
-              <option value="open">高そうな仕掛け</option>
+              <option value="openLow">安い仕掛け</option>
+              <option value="openHigh">高い仕掛け</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="riichi" onclick="battleSeg('aw-battle-threat',this)">リーチ</button>
+              <button type="button" class="battle-seg-btn" data-val="parent" onclick="battleSeg('aw-battle-threat',this)">親リーチ</button>
+              <button type="button" class="battle-seg-btn" data-val="openLow" onclick="battleSeg('aw-battle-threat',this)">安い仕掛け</button>
+              <button type="button" class="battle-seg-btn" data-val="openHigh" onclick="battleSeg('aw-battle-threat',this)">高い仕掛け</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="openCount">
             <label>副露数</label>
-            <select id="aw-battle-open-count" onchange="calcBattle()">
+            <select id="aw-battle-open-count" style="display:none">
               <option value="none" selected>なし</option>
               <option value="one">1副露</option>
               <option value="two">2副露</option>
               <option value="three">3副露以上</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="none" onclick="battleSeg('aw-battle-open-count',this)">なし</button>
+              <button type="button" class="battle-seg-btn" data-val="one" onclick="battleSeg('aw-battle-open-count',this)">1副露</button>
+              <button type="button" class="battle-seg-btn" data-val="two" onclick="battleSeg('aw-battle-open-count',this)">2副露</button>
+              <button type="button" class="battle-seg-btn" data-val="three" onclick="battleSeg('aw-battle-open-count',this)">3副露以上</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="secondAttacker">
             <label>第2攻撃者</label>
-            <select id="aw-battle-second-attacker" onchange="calcBattle()">
+            <select id="aw-battle-second-attacker" style="display:none">
               <option value="none" selected>なし</option>
               <option value="child">子が押し</option>
               <option value="parent">親が押し</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="none" onclick="battleSeg('aw-battle-second-attacker',this)">なし</button>
+              <button type="button" class="battle-seg-btn" data-val="child" onclick="battleSeg('aw-battle-second-attacker',this)">子が押し</button>
+              <button type="button" class="battle-seg-btn" data-val="parent" onclick="battleSeg('aw-battle-second-attacker',this)">親が押し</button>
+            </div>
           </div>
         </div>
       </div>
@@ -243,36 +296,57 @@
         <div class="awaken-grid">
           <div class="awaken-field awaken-wide" data-awaken-field="riskLevel">
             <label>危険度</label>
-            <select id="aw-battle-risklevel" onchange="calcBattle()">
+            <select id="aw-battle-risklevel" style="display:none">
               <option value="okay" selected>現物・筋</option>
               <option value="safe19">無筋（1・9・字牌周辺）</option>
               <option value="danger">無筋（2・3・7・8）</option>
               <option value="verydanger">無筋（4・5・6・またぎ）</option>
             </select>
+            <div class="battle-seg-group battle-seg-wrap">
+              <button type="button" class="battle-seg-btn active" data-val="okay" onclick="battleSeg('aw-battle-risklevel',this)">現物・筋</button>
+              <button type="button" class="battle-seg-btn" data-val="safe19" onclick="battleSeg('aw-battle-risklevel',this)">無筋（1・9・字牌）</button>
+              <button type="button" class="battle-seg-btn" data-val="danger" onclick="battleSeg('aw-battle-risklevel',this)">無筋（2・3・7・8）</button>
+              <button type="button" class="battle-seg-btn" data-val="verydanger" onclick="battleSeg('aw-battle-risklevel',this)">無筋（4・5・6・またぎ）</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="suji">
             <label>残り筋</label>
-            <select id="aw-battle-suji" onchange="calcBattle()">
+            <select id="aw-battle-suji" style="display:none">
               <option value="many" selected>多い</option>
               <option value="normal">普通</option>
               <option value="few">少ない</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="many" onclick="battleSeg('aw-battle-suji',this)">多い</button>
+              <button type="button" class="battle-seg-btn" data-val="normal" onclick="battleSeg('aw-battle-suji',this)">普通</button>
+              <button type="button" class="battle-seg-btn" data-val="few" onclick="battleSeg('aw-battle-suji',this)">少ない</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="safe">
             <label>安牌</label>
-            <select id="aw-battle-safe" onchange="calcBattle()">
+            <select id="aw-battle-safe" style="display:none">
               <option value="enough" selected>十分ある</option>
               <option value="few">少ない</option>
               <option value="none">ほぼない</option>
             </select>
+            <div class="battle-seg-group">
+              <button type="button" class="battle-seg-btn active" data-val="enough" onclick="battleSeg('aw-battle-safe',this)">十分ある</button>
+              <button type="button" class="battle-seg-btn" data-val="few" onclick="battleSeg('aw-battle-safe',this)">少ない</button>
+              <button type="button" class="battle-seg-btn" data-val="none" onclick="battleSeg('aw-battle-safe',this)">ほぼない</button>
+            </div>
           </div>
           <div class="awaken-field" data-awaken-field="pushTile">
             <label>押す牌の性質</label>
-            <select id="aw-battle-push-tile" onchange="calcBattle()">
+            <select id="aw-battle-push-tile" style="display:none">
               <option value="normal" selected>普通</option>
               <option value="kaitaku">通ると安全牌が増える</option>
               <option value="blocked">通っても次で詰まる</option>
             </select>
+            <div class="battle-seg-group battle-seg-wrap">
+              <button type="button" class="battle-seg-btn active" data-val="normal" onclick="battleSeg('aw-battle-push-tile',this)">普通</button>
+              <button type="button" class="battle-seg-btn" data-val="kaitaku" onclick="battleSeg('aw-battle-push-tile',this)">通ると安全牌増</button>
+              <button type="button" class="battle-seg-btn" data-val="blocked" onclick="battleSeg('aw-battle-push-tile',this)">通っても詰まる</button>
+            </div>
           </div>
         </div>
       </div>

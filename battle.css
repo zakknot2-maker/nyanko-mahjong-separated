@@ -649,3 +649,38 @@ body.developer-mode #secret-battle .battle-judge{
     padding:6px 9px !important;
   }
 }
+
+/* ===== Awaken版：セグメントボタン化（入力速度優先のため1列縦積みに変更） ===== */
+body.developer-mode #secret-battle .awaken-form{
+  grid-template-columns:1fr !important;
+}
+body.developer-mode #secret-battle .awaken-field,
+body.developer-mode #secret-battle .awaken-field.awaken-wide{
+  grid-column:auto !important;
+}
+body.developer-mode #secret-battle .awaken-field select{
+  display:none !important;
+}
+body.developer-mode #secret-battle .awaken-field .battle-seg-group{
+  width:100%;
+}
+body.developer-mode #secret-battle .awaken-field .battle-seg-btn{
+  min-height:36px;
+  font-size:12px;
+  padding:6px 3px;
+}
+/* 選択肢が多い項目（5〜6択）は折り返し可にして潰れを防ぐ */
+body.developer-mode #secret-battle .awaken-field .battle-seg-group.battle-seg-wrap{
+  flex-wrap:wrap;
+}
+body.developer-mode #secret-battle .awaken-field .battle-seg-group.battle-seg-wrap .battle-seg-btn{
+  flex:1 1 30%;
+}
+
+@media (max-width:420px){
+  body.developer-mode #secret-battle .awaken-field .battle-seg-btn{
+    font-size:11px;
+    min-height:34px;
+    padding:5px 2px;
+  }
+}
