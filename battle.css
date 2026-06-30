@@ -1,5 +1,49 @@
 /* ===== 戦えるかにゃ？専用CSS ===== */
 
+/* ===== 通常版：入力スピード重視のミニセグメントボタン ===== */
+.battle-seg-group{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:5px;
+  width:100%;
+}
+.battle-seg-group.cols-3{
+  grid-template-columns:repeat(3,1fr);
+}
+.battle-seg-btn{
+  min-width:0;
+  min-height:38px;
+  padding:6px 4px;
+  font-size:12px;
+  font-weight:800;
+  font-family:inherit;
+  line-height:1.2;
+  border-radius:10px;
+  border:1.5px solid var(--theme-shadow,#ccc);
+  background:var(--c-white);
+  color:var(--theme-text,#555);
+  cursor:pointer;
+  text-align:center;
+  white-space:normal;
+  word-break:keep-all;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .1s,color .1s,border-color .1s;
+}
+.battle-seg-btn.active{
+  background:var(--theme-main);
+  color:#fff;
+  border-color:var(--theme-main);
+}
+.battle-seg-btn:active{ opacity:.8; }
+
+@media (max-width:380px){
+  .battle-seg-btn{
+    font-size:11px;
+    min-height:36px;
+    padding:5px 3px;
+  }
+}
+
 /* 裏モード中は通常UIを隠す */
 body.secret-mode .hero,
 body.secret-mode .tabs,

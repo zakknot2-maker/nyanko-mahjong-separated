@@ -37,69 +37,106 @@
     <div class="row normal-battle-panel">
       <div class="input-box">
         <label>シャンテン 🐱</label>
-        <select id="battle-shanten" onchange="calcBattle()">
+        <select id="battle-shanten" onchange="calcBattle()" style="display:none">
           <option value="tenpai" selected>テンパイ</option>
           <option value="one">1シャンテン</option>
           <option value="two">2シャンテン</option>
           <option value="three">3シャンテン以上</option>
         </select>
+        <div class="battle-seg-group">
+          <button type="button" class="battle-seg-btn active" data-val="tenpai" onclick="battleSeg('battle-shanten',this)">テンパイ</button>
+          <button type="button" class="battle-seg-btn" data-val="one" onclick="battleSeg('battle-shanten',this)">1シャンテン</button>
+          <button type="button" class="battle-seg-btn" data-val="two" onclick="battleSeg('battle-shanten',this)">2シャンテン</button>
+          <button type="button" class="battle-seg-btn" data-val="three" onclick="battleSeg('battle-shanten',this)">3シャンテン以上</button>
+        </div>
       </div>
       <div class="input-box">
         <label>待ち・形 🐾</label>
-        <select id="battle-shape" onchange="calcBattle()">
+        <select id="battle-shape" onchange="calcBattle()" style="display:none">
           <option value="good" selected>良形</option>
           <option value="bad">愚形</option>
         </select>
+        <div class="battle-seg-group">
+          <button type="button" class="battle-seg-btn active" data-val="good" onclick="battleSeg('battle-shape',this)">良形</button>
+          <button type="button" class="battle-seg-btn" data-val="bad" onclick="battleSeg('battle-shape',this)">愚形</button>
+        </div>
       </div>
     </div>
 
     <div class="row normal-battle-panel">
       <div class="input-box">
         <label>打点目安 💰</label>
-        <select id="battle-value" onchange="calcBattle()">
+        <select id="battle-value" onchange="calcBattle()" style="display:none">
           <option value="low">1000～2000</option>
           <option value="middle" selected>3900～5200</option>
           <option value="mangan">満貫以上</option>
         </select>
+        <div class="battle-seg-group cols-3">
+          <button type="button" class="battle-seg-btn" data-val="low" onclick="battleSeg('battle-value',this)">1000〜2000</button>
+          <button type="button" class="battle-seg-btn active" data-val="middle" onclick="battleSeg('battle-value',this)">3900〜5200</button>
+          <button type="button" class="battle-seg-btn" data-val="mangan" onclick="battleSeg('battle-value',this)">満貫以上</button>
+        </div>
       </div>
       <div class="input-box">
         <label>相手の攻撃 ⚠️</label>
-        <select id="battle-threat" onchange="calcBattle()">
+        <select id="battle-threat" onchange="calcBattle()" style="display:none">
           <option value="none" selected>なし</option>
           <option value="riichi">リーチ</option>
           <option value="parent">親リーチ</option>
           <option value="open">仕掛け（テンパイっぽい）</option>
         </select>
+        <div class="battle-seg-group">
+          <button type="button" class="battle-seg-btn active" data-val="none" onclick="battleSeg('battle-threat',this)">なし</button>
+          <button type="button" class="battle-seg-btn" data-val="riichi" onclick="battleSeg('battle-threat',this)">リーチ</button>
+          <button type="button" class="battle-seg-btn" data-val="parent" onclick="battleSeg('battle-threat',this)">親リーチ</button>
+          <button type="button" class="battle-seg-btn" data-val="open" onclick="battleSeg('battle-threat',this)">仕掛け</button>
+        </div>
       </div>
     </div>
 
     <div class="row normal-battle-panel">
       <div class="input-box">
         <label>切る牌 🀄</label>
-        <select id="battle-risklevel" onchange="calcBattle()">
+        <select id="battle-risklevel" onchange="calcBattle()" style="display:none">
           <option value="okay" selected>通りそうな牌</option>
           <option value="danger">危険牌</option>
           <option value="verydanger">超危険牌</option>
         </select>
+        <div class="battle-seg-group cols-3">
+          <button type="button" class="battle-seg-btn active" data-val="okay" onclick="battleSeg('battle-risklevel',this)">通りそう</button>
+          <button type="button" class="battle-seg-btn" data-val="danger" onclick="battleSeg('battle-risklevel',this)">危険牌</button>
+          <button type="button" class="battle-seg-btn" data-val="verydanger" onclick="battleSeg('battle-risklevel',this)">超危険牌</button>
+        </div>
       </div>
       <div class="input-box">
         <label>巡目 🀄</label>
-        <select id="battle-round" onchange="calcBattle()">
+        <select id="battle-round" onchange="calcBattle()" style="display:none">
           <option value="early">序盤（1〜6巡）</option>
           <option value="middle" selected>中盤（7〜12巡）</option>
           <option value="late">終盤（13巡〜）</option>
         </select>
+        <div class="battle-seg-group cols-3">
+          <button type="button" class="battle-seg-btn" data-val="early" onclick="battleSeg('battle-round',this)">序盤</button>
+          <button type="button" class="battle-seg-btn active" data-val="middle" onclick="battleSeg('battle-round',this)">中盤</button>
+          <button type="button" class="battle-seg-btn" data-val="late" onclick="battleSeg('battle-round',this)">終盤</button>
+        </div>
       </div>
     </div>
 
     <div class="input-box normal-battle-panel">
       <label>着順状況 🐾</label>
-      <select id="battle-rank" onchange="calcBattle()">
+      <select id="battle-rank" onchange="calcBattle()" style="display:none">
         <option value="1">1着目</option>
         <option value="2" selected>2着目</option>
         <option value="3">3着目</option>
         <option value="4">4着目</option>
       </select>
+      <div class="battle-seg-group">
+        <button type="button" class="battle-seg-btn" data-val="1" onclick="battleSeg('battle-rank',this)">1着目</button>
+        <button type="button" class="battle-seg-btn active" data-val="2" onclick="battleSeg('battle-rank',this)">2着目</button>
+        <button type="button" class="battle-seg-btn" data-val="3" onclick="battleSeg('battle-rank',this)">3着目</button>
+        <button type="button" class="battle-seg-btn" data-val="4" onclick="battleSeg('battle-rank',this)">4着目</button>
+      </div>
     </div>
 
     <div class="developer-only awaken-extra awaken-form">

@@ -664,6 +664,14 @@ function hideSecretBattle(){
   document.body.classList.remove("secret-mode");
   document.getElementById("secret-battle").classList.remove("active");
 }
+function battleSeg(selectId, btn){
+  const group = btn.parentElement;
+  group.querySelectorAll('.battle-seg-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const sel = document.getElementById(selectId);
+  if(sel) sel.value = btn.dataset.val;
+  calcBattle();
+}
 function calcBattle(){
   if(document.body.classList.contains("developer-mode")){
     calcBattleAwaken();
