@@ -672,6 +672,147 @@ function battleSeg(selectId, btn){
   if(sel) sel.value = btn.dataset.val;
   calcBattle();
 }
+// ================================================================
+// リセット関数（全ページ共通）
+// ================================================================
+
+// セグメントボタングループを指定のdata-valで選択しなおすユーティリティ
+function resetSegGroup(groupSelector, defaultVal) {
+  document.querySelectorAll(groupSelector + ' .battle-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === defaultVal);
+  });
+  // hidden selectにも反映
+  const grp = document.querySelector(groupSelector);
+  if (grp) {
+    const sel = grp.previousElementSibling;
+    if (sel && sel.tagName === 'SELECT') sel.value = defaultVal;
+  }
+}
+
+function resetAssist() {
+  // ドラム
+  setPickerIndex('assist-han', PICKER_DEFS['assist-han'].initIndex, true);
+  const synced = document.getElementById('assist-han');
+  if (synced) synced.value = PICKER_DEFS['assist-han'].values[PICKER_DEFS['assist-han'].initIndex];
+
+  // チェックボックス
+  document.getElementById('assist-pinfu').checked  = false;
+  document.getElementById('assist-chitoi').checked = false;
+
+  // あがり方セグメント → メンゼンロン
+  document.querySelectorAll('#seg-assist-win .assist-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === 'closedRon');
+  });
+  document.getElementById('assist-win').value = 'closedRon';
+
+  // 頭セグメント → 通常(0)
+  document.querySelectorAll('#seg-assist-head .assist-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === '0');
+  });
+  document.getElementById('assist-head').value = '0';
+
+  // 待ちトグル → 両面(0)
+  document.querySelectorAll('#toggle-assist-wait .toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === '0');
+  });
+  document.getElementById('assist-wait').value = '0';
+
+  // 刻子・カン行 → すべて0
+  document.querySelectorAll('.assist-set-row .assist-seg-group').forEach(group => {
+    group.querySelectorAll('.assist-seg-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === '0');
+    });
+  });
+
+  updateAssistSpecialUI();
+  calcAssist();
+}
+
+function resetQuick() {
+  ['ron-han','ron-fu','tsumo-han','tsumo-fu'].forEach(key => {
+    setPickerIndex(key, PICKER_DEFS[key].initIndex, true);
+  });
+  calcQuick();
+}
+
+function resetCondition() {
+  document.getElementById('cond-me').value     = '';
+  document.getElementById('cond-target').value = '';
+
+  // 席トグル → 子
+  ['my-seat','target-seat'].forEach(key => {
+    document.querySelectorAll('#toggle-' + key + ' .toggle-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === 'child');
+    });
+    toggleState[key] = 'child';
+  });
+
+  // 本場・供託 → 0
+  ['honba','kyotaku'].forEach(field => {
+    document.querySelectorAll('#seg-cond-' + field + ' .cond-num-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === '0');
+    });
+    condSegState[field] = 0;
+  });
+
+  calcCondition();
+}
+
+function resetBattle() {
+  if (document.body.classList.contains('developer-mode')) {
+    // awaken版
+    const aw = [
+      ['aw-battle-rank',           '2'],
+      ['aw-battle-round',          'middle'],
+      ['aw-battle-shanten',        'tenpai'],
+      ['aw-battle-tenpai-shape',   'ryanmen'],
+      ['aw-battle-iishanten-shape','ryanmen2'],
+      ['aw-battle-value',          'middle'],
+      ['aw-battle-threat',         'riichi'],
+      ['aw-battle-open-count',     'none'],
+      ['aw-battle-second-attacker','none'],
+      ['aw-battle-risklevel',      'okay'],
+      ['aw-battle-suji',           'many'],
+      ['aw-battle-safe',           'enough'],
+      ['aw-battle-push-tile',      'normal'],
+    ];
+    aw.forEach(([id, val]) => {
+      const sel = document.getElementById(id);
+      if (sel) sel.value = val;
+      // 同じawaken-fieldの中のseg-groupボタンを更新
+      const field = sel ? sel.closest('.awaken-field') : null;
+      if (field) {
+        field.querySelectorAll('.battle-seg-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.val === val);
+        });
+      }
+    });
+  } else {
+    // 通常版
+    const nm = [
+      ['battle-shanten',   'tenpai'],
+      ['battle-shape',     'good'],
+      ['battle-value',     'middle'],
+      ['battle-threat',    'riichi'],
+      ['battle-risklevel', 'okay'],
+      ['battle-round',     'middle'],
+      ['battle-rank',      '2'],
+    ];
+    nm.forEach(([id, val]) => {
+      const sel = document.getElementById(id);
+      if (sel) sel.value = val;
+      // input-boxの中のseg-groupボタンを更新
+      const box = sel ? sel.closest('.input-box') : null;
+      if (box) {
+        box.querySelectorAll('.battle-seg-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.val === val);
+        });
+      }
+    });
+  }
+  calcBattle();
+}
+
 function calcBattle(){
   if(document.body.classList.contains("developer-mode")){
     calcBattleAwaken();

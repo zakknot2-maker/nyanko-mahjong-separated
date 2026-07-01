@@ -914,3 +914,28 @@ summary{
   border-color:var(--theme-main);
 }
 .cond-num-btn:active{ opacity:.8; }
+
+/* ===== リセットボタン（全ページ共通） ===== */
+.reset-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+.reset-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--theme-text, #888);
+  background: transparent;
+  border: 1.5px solid var(--theme-shadow, #ccc);
+  border-radius: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity .15s, background .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.reset-btn:active {
+  opacity: 1;
+  background: var(--theme-shadow, #eee);
+}
