@@ -596,6 +596,58 @@ function setConditionDifficultyCat(resultText){
   }
 }
 
+// ================================================================
+// 役例ヒントテーブル（条件テキスト → 役の組み合わせ例）
+// ================================================================
+const YAKU_HINT = {
+  // ── 子ロン系 ──
+  '1000ロン':        { label:'1翻でOKにゃ 🎯', ex:['リーチ','タンヤオ','役牌1枚','ピンフ+ツモ'] },
+  '2000ロン':        { label:'2翻が目安にゃ',   ex:['タンヤオ+役牌','リーチ+ドラ1','ピンフ+リーチ','ピンフ+タンヤオ'] },
+  '3900ロン':        { label:'3翻が目安にゃ',   ex:['リーチ+タンヤオ+ドラ1','タンヤオ+役牌+ドラ1','ピンフ+リーチ+タンヤオ'] },
+  '5200ロン':        { label:'3〜4翻が必要にゃ', ex:['リーチ+タンヤオ+ドラ2','リーチ+ピンフ+タンヤオ+ドラ1','タンヤオ+役牌×2+ドラ1'] },
+  // ── 親ロン系 ──
+  '1500ロン':        { label:'1翻でOKにゃ 🎯', ex:['リーチ','タンヤオ','役牌1枚'] },
+  '2900ロン':        { label:'2翻が目安にゃ',   ex:['タンヤオ+役牌','リーチ+ドラ1','ピンフ+リーチ'] },
+  '5800ロン':        { label:'3翻が目安にゃ',   ex:['リーチ+タンヤオ+ドラ1','タンヤオ+役牌+ドラ1','ピンフ+リーチ+タンヤオ'] },
+  // ── 満貫以上（共通） ──
+  '満貫ロン':        { label:'満貫が必要にゃ 💪', ex:['リーチ+タンヤオ+ピンフ+ドラ1','タンヤオ+役牌×2+ドラ1','リーチ+タンヤオ+ドラ3'] },
+  '跳満ロン':        { label:'跳満が必要にゃ 😤', ex:['リーチ+タンヤオ+ピンフ+ドラ3','染め手＋役牌複数'] },
+  '倍満ロン':        { label:'倍満が必要にゃ 😱', ex:['清一色','混一色+役牌複数+ドラ','字一色など'] },
+  '三倍満ロン':      { label:'三倍満が必要にゃ 😱', ex:['大三元','字一色など大物手'] },
+  '役満ロン':        { label:'役満が必要にゃ 🙀', ex:['国士無双','四暗刻','大三元など'] },
+  // ── 子ツモ系 ──
+  '500 / 1000ツモ':  { label:'1翻でOKにゃ 🎯', ex:['リーチ','タンヤオ','役牌1枚','ピンフ'] },
+  '1000 / 2000ツモ': { label:'2翻が目安にゃ',   ex:['タンヤオ+役牌','リーチ+ドラ1','ピンフ+リーチ'] },
+  '1300 / 2600ツモ': { label:'3翻が目安にゃ',   ex:['リーチ+タンヤオ+ドラ1','タンヤオ+役牌+ドラ1','ピンフ+リーチ+タンヤオ'] },
+  '2000 / 4000ツモ': { label:'満貫が必要にゃ 💪', ex:['リーチ+タンヤオ+ピンフ+ドラ1','タンヤオ+役牌×2+ドラ1'] },
+  '3000 / 6000ツモ': { label:'跳満が必要にゃ 😤', ex:['リーチ+タンヤオ+ピンフ+ドラ3','染め手＋役牌複数'] },
+  '4000 / 8000ツモ': { label:'倍満が必要にゃ 😱', ex:['清一色','混一色+役牌複数+ドラ'] },
+  // ── 親ツモ系 ──
+  '1000 ALL':        { label:'1翻でOKにゃ 🎯', ex:['リーチ','タンヤオ','役牌1枚'] },
+  '2000 ALL':        { label:'2翻が目安にゃ',   ex:['タンヤオ+役牌','リーチ+ドラ1','ピンフ+リーチ'] },
+  '4000 ALL':        { label:'満貫が必要にゃ 💪', ex:['リーチ+タンヤオ+ピンフ+ドラ1','タンヤオ+役牌×2+ドラ1'] },
+  '6000 ALL':        { label:'跳満が必要にゃ 😤', ex:['リーチ+タンヤオ+ピンフ+ドラ3','染め手＋役牌複数'] },
+  '8000 ALL':        { label:'倍満が必要にゃ 😱', ex:['清一色','混一色+役牌複数+ドラ'] },
+};
+
+function renderYakuHint(elId, condText) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (condText.includes('届かない')) {
+    el.innerHTML = '<div class="cond-yaku-label">🙀 役満でも届かない</div>';
+    el.classList.add('visible');
+    return;
+  }
+  const hint = YAKU_HINT[condText];
+  if (!hint) { el.classList.remove('visible'); return; }
+  el.innerHTML =
+    '<div class="cond-yaku-label">役例：' + hint.label + '</div>' +
+    '<div class="cond-yaku-examples">' +
+    hint.ex.map(e => '<span class="cond-yaku-tag">' + e + '</span>').join('') +
+    '</div>';
+  el.classList.add('visible');
+}
+
 function calcCondition(){
   const diffInput = document.getElementById("cond-diff-input");
 
@@ -604,9 +656,13 @@ function calcCondition(){
   const honba = condSegState.honba;
   const kyotaku = condSegState.kyotaku;
 
+  // 役例エリアをいったんクリア
+  ['cond-ron-yaku','cond-direct-yaku','cond-tsumo-yaku'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = ''; el.classList.remove('visible'); }
+  });
+
   if(diffInput.value === ""){
-    document.getElementById("cond-diff").innerText = "点差を入力してください🐾";
-    document.getElementById("cond-minimum").innerText = "-";
     document.getElementById("cond-ron").innerText = "-";
     document.getElementById("cond-direct").innerText = "-";
     document.getElementById("cond-tsumo").innerText = "-";
@@ -619,35 +675,26 @@ function calcCondition(){
 
   const diff = parseInt(diffInput.value);
   const bonus = honba * 300 + kyotaku * 1000;
-
-  // me=0, target=diff とすることで既存のfindRon/findTsumoをそのまま利用できる
   const me = 0;
   const target = diff;
 
-  document.getElementById("cond-diff").innerText =
-    diff > 0 ? fmt(diff) + "点ビハインド" : fmt(Math.abs(diff)) + "点リード";
+  const ron    = findRon(me, target, mySeat, false, bonus);
+  const direct = findRon(me, target, mySeat, true,  bonus);
+  const tsumo  = findTsumo(me, target, mySeat, targetSeat, bonus);
 
-  const ron = findRon(me, target, mySeat, false, bonus);
-  const direct = findRon(me, target, mySeat, true, bonus);
-  const tsumo = findTsumo(me, target, mySeat, targetSeat, bonus);
-
-  document.getElementById("cond-ron").innerText = ron;
+  document.getElementById("cond-ron").innerText    = ron;
   document.getElementById("cond-direct").innerText = direct;
-  document.getElementById("cond-tsumo").innerText = tsumo;
+  document.getElementById("cond-tsumo").innerText  = tsumo;
+
+  renderYakuHint('cond-ron-yaku',    ron);
+  renderYakuHint('cond-direct-yaku', direct);
+  renderYakuHint('cond-tsumo-yaku',  tsumo);
 
   let bestCondition = ron;
   if(bestCondition.includes("届かない")) bestCondition = direct;
   if(bestCondition.includes("届かない")) bestCondition = tsumo;
 
   setConditionDifficultyCat(bestCondition);
-
-  if(diff < 0){
-    document.getElementById("cond-minimum").innerText = "すでに上回ってるにゃ";
-  }else if([ron, direct, tsumo].some(x => !x.includes("届かない"))){
-    document.getElementById("cond-minimum").innerText = "どれかでまくれるにゃ";
-  }else{
-    document.getElementById("cond-minimum").innerText = "かなり厳しいにゃ";
-  }
 
   document.getElementById("cond-tsumo-sub").innerText =
     "自分：" + (mySeat === "parent" ? "親" : "子") +
