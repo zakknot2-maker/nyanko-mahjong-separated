@@ -505,15 +505,11 @@
 
     <section id="condition" class="tool">
       <div class="reset-bar"><button type="button" class="reset-btn" onclick="resetCondition()">↩ リセット</button></div>
-      <div class="input-box"><label>自分の持ち点 🐾</label><input
-  id="cond-me"
+      <div class="input-box"><label>相手との点差（相手が何点上か）🐾</label><input
+  id="cond-diff-input"
   type="number"
-  placeholder="例）24500"
-  oninput="calcCondition()"></div>
-      <div class="input-box"><label>まくりたい相手の点数 👑</label><input
-  id="cond-target"
-  type="number"
-  placeholder="例）38700"
+  inputmode="numeric"
+  placeholder="例）14200"
   oninput="calcCondition()"></div>
       <div class="row">
         <div class="input-box">

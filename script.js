@@ -597,16 +597,15 @@ function setConditionDifficultyCat(resultText){
 }
 
 function calcCondition(){
-  const meInput = document.getElementById("cond-me");
-  const targetInput = document.getElementById("cond-target");
+  const diffInput = document.getElementById("cond-diff-input");
 
   const mySeat = toggleState['my-seat'];
   const targetSeat = toggleState['target-seat'];
   const honba = condSegState.honba;
   const kyotaku = condSegState.kyotaku;
 
-  if(meInput.value === "" || targetInput.value === ""){
-    document.getElementById("cond-diff").innerText = "点数を入力してください🐾";
+  if(diffInput.value === ""){
+    document.getElementById("cond-diff").innerText = "点差を入力してください🐾";
     document.getElementById("cond-minimum").innerText = "-";
     document.getElementById("cond-ron").innerText = "-";
     document.getElementById("cond-direct").innerText = "-";
@@ -618,10 +617,12 @@ function calcCondition(){
     return;
   }
 
-  const me = parseInt(meInput.value);
-  const target = parseInt(targetInput.value);
+  const diff = parseInt(diffInput.value);
   const bonus = honba * 300 + kyotaku * 1000;
-  const diff = target - me;
+
+  // me=0, target=diff とすることで既存のfindRon/findTsumoをそのまま利用できる
+  const me = 0;
+  const target = diff;
 
   document.getElementById("cond-diff").innerText =
     diff > 0 ? fmt(diff) + "点ビハインド" : fmt(Math.abs(diff)) + "点リード";
@@ -736,8 +737,7 @@ function resetQuick() {
 }
 
 function resetCondition() {
-  document.getElementById('cond-me').value     = '';
-  document.getElementById('cond-target').value = '';
+  document.getElementById('cond-diff-input').value = '';
 
   // 席トグル → 子
   ['my-seat','target-seat'].forEach(key => {
