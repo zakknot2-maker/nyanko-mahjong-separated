@@ -600,6 +600,47 @@ function setConditionDifficultyCat(resultText){
 // 役例ヒントテーブル（条件テキスト → 役の組み合わせ例）
 // ================================================================
 
+// 条件テキスト → 最低翻符表示（アプリ内の点数テーブルから逆算）
+const COND_HANFU = {
+  // 子ロン
+  '1000ロン':        '1翻30符以上',
+  '2000ロン':        '2翻30符以上',
+  '3900ロン':        '3翻30符以上',
+  '5200ロン':        '3翻40符以上',
+  '満貫ロン':        '4翻以上（切り上げ満貫）',
+  '跳満ロン':        '6翻以上',
+  '倍満ロン':        '8翻以上',
+  '三倍満ロン':      '11翻以上',
+  '役満ロン':        '役満',
+  // 親ロン
+  '1500ロン':        '1翻30符以上',
+  '2900ロン':        '2翻30符以上',
+  '5800ロン':        '3翻30符以上',
+  // 子ツモ
+  '500 / 1000ツモ':  '1翻30符以上',
+  '1000 / 2000ツモ': '2翻30符以上',
+  '1300 / 2600ツモ': '3翻20符以上',
+  '2000 / 4000ツモ': '4翻以上（切り上げ満貫）',
+  '3000 / 6000ツモ': '6翻以上',
+  '4000 / 8000ツモ': '8翻以上',
+  // 親ツモ
+  '1000 ALL':        '1翻30符以上',
+  '2000 ALL':        '2翻30符以上',
+  '4000 ALL':        '4翻以上（切り上げ満貫）',
+  '6000 ALL':        '6翻以上',
+  '8000 ALL':        '8翻以上',
+};
+
+function setCondHanfu(elId, condText) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (condText === '-' || condText.includes('届かない')) {
+    el.textContent = '';
+    return;
+  }
+  el.textContent = COND_HANFU[condText] || '';
+}
+
 function calcCondition(){
   const diffInput = document.getElementById("cond-diff-input");
 
@@ -631,6 +672,10 @@ function calcCondition(){
   document.getElementById("cond-ron").innerText    = ron;
   document.getElementById("cond-direct").innerText = direct;
   document.getElementById("cond-tsumo").innerText  = tsumo;
+
+  setCondHanfu('cond-ron-hanfu',    ron);
+  setCondHanfu('cond-direct-hanfu', direct);
+  setCondHanfu('cond-tsumo-hanfu',  tsumo);
 
 
   let bestCondition = ron;
