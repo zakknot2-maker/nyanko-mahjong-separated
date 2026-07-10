@@ -599,184 +599,6 @@ function setConditionDifficultyCat(resultText){
 // ================================================================
 // 役例ヒントテーブル（条件テキスト → 役の組み合わせ例）
 // ================================================================
-const YAKU_HINT = {
-  // ── 1翻ゾーン ──
-  '1000ロン': {
-    label:'1翻でOKにゃ 🎯',
-    menzen:['リーチ','タンヤオ','ピンフ','役牌'],
-    naki:  ['タンヤオ+ドラ1','役牌+ドラ1'],
-    inori: null,
-  },
-  '1500ロン': {
-    label:'1翻でOKにゃ 🎯',
-    menzen:['リーチ','タンヤオ','ピンフ','役牌'],
-    naki:  ['タンヤオ+ドラ1','役牌+ドラ1'],
-    inori: null,
-  },
-  '500 / 1000ツモ': {
-    label:'1翻でOKにゃ 🎯',
-    menzen:['リーチ','タンヤオ','ピンフ+ツモ','役牌'],
-    naki:  ['タンヤオ+ドラ1','役牌+ドラ1'],
-    inori: null,
-  },
-  '1000 ALL': {
-    label:'1翻でOKにゃ 🎯',
-    menzen:['リーチ','タンヤオ','ピンフ+ツモ','役牌'],
-    naki:  ['タンヤオ+ドラ1','役牌+ドラ1'],
-    inori: null,
-  },
-  // ── 2翻ゾーン ──
-  '2000ロン': {
-    label:'2翻が目安にゃ',
-    menzen:['リーチ+ドラ1','タンヤオ+ピンフ','三色同順','一気通貫'],
-    naki:  ['タンヤオ+三色同順','役牌+役牌'],
-    inori: ['リーチ+裏'],
-  },
-  '2900ロン': {
-    label:'2翻が目安にゃ',
-    menzen:['リーチ+ドラ1','タンヤオ+ピンフ','三色同順','一気通貫'],
-    naki:  ['タンヤオ+三色同順','役牌+役牌'],
-    inori: ['リーチ+裏'],
-  },
-  '1000 / 2000ツモ': {
-    label:'2翻が目安にゃ',
-    menzen:['リーチ+ツモ','タンヤオ+ピンフ','ピンフ+ツモ','三色同順'],
-    naki:  ['タンヤオ+三色同順','役牌+役牌'],
-    inori: ['リーチ+ツモ+裏'],
-  },
-  '2000 ALL': {
-    label:'2翻が目安にゃ',
-    menzen:['リーチ+ツモ','タンヤオ+ピンフ','ピンフ+ツモ','三色同順'],
-    naki:  ['タンヤオ+三色同順','役牌+役牌'],
-    inori: ['リーチ+ツモ+裏'],
-  },
-  // ── 3翻ゾーン ──
-  '3900ロン': {
-    label:'3翻が目安にゃ',
-    menzen:['リーチ+タンヤオ+ドラ1','リーチ+タンヤオ+ピンフ','リーチ+一気通貫','ピンフ+三色同順'],
-    naki:  ['三色同順+役牌+役牌','役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+裏','リーチ+ピンフ+裏'],
-  },
-  '5800ロン': {
-    label:'3翻が目安にゃ',
-    menzen:['リーチ+タンヤオ+ドラ1','リーチ+タンヤオ+ピンフ','リーチ+一気通貫','ピンフ+三色同順'],
-    naki:  ['三色同順+役牌+役牌','役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+裏','リーチ+ピンフ+裏'],
-  },
-  '1300 / 2600ツモ': {
-    label:'3翻が目安にゃ',
-    menzen:['リーチ+タンヤオ+ツモ','リーチ+ピンフ+ツモ','タンヤオ+ピンフ+ツモ','ピンフ+三色同順'],
-    naki:  ['三色同順+役牌+役牌','役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+ツモ+裏'],
-  },
-  // ── 3翻高め（愚形系）ゾーン ──
-  '5200ロン': {
-    label:'3翻高め（愚形系）にゃ',
-    menzen:['リーチ+タンヤオ+ドラ1（愚形）','リーチ+一気通貫（愚形）'],
-    naki:  ['三色同順+役牌+ドラ1','役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+裏（愚形）'],
-  },
-  // ── 4翻・切り上げ満貫ゾーン ──
-  '満貫ロン': {
-    label:'4翻で切り上げ満貫にゃ 💪',
-    menzen:['リーチ+タンヤオ+ピンフ+ドラ1','リーチ+ピンフ+三色同順','リーチ+一気通貫+ドラ1'],
-    naki:  ['三色同順+役牌+役牌+ドラ1','一気通貫+役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+ピンフ+裏','リーチ+一気通貫+裏'],
-  },
-  '2000 / 4000ツモ': {
-    label:'4翻で切り上げ満貫にゃ 💪',
-    menzen:['リーチ+タンヤオ+ピンフ+ツモ','リーチ+タンヤオ+ツモ+ドラ1','リーチ+ピンフ+三色同順'],
-    naki:  ['三色同順+役牌+役牌+ドラ1','一気通貫+役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+ピンフ+ツモ+裏'],
-  },
-  '4000 ALL': {
-    label:'4翻で切り上げ満貫にゃ 💪',
-    menzen:['リーチ+タンヤオ+ピンフ+ツモ','リーチ+タンヤオ+ツモ+ドラ1','リーチ+ピンフ+三色同順'],
-    naki:  ['三色同順+役牌+役牌+ドラ1','一気通貫+役牌+役牌+ドラ1'],
-    inori: ['リーチ+タンヤオ+ピンフ+ツモ+裏'],
-  },
-  // ── 跳満以上（面前のみ） ──
-  '跳満ロン': {
-    label:'跳満（6翻）が必要にゃ 😤',
-    menzen:['リーチ+タンヤオ+ピンフ+三色同順+ドラ1','混一色+役牌+役牌+ドラ1'],
-    naki:  null,
-    inori: ['リーチ+タンヤオ+ピンフ+三色同順+裏'],
-  },
-  '3000 / 6000ツモ': {
-    label:'跳満（6翻）が必要にゃ 😤',
-    menzen:['リーチ+タンヤオ+ピンフ+ツモ+三色同順','混一色+役牌+役牌+ドラ1'],
-    naki:  null,
-    inori: ['リーチ+タンヤオ+ピンフ+ツモ+三色同順+裏'],
-  },
-  '6000 ALL': {
-    label:'跳満（6翻）が必要にゃ 😤',
-    menzen:['リーチ+タンヤオ+ピンフ+ツモ+三色同順','混一色+役牌+役牌+ドラ1'],
-    naki:  null,
-    inori: ['リーチ+タンヤオ+ピンフ+ツモ+三色同順+裏'],
-  },
-  '倍満ロン': {
-    label:'倍満（8翻）が必要にゃ 😱',
-    menzen:['清一色','混一色+役牌複数+ドラ1'],
-    naki:  null,
-    inori: null,
-  },
-  '4000 / 8000ツモ': {
-    label:'倍満（8翻）が必要にゃ 😱',
-    menzen:['清一色','混一色+役牌複数+ドラ1'],
-    naki:  null,
-    inori: null,
-  },
-  '8000 ALL': {
-    label:'倍満（8翻）が必要にゃ 😱',
-    menzen:['清一色','混一色+役牌複数+ドラ1'],
-    naki:  null,
-    inori: null,
-  },
-  '三倍満ロン': {
-    label:'三倍満（11翻）が必要にゃ 😱',
-    menzen:['大三元','字一色など大物手'],
-    naki:  null,
-    inori: null,
-  },
-  '役満ロン': {
-    label:'役満が必要にゃ 🙀',
-    menzen:['国士無双','四暗刻','大三元など'],
-    naki:  null,
-    inori: null,
-  },
-};
-
-function renderYakuHint(elId, condText) {
-  const el = document.getElementById(elId);
-  if (!el) return;
-  if (condText.includes('届かない')) {
-    el.innerHTML = '<div class="cond-yaku-label">🙀 役満でも届かない</div>';
-    el.classList.add('visible');
-    return;
-  }
-  const hint = YAKU_HINT[condText];
-  if (!hint) { el.classList.remove('visible'); return; }
-
-  const tags = arr => arr.map(e => '<span class="cond-yaku-tag">' + e + '</span>').join('');
-
-  let html = '<div class="cond-yaku-label">' + hint.label + '</div>';
-  html += '<div class="cond-yaku-section"><span class="cond-yaku-type">面前</span>'
-        + '<div class="cond-yaku-examples">' + tags(hint.menzen) + '</div></div>';
-  if (hint.naki) {
-    html += '<div class="cond-yaku-section"><span class="cond-yaku-type">鳴き</span>'
-          + '<div class="cond-yaku-examples">' + tags(hint.naki) + '</div></div>';
-  }
-  if (hint.inori) {
-    html += '<div class="cond-yaku-section"><span class="cond-yaku-type cond-yaku-type-inori">🙏お祈り</span>'
-          + '<div class="cond-yaku-examples">'
-          + hint.inori.map(e => '<span class="cond-yaku-tag cond-yaku-tag-inori">' + e + '</span>').join('')
-          + '</div></div>';
-  }
-  el.innerHTML = html;
-  el.classList.add('visible');
-}
-
-
 
 function calcCondition(){
   const diffInput = document.getElementById("cond-diff-input");
@@ -785,12 +607,6 @@ function calcCondition(){
   const targetSeat = toggleState['target-seat'];
   const honba = condSegState.honba;
   const kyotaku = condSegState.kyotaku;
-
-  // 役例エリアをいったんクリア
-  ['cond-ron-yaku','cond-direct-yaku','cond-tsumo-yaku'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.innerHTML = ''; el.classList.remove('visible'); }
-  });
 
   if(diffInput.value === ""){
     document.getElementById("cond-ron").innerText = "-";
@@ -816,9 +632,6 @@ function calcCondition(){
   document.getElementById("cond-direct").innerText = direct;
   document.getElementById("cond-tsumo").innerText  = tsumo;
 
-  renderYakuHint('cond-ron-yaku',    ron);
-  renderYakuHint('cond-direct-yaku', direct);
-  renderYakuHint('cond-tsumo-yaku',  tsumo);
 
   let bestCondition = ron;
   if(bestCondition.includes("届かない")) bestCondition = direct;

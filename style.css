@@ -441,57 +441,6 @@ summary{
 .condition{
   display:block;
 }
-.cond-yaku{
-  display:none;
-  margin-top:6px;
-  padding-top:6px;
-  border-top:1px dashed var(--theme-shadow);
-  font-size:12px;
-  color:var(--theme-muted);
-  position:relative;
-  z-index:1;
-}
-.cond-yaku.visible{
-  display:block;
-}
-.cond-yaku-label{
-  font-size:11px;
-  font-weight:700;
-  color:var(--theme-accent);
-  margin-bottom:5px;
-  opacity:.8;
-}
-.cond-yaku-section{
-  display:flex;
-  align-items:flex-start;
-  gap:5px;
-  margin-bottom:4px;
-}
-.cond-yaku-section:last-child{ margin-bottom:0; }
-.cond-yaku-type{
-  font-size:10px;
-  font-weight:700;
-  color:var(--theme-muted);
-  background:var(--theme-shadow);
-  border-radius:8px;
-  padding:2px 5px;
-  white-space:nowrap;
-  margin-top:2px;
-}
-.cond-yaku-examples{
-  display:flex;
-  flex-wrap:wrap;
-  gap:4px;
-}
-.cond-yaku-tag{
-  background:var(--theme-soft);
-  border:1px solid var(--theme-shadow);
-  border-radius:12px;
-  padding:2px 8px;
-  font-size:11px;
-  white-space:nowrap;
-}
-
 .cat-comment{
   display:flex;
   align-items:center;
