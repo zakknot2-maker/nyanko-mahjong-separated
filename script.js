@@ -152,6 +152,56 @@ function assistSetSeg(btn) {
 }
 
 
+// ===== 条件ネコ：対象（2位／1位）切り替え =====
+// 3着から2着・1着それぞれをまくる条件を、UIを増やさず1セットのまま切り替えて見られるようにする
+const condTargets = {
+  second: { diff: '', seat: 'child' },
+  first:  { diff: '', seat: 'child' },
+};
+let condActiveTarget = 'second';
+
+const CON_TARGET_LABEL = {
+  second: { tab: '2位', emoji: '🥈' },
+  first:  { tab: '1位', emoji: '🥇' },
+};
+
+function switchCondTarget(target, btn){
+  if(target === condActiveTarget) return;
+
+  // 今表示している内容を退避
+  condTargets[condActiveTarget].diff = document.getElementById('cond-diff-input').value;
+  condTargets[condActiveTarget].seat = toggleState['target-seat'];
+
+  condActiveTarget = target;
+
+  // タブの見た目を切り替え
+  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.target === target);
+  });
+
+  // 保存しておいた値を復元
+  document.getElementById('cond-diff-input').value = condTargets[target].diff;
+
+  const seat = condTargets[target].seat;
+  toggleState['target-seat'] = seat;
+  document.querySelectorAll('#toggle-target-seat .toggle-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.value === seat);
+  });
+
+  updateCondTargetLabels();
+  calcCondition();
+}
+
+function updateCondTargetLabels(){
+  const label = CON_TARGET_LABEL[condActiveTarget];
+  document.getElementById('cond-diff-label').innerText =
+    label.tab + "との点差（" + label.tab + "が何点上か）🐾";
+  document.getElementById('cond-target-seat-label').innerText =
+    label.tab + " 🐈‍⬛";
+  const resultTarget = document.getElementById('cond-result-target');
+  if(resultTarget) resultTarget.innerText = "（対" + label.tab + "）";
+}
+
 // ===== 条件ネコ：本場・供託セグメント =====
 const condSegState = { honba: 0, kyotaku: 0 };
 
@@ -649,6 +699,10 @@ function calcCondition(){
   const honba = condSegState.honba;
   const kyotaku = condSegState.kyotaku;
 
+  // 現在表示中タブ（2位／1位）の入力値を裏の状態にも同期しておく
+  condTargets[condActiveTarget].diff = diffInput.value;
+  condTargets[condActiveTarget].seat = targetSeat;
+
   if(diffInput.value === ""){
     document.getElementById("cond-ron").innerText = "-";
     document.getElementById("cond-direct").innerText = "-";
@@ -773,6 +827,17 @@ function resetQuick() {
 
 function resetCondition() {
   document.getElementById('cond-diff-input').value = '';
+
+  // 2位／1位タブの状態も両方リセットして「2位」タブに戻す
+  condTargets.second.diff = '';
+  condTargets.second.seat = 'child';
+  condTargets.first.diff  = '';
+  condTargets.first.seat  = 'child';
+  condActiveTarget = 'second';
+  document.querySelectorAll('#cond-target-tabs .toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.target === 'second');
+  });
+  updateCondTargetLabels();
 
   // 席トグル → 子
   ['my-seat','target-seat'].forEach(key => {
@@ -1665,6 +1730,7 @@ document.body.classList.add("theme-assist");
 
 calcQuick();
 calcAssist();
+updateCondTargetLabels();
 calcCondition();
 
 function hideDeveloperMode(){

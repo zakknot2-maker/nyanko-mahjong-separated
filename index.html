@@ -505,7 +505,13 @@
 
     <section id="condition" class="tool">
       <div class="reset-bar"><button type="button" class="reset-btn" onclick="resetCondition()">↩ リセット</button></div>
-      <div class="input-box"><label>相手との点差（相手が何点上か）🐾</label><input
+      <div class="input-box">
+        <div class="toggle-group" id="cond-target-tabs">
+          <button type="button" class="toggle-btn active" data-target="second" onclick="switchCondTarget('second', this)">🥈 2位との差</button>
+          <button type="button" class="toggle-btn" data-target="first" onclick="switchCondTarget('first', this)">🥇 1位との差</button>
+        </div>
+      </div>
+      <div class="input-box"><label id="cond-diff-label">2位との点差（2位が何点上か）🐾</label><input
   id="cond-diff-input"
   type="number"
   inputmode="numeric"
@@ -520,7 +526,7 @@
           </div>
         </div>
         <div class="input-box">
-          <label>相手 🐈‍⬛</label>
+          <label id="cond-target-seat-label">2位 🐈‍⬛</label>
           <div class="toggle-group" id="toggle-target-seat">
             <button class="toggle-btn active" data-value="child" onclick="toggleSeat('target-seat', this)">子</button>
             <button class="toggle-btn" data-value="parent" onclick="toggleSeat('target-seat', this)">親</button>
@@ -554,7 +560,7 @@
         </div>
       </div>
       <div class="results fire">
-        <div class="result-title">🐱 まくれるかにゃ？</div>
+        <div class="result-title">🐱 まくれるかにゃ？<span id="cond-result-target"></span></div>
         <div class="condition"><div class="cond-head">🐾 ロン条件</div><div class="cond-main" id="cond-ron">-</div><div class="cond-hanfu" id="cond-ron-hanfu"></div><div class="cond-sub">相手以外からロン。相手の点数は減らないにゃ。</div></div>
         <div class="condition"><div class="cond-head">🔥 直撃条件</div><div class="cond-main" id="cond-direct">-</div><div class="cond-hanfu" id="cond-direct-hanfu"></div><div class="cond-sub">相手からロン。自分加点＋相手失点にゃ。</div></div>
         <div class="condition"><div class="cond-head">🐈 ツモ条件</div><div class="cond-main" id="cond-tsumo">-</div><div class="cond-hanfu" id="cond-tsumo-hanfu"></div><div class="cond-sub" id="cond-tsumo-sub">自分の加点＋相手の支払い減点で判定するにゃ。</div></div>
